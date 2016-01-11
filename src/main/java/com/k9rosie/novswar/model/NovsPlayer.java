@@ -6,7 +6,6 @@ public class NovsPlayer {
 
     private Player player;
     private NovsLoadout loadout;
-    private NovsTeam team;
 
     public NovsPlayer(Player player) {
         this.player = player;
@@ -28,12 +27,5 @@ public class NovsPlayer {
         this.loadout = loadout;
     }
 
-    public NovsTeam getTeam() {
-        return team;
-    }
-
-    public void setTeam(NovsTeam team) {
-        this.team = team;
-    }
 
 }

@@ -1,10 +1,4 @@
 worlds:
-  world:
-    name: World
-    gamemode: tdm
-    enabled_teams:
-      - red
-      - blue
   world_nether:
     name: Nether World
     gamemode: ctf

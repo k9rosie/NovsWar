@@ -11,16 +11,12 @@ public class NovsTeam {
     private ChatColor color;
     private boolean canBeDamaged;
     private boolean canAttack;
-    private HashSet<NovsPlayer> players;
-    private int score;
 
     public NovsTeam(String name, ChatColor color, boolean canBeDamaged, boolean canAttack) {
         this.name = name;
         this.color = color;
         this.canBeDamaged = canBeDamaged;
         this.canAttack = canAttack;
-        players = new HashSet<NovsPlayer>();
-        score = 0;
     }
 
     public String getName() {
@@ -53,34 +49,6 @@ public class NovsTeam {
 
     public void setCanAttack(boolean canAttack) {
         this.canAttack = canAttack;
-    }
-
-    public HashSet<NovsPlayer> getPlayers() {
-        return players;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    public void incrementScore() {
-        score++;
-    }
-
-    public void incrementScore(int increment) {
-        score += increment;
-    }
-
-    public void decrementScore() {
-        score--;
-    }
-
-    public void decrementScore(int decrement) {
-        score -= decrement;
     }
 
 }

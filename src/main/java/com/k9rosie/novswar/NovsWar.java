@@ -1,6 +1,7 @@
 package com.k9rosie.novswar;
 
 import com.k9rosie.novswar.config.ConfigurationCache;
+import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.manager.TeamManager;
 import com.k9rosie.novswar.manager.WorldManager;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,6 +13,7 @@ public class NovsWar {
 	
 	private ConfigurationCache configurationCache;
 	private TeamManager teamManager;
+	private PlayerManager playerManager;
 	private WorldManager worldManager;
 
 	private boolean lobbyEnabled;
@@ -21,6 +23,7 @@ public class NovsWar {
 		
 		configurationCache = new ConfigurationCache(this);
 		teamManager = new TeamManager(this);
+		playerManager = new PlayerManager(this);
 		worldManager = new WorldManager(this);
 
 		lobbyEnabled = true;

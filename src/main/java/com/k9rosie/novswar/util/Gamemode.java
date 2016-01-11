@@ -1,4 +1,4 @@
-package com.k9rosie.novswar.game;
+package com.k9rosie.novswar.util;
 
 public enum Gamemode {
     CAPTURE_THE_FLAG,

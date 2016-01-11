@@ -1,6 +1,6 @@
 package com.k9rosie.novswar.model;
 
-import com.k9rosie.novswar.game.Gamemode;
+import com.k9rosie.novswar.util.Gamemode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.Listener;
@@ -14,7 +14,6 @@ public class NovsWorld implements Listener {
     private World world;
     private String name;
     private Gamemode gamemode;
-    private HashSet<NovsTeam> enabledTeams;
     private HashMap<NovsTeam, Location> teamSpawns;
     private ArrayList<NovsRegion> intermissionGateRegions;
     private ArrayList<NovsRegion> respawnGateRegions;
@@ -23,7 +22,6 @@ public class NovsWorld implements Listener {
         this.world = world;
         this.name = name;
         this.gamemode = gamemode;
-        enabledTeams = new HashSet<NovsTeam>();
         teamSpawns = new HashMap<NovsTeam, Location>();
     }
 
@@ -49,10 +47,6 @@ public class NovsWorld implements Listener {
 
     public void setGamemode(Gamemode gamemode) {
         this.gamemode = gamemode;
-    }
-
-    public HashSet<NovsTeam> getEnabledTeams() {
-        return enabledTeams;
     }
 
     public HashMap<NovsTeam, Location> getTeamSpawns() {

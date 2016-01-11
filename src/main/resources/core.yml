@@ -27,9 +27,11 @@ core:
     # list of worlds enabled for gameplay
     # these worlds must be defined in worlds.yml
     enabled_worlds:
-      - world
       - world_nether
       - world_the_end
+
+    # world that's loaded when the server is started
+    starting_world: world_nether
 
   # lobby settings
   # the lobby is the world your players are placed in when they first join the server
