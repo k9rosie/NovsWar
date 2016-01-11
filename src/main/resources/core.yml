@@ -25,6 +25,7 @@ core:
   world:
 
     # list of worlds enabled for gameplay
+    # these worlds must be defined in worlds.yml
     enabled_worlds:
       - world
       - world_nether

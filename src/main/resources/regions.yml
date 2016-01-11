@@ -1,0 +1,32 @@
+regions:
+  world:
+    spawns:
+      red:
+        x: 0
+        y: 64
+        z: 0
+      blue:
+        x: 0
+        y: 0
+        z: 0
+    regions:
+      region1:
+        type: intermission_gate
+        cornerOne:
+          x: 0
+          y: 0
+          z: 0
+        cornerTwo:
+          x: 10
+          y: 10
+          z: 10
+      region2:
+        type: spawn_gate
+        cornerOne:
+          x: 0
+          y: 0
+          z: 0
+        cornerTwo:
+          x: 10
+          y: 10
+          z: 10

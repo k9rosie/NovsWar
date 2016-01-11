@@ -1,0 +1,19 @@
+worlds:
+  world:
+    name: World
+    gamemode: tdm
+    enabled_teams:
+      - red
+      - blue
+  world_nether:
+    name: Nether World
+    gamemode: ctf
+    enabled_teams:
+      - red
+      - blue
+  world_the_end:
+    name: End World
+    gamemode: ctf
+    enabled_teams:
+      - red
+      - blue

@@ -1,1 +1,9 @@
 teams:
+  Red:
+    color: red
+    can_be_damaged: true
+    can_attack: true
+  Blue:
+    color: blue
+    can_be_damaged: true
+    can_attack: true
