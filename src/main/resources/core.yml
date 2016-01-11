@@ -1,0 +1,78 @@
+# core novswar settings
+core:
+
+  # database settings
+  database:
+
+    # the connector for the database
+    connector: sqlite # sqlite or mysql
+
+    # the path to the database (for sqlite)
+    path: plugins/NovsWar/novswar.db
+
+    # the prefix for database tables
+    prefix: nw_
+
+    # mysql settings
+    mysql:
+      hostname: localhost
+      port: 3306
+      database: example_database
+      username: example_user
+      password: example_password
+
+  # world settings
+  world:
+
+    # list of worlds enabled for gameplay
+    enabled_worlds:
+      - world
+      - world_nether
+      - world_the_end
+
+  # lobby settings
+  # the lobby is the world your players are placed in when they first join the server
+  # it's recommended you enable the lobby so your players have a starting point on the server
+  # if not enabled then players will be assigned a random team when they connect
+  lobby:
+
+    # enable the lobby
+    enabled: true
+
+    # enabling the lobby also enables the 'default' team
+    # players are put onto the default team when they first connect to the server
+    # these are the settings for the default team
+    default_team:
+      name: Neutral
+      color: grey
+      can_attack: false
+      can_be_damaged: false
+
+    # the world players are put in
+    # note: you don't have to include this world in core.world.enabled_worlds as it's already enabled by default
+    lobby_world: world
+
+  # game settings
+  game:
+
+    # the minimum amount of players on each team needed to start the game
+    minimum_players: 3
+
+    # can players join a game after it has started?
+    # this setting will be ignored if the lobby isn't enabled
+    join_in_progress: false
+
+    # capture the flag settings
+    ctf:
+
+      # number of captures a team needs to win
+      captures: 3
+
+      # money rewarded for capturing the flag
+      capture_reward: 100
+
+      # money rewarded for killing someone with a flag
+      flagholder_kill_reward: 50
+
+    tdm:
+

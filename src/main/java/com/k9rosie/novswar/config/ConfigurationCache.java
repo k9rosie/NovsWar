@@ -6,12 +6,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import com.k9rosie.novswar.NovsWar;
 
-public class ConfigCache {
+public class ConfigurationCache {
 	
 	private NovsWar novswar;
 	private HashMap<String, NovsConfig> configCache;
 	
-	public ConfigCache(NovsWar novswar) {
+	public ConfigurationCache(NovsWar novswar) {
 		this.novswar = novswar;
 	}
 	

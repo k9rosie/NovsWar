@@ -1,22 +1,22 @@
 package com.k9rosie.novswar;
 
-import com.k9rosie.novswar.config.ConfigCache;
+import com.k9rosie.novswar.config.ConfigurationCache;
 
 public class NovsWar {
 	
 	private NovsWarPlugin plugin;
 	private static NovsWar instance;
 	
-	private ConfigCache configCache;
+	private ConfigurationCache configurationCache;
 	
 	public NovsWar(NovsWarPlugin plugin) {
 		this.plugin = plugin;
 		
-		configCache = new ConfigCache(this);
+		configurationCache = new ConfigurationCache(this);
 	}
 	
 	public void initialize() {
-		configCache.initialize();
+		configurationCache.initialize();
 	}
 	
 	public static NovsWar getInstance() {
