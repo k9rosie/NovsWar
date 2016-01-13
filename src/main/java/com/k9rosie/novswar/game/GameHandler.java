@@ -2,6 +2,7 @@ package com.k9rosie.novswar.game;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.model.NovsWorld;
+import org.bukkit.World;
 
 public class GameHandler {
 
@@ -13,6 +14,11 @@ public class GameHandler {
     }
 
     public void initialize() {
+        World initialBukkitWorld = novswar.getPlugin().getServer().getWorld(novswar.getConfigurationCache().getConfig("core").getString("core.world.starting_world"));
+        NovsWorld initialWorld = novswar.getWorldManager().getNovsWorld(initialBukkitWorld);
+
+        newGame(initialWorld);
+        game.startGame();
     }
 
     public void newGame(NovsWorld world) {

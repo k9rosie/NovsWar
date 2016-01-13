@@ -1,8 +1,10 @@
+# team configuration
+# here you can configure the different teams for the plugin to use
 teams:
-  Red:
-    color: red
-    can_be_damaged: true
-    can_attack: true
+  Red: # team name
+    color: red # team color
+    can_be_damaged: true # can players on this team be damaged?
+    can_attack: true # can players on this team be attack?
   Blue:
     color: blue
     can_be_damaged: true

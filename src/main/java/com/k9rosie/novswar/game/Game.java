@@ -22,11 +22,26 @@ public class Game {
         activeTeams = new HashMap<NovsTeam, HashSet<NovsPlayer>>();
     }
 
-    public void startGame() {}
+    public void startGame() {
+        // TODO: check if there are enough players to start
+        // TODO: start timer
+        // TODO: adjust game score according to gamemode
+        // TODO: teleport all players to their team's designated spawn points
+        // TODO: start schedulers for the world's regions
+    }
 
-    public void pauseGame() {}
+    public void pauseGame() {
+        // TODO: teleport all players to their spawn points
+        // TODO: stop timer
+        // TODO: stop schedulers for the world's regions
+    }
 
-    public void endGame() {}
+    public void endGame() {
+        // TODO: stop timer
+        // TODO: teleport players to spawn points
+        // TODO: start voting if enabled
+        // TODO: pick next world and request a new game from the gameHandler
+    }
 
 
 

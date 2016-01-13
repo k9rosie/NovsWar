@@ -1,13 +1,15 @@
+# world configuration
+# these are the worlds the plugin will see
 worlds:
-  world_nether:
-    name: Nether World
-    gamemode: ctf
-    enabled_teams:
-      - red
-      - blue
+  world_nether: # name of the world directory
+    name: Nether World # name of the world self defined by you
+    gamemode: ctf # gamemode
+    enabled_teams: # a list of teams that players can join when in this world
+      - Red
+      - Blue
   world_the_end:
     name: End World
     gamemode: ctf
     enabled_teams:
-      - red
-      - blue
+      - Red
+      - Blue

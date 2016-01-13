@@ -55,6 +55,14 @@ core:
     # note: you don't have to include this world in core.world.enabled_worlds as it's already enabled by default
     lobby_world: world
 
+  # voting settings
+  voting:
+
+    # enable voting for a new map at the end of each game
+    enabled: true
+
+    #
+
   # game settings
   game:
 

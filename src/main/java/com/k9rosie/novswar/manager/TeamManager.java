@@ -25,15 +25,10 @@ public class TeamManager {
 
     public void initialize() {
         loadTeams(); // load teams' data from config
-
     }
 
     public HashSet<NovsTeam> getTeams() {
         return teams;
-    }
-
-    public void addTeam(NovsTeam team) {
-        teams.add(team);
     }
 
     public void loadTeams() {
@@ -42,8 +37,11 @@ public class TeamManager {
 
         for(String teamName : teamNames) {
             ChatColor color = ColorParser.parseString(teamsConfig.getString("teams."+teamName+".color"));
-            boolean canBeDamaged = teamsConfig.getBoolean("teams."+teamName+".color");
+            boolean canBeDamaged = teamsConfig.getBoolean("teams."+teamName+".can_be_damaged");
+            boolean canAttack = teamsConfig.getBoolean("teams."+teamName+".can_attack");
 
+            NovsTeam team = new NovsTeam(teamName, color, canBeDamaged, canAttack);
+            teams.add(team);
         }
     }
 

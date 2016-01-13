@@ -1,3 +1,5 @@
+# YAML file that stores the different regions in the worlds
+# it's not recommended that you edit this file unless you are sure on what you are doing
 regions:
   world:
     spawns:
