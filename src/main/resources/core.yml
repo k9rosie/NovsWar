@@ -61,7 +61,13 @@ core:
     # enable voting for a new map at the end of each game
     enabled: true
 
-    #
+    # the amount in seconds to vote before voting ends
+    timer: 60
+
+    # worlds that will not be listed in the voting rotation
+    disabled_worlds:
+      - world_nether
+      - world_the_end
 
   # game settings
   game:
@@ -70,8 +76,14 @@ core:
     minimum_players: 3
 
     # can players join a game after it has started?
-    # this setting will be ignored if the lobby isn't enabled
+    # if the lobby isn't enabled then players will be kicked from the server while the game is in progress
     join_in_progress: false
+
+    # the amount in seconds players will be forced to stay in spawn before the game begins
+    pre_game_timer: 30
+
+    # the amount in seconds players will be forced to stay in spawn after a game ends
+    post_game_timer: 30
 
     # capture the flag settings
     ctf:
