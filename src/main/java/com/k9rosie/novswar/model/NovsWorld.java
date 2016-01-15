@@ -11,26 +11,16 @@ import java.util.HashSet;
 
 public class NovsWorld implements Listener {
 
-    private World world;
     private String name;
     private Gamemode gamemode;
     private HashMap<NovsTeam, Location> teamSpawns;
     private ArrayList<NovsRegion> intermissionGateRegions;
     private ArrayList<NovsRegion> respawnGateRegions;
 
-    public NovsWorld(World world, String name, Gamemode gamemode) {
-        this.world = world;
+    public NovsWorld(String name, Gamemode gamemode) {
         this.name = name;
         this.gamemode = gamemode;
         teamSpawns = new HashMap<NovsTeam, Location>();
-    }
-
-    public World getBukkitWorld() {
-        return world;
-    }
-
-    public void setBukkitWorld(World world) {
-        this.world = world;
     }
 
     public String getName() {

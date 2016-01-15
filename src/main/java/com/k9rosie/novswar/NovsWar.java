@@ -17,6 +17,7 @@ public class NovsWar {
 	private WorldManager worldManager;
 
 	private boolean lobbyEnabled;
+	private boolean votingEnabled;
 
 	public NovsWar(NovsWarPlugin plugin) {
 		this.plugin = plugin;
@@ -32,6 +33,7 @@ public class NovsWar {
 	public void initialize() {
 		configurationCache.initialize();
 		lobbyEnabled = configurationCache.getConfig("core").getBoolean("core.lobby.enabled");
+        votingEnabled = configurationCache.getConfig("core").getBoolean("core.voting.enabled");
 
 		teamManager.initialize();
 		worldManager.initialize();

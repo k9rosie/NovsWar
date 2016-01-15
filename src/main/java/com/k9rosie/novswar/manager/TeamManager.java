@@ -7,16 +7,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TeamManager {
 
     private NovsWar novswar;
 
-    private HashSet<NovsTeam> teams;
+    private HashMap<String, NovsTeam> teams; // key: team name, value: team
     private NovsTeam defaultTeam;
 
     public TeamManager(NovsWar novswar) {
@@ -27,7 +24,7 @@ public class TeamManager {
         loadTeams(); // load teams' data from config
     }
 
-    public HashSet<NovsTeam> getTeams() {
+    public HashMap<String, NovsTeam> getTeams() {
         return teams;
     }
 
@@ -40,8 +37,8 @@ public class TeamManager {
             boolean canBeDamaged = teamsConfig.getBoolean("teams."+teamName+".can_be_damaged");
             boolean canAttack = teamsConfig.getBoolean("teams."+teamName+".can_attack");
 
-            NovsTeam team = new NovsTeam(teamName, color, canBeDamaged, canAttack);
-            teams.add(team);
+            NovsTeam team = new NovsTeam(color, canBeDamaged, canAttack);
+            teams.put(teamName, team);
         }
     }
 

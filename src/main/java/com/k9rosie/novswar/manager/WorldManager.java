@@ -7,6 +7,7 @@ import com.k9rosie.novswar.util.Gamemode;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -14,8 +15,7 @@ public class WorldManager {
 
     private NovsWar novswar;
 
-    private HashSet<NovsWorld> worlds;
-    private NovsWorld lobbyWorld;
+    private HashMap<World, NovsWorld> worlds;
 
     public WorldManager(NovsWar novswar) {
         this.novswar = novswar;
@@ -25,16 +25,8 @@ public class WorldManager {
         loadWorlds();
     }
 
-    public HashSet<NovsWorld> getWorlds(){
+    public HashMap<World, NovsWorld> getWorlds(){
         return worlds;
-    }
-
-    public NovsWorld getNovsWorld(World world) {
-        for (NovsWorld novsWorld : world) {
-            if (novsWorld.getBukkitWorld().equals(world)) {
-                return novsWorld;
-            }
-        }
     }
 
     public void loadWorlds() {
@@ -43,12 +35,12 @@ public class WorldManager {
 
         for (String worldName : enabledWorldNames) {
             World world = novswar.getPlugin().getServer().getWorld(worldName);
-            String name = worldConfig.getString("worlds".+worldName+".name");
+            String name = worldConfig.getString("worlds."+worldName+".name");
             Gamemode gamemode = Gamemode.parseString(worldConfig.getString("worlds."+worldName+".gamemode"));
 
-            NovsWorld novsWorld = new NovsWorld(world, name, gamemode);
+            NovsWorld novsWorld = new NovsWorld(name, gamemode);
             // TODO: load world regions here
-            worlds.add(novsWorld);
+            worlds.put(world, novsWorld);
         }
     }
 

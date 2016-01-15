@@ -7,24 +7,15 @@ import java.util.HashSet;
 
 public class NovsTeam {
 
-    private String name;
     private ChatColor color;
     private boolean canBeDamaged;
     private boolean canAttack;
 
-    public NovsTeam(String name, ChatColor color, boolean canBeDamaged, boolean canAttack) {
-        this.name = name;
+    public NovsTeam(ChatColor color, boolean canBeDamaged, boolean canAttack) {
+
         this.color = color;
         this.canBeDamaged = canBeDamaged;
         this.canAttack = canAttack;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public ChatColor getColor() {
