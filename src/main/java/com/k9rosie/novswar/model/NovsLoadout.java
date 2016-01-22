@@ -14,28 +14,28 @@ public class NovsLoadout {
     private ItemStack weapon;
     private ItemStack food;
     private int foodQuantity;
-    private ArrayList<ItemStack> customs;
+    private ItemStack custom;
+    private int customQuantity;
+    private ItemStack arrows;
+    private int arrowQuantity;
+    private ArrayList<ItemStack> potions;
 
-    public NovsLoadout() {
-        foodQuantity = 5;
-        helmet = new ItemStack(Material.LEATHER_HELMET);
-        chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
-        leggings = new ItemStack(Material.LEATHER_LEGGINGS);
-        boots = new ItemStack(Material.LEATHER_BOOTS);
-        weapon = new ItemStack(Material.WOOD_SWORD);
-        food = new ItemStack(Material.COOKIE, foodQuantity);
-        customs = new ArrayList<ItemStack>();
-    }
-
-    public NovsLoadout(ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots, ItemStack weapon, ItemStack food, int foodQuantity) {
-        this.helmet = helmet;
-        this.chestplate = chestplate;
-        this.leggings = leggings;
-        this.boots = boots;
-        this.weapon = weapon;
-        this.food = food;
+    public NovsLoadout(Material helmet, Material chestplate, Material leggings,
+                       Material boots, Material weapon, Material food,
+                       int foodQuantity, Material custom, int customQuantity,
+                       Material arrows, int arrowQuantity, ArrayList<ItemStack> potions) {
+        this.helmet = new ItemStack(helmet);
+        this.chestplate = new ItemStack(chestplate);
+        this.leggings = new ItemStack(leggings);
+        this.boots = new ItemStack(boots);
+        this.weapon = new ItemStack(weapon);
         this.foodQuantity = foodQuantity;
-        customs = new ArrayList<ItemStack>();
+        this.food = new ItemStack(food, this.foodQuantity);
+        this.customQuantity = customQuantity;
+        this.custom = new ItemStack(custom, this.customQuantity);
+        this.arrowQuantity = arrowQuantity;
+        this.arrows = new ItemStack(arrows, arrowQuantity);
+        this.potions = potions;
     }
 
     public ItemStack getHelmet() {
@@ -94,8 +94,40 @@ public class NovsLoadout {
         this.foodQuantity = foodQuantity;
     }
 
-    public ArrayList<ItemStack> getCustoms() {
-        return customs;
+    public ItemStack getCustom() {
+        return custom;
+    }
+
+    public void setCustom(ItemStack custom) {
+        this.custom = custom;
+    }
+
+    public int getCustomQuantity() {
+        return customQuantity;
+    }
+
+    public ItemStack getArrows() {
+        return arrows;
+    }
+
+    public void setArrows(ItemStack arrows) {
+        this.arrows = arrows;
+    }
+
+    public int getArrowQuantity() {
+        return arrowQuantity;
+    }
+
+    public void setArrowQuantity(int arrowQuantity) {
+        this.arrowQuantity = arrowQuantity;
+    }
+
+    public ArrayList<ItemStack> getPotions() {
+        return potions;
+    }
+
+    public void setPotions(ArrayList<ItemStack> potions) {
+        this.potions = potions;
     }
 
 }
