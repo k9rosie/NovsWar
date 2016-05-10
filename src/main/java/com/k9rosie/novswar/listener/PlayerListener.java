@@ -21,7 +21,16 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        novswar.getPlayerManager().createNovsPlayer(player);
 
+        // TODO: if lobby enabled:
+        //   put player on default team
+        // TODO: if lobby not enabled:
+        //   if join_in_progress false:
+        //     kick player and let them know a game is in progress
+        //  if join_in_progress true:
+        //     put them on a team
+        // TODO: spawn player on team spawn point
     }
 
 }

@@ -13,7 +13,7 @@ public class TeamManager {
 
     private NovsWar novswar;
 
-    private HashMap<String, NovsTeam> teams; // key: team name, value: team
+    private ArrayList<NovsTeam> teams;
     private NovsTeam defaultTeam;
 
     public TeamManager(NovsWar novswar) {
@@ -24,7 +24,7 @@ public class TeamManager {
         loadTeams(); // load teams' data from config
     }
 
-    public HashMap<String, NovsTeam> getTeams() {
+    public ArrayList<NovsTeam> getTeams() {
         return teams;
     }
 
@@ -37,8 +37,8 @@ public class TeamManager {
             boolean canBeDamaged = teamsConfig.getBoolean("teams."+teamName+".can_be_damaged");
             boolean canAttack = teamsConfig.getBoolean("teams."+teamName+".can_attack");
 
-            NovsTeam team = new NovsTeam(color, canBeDamaged, canAttack);
-            teams.put(teamName, team);
+            NovsTeam team = new NovsTeam(teamName, color, canBeDamaged, canAttack);
+            teams.add(team);
         }
     }
 

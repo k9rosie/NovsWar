@@ -4,14 +4,15 @@ import org.bukkit.entity.Player;
 
 public class NovsPlayer {
 
-    private NovsLoadout loadout;
+    private Player bukkitPlayer;
+    private NovsStats stats;
 
-    public NovsLoadout getLoadout() {
-        return loadout;
+    public NovsPlayer (Player bukkitPlayer) {
+        this.bukkitPlayer = bukkitPlayer;
     }
 
-    public void setLoadout(NovsLoadout loadout) {
-        this.loadout = loadout;
+    public Player getBukkitPlayer() {
+        return bukkitPlayer;
     }
 
 

@@ -3,12 +3,10 @@ package com.k9rosie.novswar.manager;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.model.NovsWorld;
-import com.k9rosie.novswar.util.Gamemode;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 public class WorldManager {

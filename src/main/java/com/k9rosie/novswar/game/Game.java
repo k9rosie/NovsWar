@@ -1,9 +1,9 @@
 package com.k9rosie.novswar.game;
 
+import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
-import com.k9rosie.novswar.util.Gamemode;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,12 +22,18 @@ public class Game {
         activeTeams = new HashMap<NovsTeam, HashSet<NovsPlayer>>();
     }
 
+    public void initialize() {
+        gamemode.setGame(this);
+        gamemode.initialize();
+    }
+
     public void startGame() {
         // TODO: check if there are enough players to start
         // TODO: start timer
         // TODO: adjust game score according to gamemode
         // TODO: teleport all players to their team's designated spawn points
         // TODO: start schedulers for the world's regions
+        // TODO: start game timer according to gamemode
     }
 
     public void pauseGame() {

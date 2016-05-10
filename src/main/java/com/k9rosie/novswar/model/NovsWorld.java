@@ -1,15 +1,13 @@
 package com.k9rosie.novswar.model;
 
-import com.k9rosie.novswar.util.Gamemode;
+import com.k9rosie.novswar.gamemode.Gamemode;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
-public class NovsWorld implements Listener {
+public class NovsWorld {
 
     private String name;
     private Gamemode gamemode;

@@ -32,8 +32,10 @@ public class NovsWar {
 	
 	public void initialize() {
 		configurationCache.initialize();
-		lobbyEnabled = configurationCache.getConfig("core").getBoolean("core.lobby.enabled");
+
+        lobbyEnabled = configurationCache.getConfig("core").getBoolean("core.lobby.enabled");
         votingEnabled = configurationCache.getConfig("core").getBoolean("core.voting.enabled");
+
 		teamManager.initialize();
 		worldManager.initialize();
 	}
@@ -57,6 +59,10 @@ public class NovsWar {
 	public WorldManager getWorldManager() {
 		return worldManager;
 	}
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
+    }
 
 	public boolean isLobbyEnabled() {
 		return lobbyEnabled;
