@@ -9,21 +9,17 @@ import java.util.Properties;
 
 public class DatabaseConnection {
     private Connection connection;
+    private String path;
     private Properties properties;
-    private DatabaseType type;
     private Database database;
 
-    public DatabaseConnection(String name, DatabaseType type) {
-        this.type = type;
-        database = new Database(name);
+    public DatabaseConnection(Database database) {
+        this.database = database;
+        this.path = path;
     }
 
     public void pingDatabase() {
 
-    }
-
-    public String getDatabasePath() {
-        return "";
     }
 
     public void setProperties(String autoReconnect, String user, String password) {
@@ -39,6 +35,8 @@ public class DatabaseConnection {
 
         ClassLoader classLoader = Bukkit.getServer().getClass().getClassLoader();
         String className = "";
+        DatabaseType type = database.getType();
+
         switch (type) {
             case MySQL:
                 className = "com.mysql.jdbc.Driver";
@@ -49,15 +47,27 @@ public class DatabaseConnection {
         Driver driver = (Driver) classLoader.loadClass(className).newInstance();
 
         try {
-            connection = driver.connect("jdbc:" + type.toString().toLowerCase() + ":" + getDatabasePath(), properties);
+            connection = driver.connect("jdbc:" + type.toString().toLowerCase() + ":" + path, properties);
             return;
         } catch (SQLException e) {
-            
+            e.printStackTrace();
         }
 
     }
 
     public void disconnect() {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
+        connection = null;
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 }

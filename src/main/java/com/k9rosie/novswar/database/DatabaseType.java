@@ -13,4 +13,14 @@ public enum DatabaseType {
     public String getDriver() {
         return driver;
     }
+
+    public static DatabaseType matchType(String str) {
+        for(DatabaseType type : values()) {
+            if(type.toString().equalsIgnoreCase(str)){
+                return type;
+            }
+        }
+
+        return null;
+    }
 }
