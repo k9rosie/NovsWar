@@ -1,18 +1,11 @@
 package com.k9rosie.novswar.database;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 public class Database {
     private String prefix;
     private DatabaseType type;
     private String path;
 
     private DatabaseConnection databaseConnection;
-    private ExecutorService queryExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     public Database(String prefix, DatabaseType type, String path) {
         this.prefix = prefix;
@@ -29,8 +22,6 @@ public class Database {
             e.printStackTrace();
             return;
         }
-
-
     }
 
     public String getPrefix() {
@@ -48,5 +39,4 @@ public class Database {
     public DatabaseConnection getDatabaseConnection() {
         return databaseConnection;
     }
-
 }

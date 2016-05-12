@@ -11,5 +11,10 @@ public abstract class Gamemode {
         this.game = game;
 
     }
+
     public abstract void initialize();
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
 }

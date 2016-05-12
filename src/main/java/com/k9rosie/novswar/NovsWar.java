@@ -39,7 +39,7 @@ public class NovsWar {
         lobbyEnabled = configurationCache.getConfig("core").getBoolean("core.lobby.enabled");
         votingEnabled = configurationCache.getConfig("core").getBoolean("core.voting.enabled");
 
-        databaseThread.getThread().run();
+        databaseThread.start();
 
 		teamManager.initialize();
 		worldManager.initialize();

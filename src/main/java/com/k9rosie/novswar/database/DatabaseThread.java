@@ -13,7 +13,13 @@ public class DatabaseThread implements Runnable {
 
     public DatabaseThread(NovsWar novsWar) {
         this.novsWar = novsWar;
-        thread = new Thread(this);
+    }
+
+    public void start() {
+        if (thread == null) {
+            thread = new Thread(this);
+            thread.start();
+        }
     }
 
     public void run() {
@@ -23,14 +29,11 @@ public class DatabaseThread implements Runnable {
         database.initialize();
     }
 
-    public Thread getThread() {
-        return thread;
-    }
-
     public void createDatabase() {
         FileConfiguration coreConfig = novsWar.getConfigurationCache().getConfig("core");
         String type = coreConfig.getString("novswar.database.connector");
         String prefix = coreConfig.getString("novswar.database.prefix");
+
         if (!type.equalsIgnoreCase("sqlite")) {
             String hostname = coreConfig.getString("novswar.database.mysql.hostname");
             String port = coreConfig.getString("novswar.database.mysql.port");
@@ -45,5 +48,9 @@ public class DatabaseThread implements Runnable {
             String path = coreConfig.getString("novswar.database.path");
             database = new Database(prefix, DatabaseType.matchType(type), path);
         }
+    }
+
+    public Thread getThread() {
+        return thread;
     }
 }
