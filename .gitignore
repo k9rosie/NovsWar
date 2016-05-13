@@ -38,6 +38,7 @@ target
 # Repository #
 ##############
 .git
+.c9
 
 # Logging #
 ###########
