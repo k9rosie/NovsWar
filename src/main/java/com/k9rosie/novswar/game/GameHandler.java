@@ -14,7 +14,7 @@ public class GameHandler {
     }
 
     public void initialize() {
-        World initialBukkitWorld = novswar.getPlugin().getServer().getWorld(novswar.getConfigurationCache().getConfig("core").getString("core.world.starting_world"));
+        World initialBukkitWorld = novswar.getPlugin().getServer().getWorld(novswar.getConfigurationCache().getConfig("core").getStringList("core.world.enabled_worlds").get(0));
         NovsWorld initialWorld = novswar.getWorldManager().getNovsWorld(initialBukkitWorld);
 
         newGame(initialWorld);

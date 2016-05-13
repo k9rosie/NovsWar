@@ -5,11 +5,15 @@ import com.k9rosie.novswar.NovsWar;
 import java.util.ArrayList;
 
 public class GamemodeHandler {
-    public ArrayList<Gamemode> gamemodes;
+    public HashMap<String, Gamemode> gamemodes;
     public NovsWar novsWar;
 
     public GamemodeHandler(NovsWar novsWar) {
         this.novsWar = novsWar;
-        gamemodes = new ArrayList<Gamemode>();
+        gamemodes = new HashMap<String, Gamemode>();
+    }
+    
+    public HashMap<String, Gamemode> getGamemodes() {
+        return gamemodes;
     }
 }

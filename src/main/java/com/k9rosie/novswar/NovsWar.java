@@ -29,6 +29,7 @@ public class NovsWar {
 		playerManager = new PlayerManager(this);
 		worldManager = new WorldManager(this);
         databaseThread = new DatabaseThread(this);
+        gamemodeHandler = new GamemodeHandler(this);
 
 		lobbyEnabled = true;
 	}
@@ -56,7 +57,7 @@ public class NovsWar {
 	public ConfigurationCache getConfigurationCache() {
 		return configurationCache;
 	}
-
+	
 	public TeamManager getTeamManager() {
 		return teamManager;
 	}
@@ -67,6 +68,14 @@ public class NovsWar {
 
     public PlayerManager getPlayerManager() {
         return playerManager;
+    }
+    
+    public DatabaseThread getDatabaseThread() {
+    	return databaseThread;
+    }
+    
+    public GamemodeHandler getGamemodeHandler() {
+    	return gamemodeHandler;
     }
 
 	public boolean isLobbyEnabled() {

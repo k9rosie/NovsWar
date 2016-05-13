@@ -4,11 +4,11 @@ import com.k9rosie.novswar.game.Game;
 
 public class TeamDeathmatch extends Gamemode {
 
-    public TeamDeathmatch(Game game) {
-        super("tdm", game);
+    public TeamDeathmatch() {
+        super("tdm");
     }
 
-    public void initialize() {
+    public void upstart() {
         // TODO: set game timer
         // TODO: set game score
     }

@@ -34,7 +34,8 @@ public class WorldManager {
         for (String worldName : enabledWorldNames) {
             World world = novswar.getPlugin().getServer().getWorld(worldName);
             String name = worldConfig.getString("worlds."+worldName+".name");
-            Gamemode gamemode = Gamemode.parseString(worldConfig.getString("worlds."+worldName+".gamemode"));
+            String gamemodeName = worldConfig.getString("worlds."+worldName+".gamemode");
+            Gamemode gamemode = novswar.getGamemodeHandler().getGamemodes().get(gamemodeName);
 
             NovsWorld novsWorld = new NovsWorld(name, gamemode);
             // TODO: load world regions here

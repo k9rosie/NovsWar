@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class Game {
-
     private GameHandler gameHandler;
     private NovsWorld world;
     private Gamemode gamemode;
@@ -24,10 +23,10 @@ public class Game {
 
     public void initialize() {
         gamemode.setGame(this);
-        gamemode.initialize();
     }
 
     public void startGame() {
+        gamemode.onNewGame();
         // TODO: check if there are enough players to start
         // TODO: start timer
         // TODO: adjust game score according to gamemode
