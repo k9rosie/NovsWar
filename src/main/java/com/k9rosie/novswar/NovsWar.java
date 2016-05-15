@@ -2,6 +2,7 @@ package com.k9rosie.novswar;
 
 import com.k9rosie.novswar.config.ConfigurationCache;
 import com.k9rosie.novswar.database.DatabaseThread;
+import com.k9rosie.novswar.gamemode.GamemodeHandler;
 import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.manager.TeamManager;
 import com.k9rosie.novswar.manager.WorldManager;
@@ -17,6 +18,7 @@ public class NovsWar {
 	private PlayerManager playerManager;
 	private WorldManager worldManager;
 	private DatabaseThread databaseThread;
+	private GamemodeHandler gamemodeHandler;
 
 	private boolean lobbyEnabled;
 	private boolean votingEnabled;

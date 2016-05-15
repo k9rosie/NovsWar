@@ -1,5 +1,6 @@
 package com.k9rosie.novswar.gamemode;
 
+import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.game.Game;
 
 public abstract class Gamemode {

@@ -9,6 +9,10 @@ public class TeamDeathmatch extends Gamemode {
     }
 
     public void upstart() {
+
+    }
+
+    public void onNewGame() {
         // TODO: set game timer
         // TODO: set game score
     }
