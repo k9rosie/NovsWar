@@ -28,6 +28,7 @@ public class ConfigurationCache {
 	}
 	
 	public void addConfig(String key, NovsConfig config) {
+		config.saveDefaultConfig();
 		config.reloadConfig();
 		configCache.put(key, config);
 	}
