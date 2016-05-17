@@ -59,7 +59,7 @@ public class DatabaseConnection {
         connection = null;
     }
 
-    private void executeUpdate(String query) {
+    public void executeUpdate(String query) {
         Statement statement = null;
 
         try {
@@ -78,7 +78,7 @@ public class DatabaseConnection {
         }
     }
 
-    private PreparedStatement prepare(String sql) {
+    public PreparedStatement prepare(String sql) {
         if (connection == null) {
             return null;
         }
