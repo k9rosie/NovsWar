@@ -25,6 +25,7 @@ public class NovsWar {
 
 	public NovsWar(NovsWarPlugin plugin) {
 		this.plugin = plugin;
+		instance = this;
 		
 		configurationCache = new ConfigurationCache(this);
 		teamManager = new TeamManager(this);
