@@ -14,10 +14,11 @@ public class DatabaseConnection {
     private Properties properties;
     private Database database;
 
-    private ExecutorService queryExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private ExecutorService queryExecutor;
 
     public DatabaseConnection(Database database) {
         this.database = database;
+        queryExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     }
 
     public void connect() throws Exception {
