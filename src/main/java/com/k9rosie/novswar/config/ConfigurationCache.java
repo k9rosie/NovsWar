@@ -13,6 +13,7 @@ public class ConfigurationCache {
 	
 	public ConfigurationCache(NovsWar novswar) {
 		this.novswar = novswar;
+        configCache = new HashMap<String, NovsConfig>();
 	}
 	
 	public void initialize() {
