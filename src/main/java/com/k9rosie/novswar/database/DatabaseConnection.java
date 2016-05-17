@@ -19,6 +19,7 @@ public class DatabaseConnection {
     public DatabaseConnection(Database database) {
         this.database = database;
         queryExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        properties = new Properties();
     }
 
     public void connect() throws Exception {
@@ -40,6 +41,7 @@ public class DatabaseConnection {
         Driver driver = (Driver) classLoader.loadClass(className).newInstance();
 
         try {
+            System.out.println("jdbc:" + type.toString().toLowerCase() + ":" + database.getPath());
             connection = driver.connect("jdbc:" + type.toString().toLowerCase() + ":" + database.getPath(), properties);
             return;
         } catch (SQLException e) {
