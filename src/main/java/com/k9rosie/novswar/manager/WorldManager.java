@@ -2,6 +2,7 @@ package com.k9rosie.novswar.manager;
 
 
 import com.k9rosie.novswar.NovsWar;
+import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsWorld;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;

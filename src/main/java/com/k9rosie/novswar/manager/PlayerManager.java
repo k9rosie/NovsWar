@@ -12,18 +12,18 @@ public class PlayerManager {
 
     private NovsWar novswar;
 
-    private ArrayList<NovsPlayer> players;
+    private HashMap<Player, NovsPlayer> players;
 
     public PlayerManager(NovsWar novswar) {
         this.novswar = novswar;
     }
 
-    public ArrayList<NovsPlayer> getPlayers() {
+    public HashMap<Player, NovsPlayer> getPlayers() {
         return players;
     }
 
     public void createNovsPlayer(Player bukkitPlayer) {
         NovsPlayer player = new NovsPlayer(bukkitPlayer);
-        players.add(player);
+        players.put(bukkitPlayer, player);
     }
 }

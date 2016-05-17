@@ -8,18 +8,24 @@ import java.util.ArrayList;
 
 public class NovsRegion {
 
+    private NovsWorld world;
     private String name;
     private Location cornerOne;
     private Location cornerTwo;
     private RegionType regionType;
     private ArrayList<Block> blocks;
 
-    public NovsRegion(String name, Location cornerOne, Location cornerTwo, RegionType regionType) {
+    public NovsRegion(NovsWorld world, String name, Location cornerOne, Location cornerTwo, RegionType regionType) {
+        this.world = world;
         this.name = name;
         this.cornerOne = cornerOne;
         this.cornerTwo = cornerTwo;
         this.regionType = regionType;
         blocks = new ArrayList<Block>();
+    }
+
+    public NovsWorld getWorld() {
+        return world;
     }
 
     public String getName() {

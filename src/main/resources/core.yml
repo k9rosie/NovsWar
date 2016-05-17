@@ -32,11 +32,7 @@ core:
 
   # lobby settings
   # the lobby is the world your players are placed in when they first join the server
-  # if not enabled then players will be assigned a random team when they connect
   lobby:
-
-    # enable the lobby
-    enabled: true
 
     # the world players are put in
     # note: you don't have to include this world in core.world.enabled_worlds as it's already enabled by default

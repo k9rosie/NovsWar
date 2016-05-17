@@ -2,11 +2,14 @@ package com.k9rosie.novswar.model;
 
 public class NovsStats {
 
-    private int swordKills;
+    private int kills;
     private int arrowKills;
-    private int swordDeaths;
+    private int deaths;
     private int arrowDeaths;
     private int suicides;
-    private int damageGiven;
-    private int damageTaken;
+    private int wins;
+    private int losses;
+    private double damageGiven;
+    private double damageTaken;
+
 }
