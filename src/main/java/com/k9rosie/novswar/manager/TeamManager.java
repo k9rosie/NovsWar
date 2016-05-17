@@ -18,6 +18,7 @@ public class TeamManager {
 
     public TeamManager(NovsWar novswar) {
         this.novswar = novswar;
+        teams = new ArrayList<NovsTeam>();
     }
 
     public void initialize() {

@@ -31,21 +31,21 @@ public class DatabaseThread implements Runnable {
 
     public void createDatabase() {
         FileConfiguration coreConfig = novsWar.getConfigurationCache().getConfig("core");
-        String type = coreConfig.getString("novswar.database.connector");
-        String prefix = coreConfig.getString("novswar.database.prefix");
+        String type = coreConfig.getString("core.database.connector");
+        String prefix = coreConfig.getString("core.database.prefix");
 
         if (!type.equalsIgnoreCase("sqlite")) {
-            String hostname = coreConfig.getString("novswar.database.mysql.hostname");
-            String port = coreConfig.getString("novswar.database.mysql.port");
-            String database = coreConfig.getString("novswar.database.mysql.database");
-            String user = coreConfig.getString("novswar.database.mysql.username");
-            String password = coreConfig.getString("novswar.database.mysql.password");
+            String hostname = coreConfig.getString("core.database.mysql.hostname");
+            String port = coreConfig.getString("core.database.mysql.port");
+            String database = coreConfig.getString("core.database.mysql.database");
+            String user = coreConfig.getString("core.database.mysql.username");
+            String password = coreConfig.getString("core.database.mysql.password");
 
             String path = "//" + hostname+":"+port + "/" + database;
             this.database = new Database(prefix, DatabaseType.matchType(type), path);
             this.database.getDatabaseConnection().setProperties("true", user, password);
         } else {
-            String path = coreConfig.getString("novswar.database.path");
+            String path = coreConfig.getString("core.database.path");
             database = new Database(prefix, DatabaseType.matchType(type), path);
         }
     }
