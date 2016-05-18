@@ -36,8 +36,10 @@ public class DatabaseConnection {
         switch (type) {
             case MySQL:
                 className = "com.mysql.jdbc.Driver";
+                System.out.println("it's mysql");
             case SQLite:
                 className = "org.sqlite.JDBC";
+                System.out.println("it's mysql");
         }
 
         Driver driver = (Driver) classLoader.loadClass(className).newInstance();
