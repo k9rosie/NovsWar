@@ -40,7 +40,6 @@ public class DatabaseConnection {
         Driver driver = (Driver) classLoader.loadClass(className).newInstance();
 
         try {
-            System.out.println("jdbc:" + type.toString().toLowerCase() + ":" + database.getPath());
             connection = driver.connect("jdbc:" + type.toString().toLowerCase() + ":" + database.getPath(), properties);
             return;
         } catch (SQLException e) {
