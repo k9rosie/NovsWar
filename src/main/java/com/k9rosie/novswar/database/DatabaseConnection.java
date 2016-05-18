@@ -31,6 +31,8 @@ public class DatabaseConnection {
         String className = "";
         DatabaseType type = database.getType();
 
+        System.out.println(type);
+
         switch (type) {
             case MySQL:
                 className = "com.mysql.jdbc.Driver";
