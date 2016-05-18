@@ -1,6 +1,6 @@
 package com.k9rosie.novswar.command;
 
-public interface Command {
+public interface ICommand {
 
     public void execute();
 }
