@@ -1,5 +1,6 @@
 package com.k9rosie.novswar;
 
+import com.k9rosie.novswar.command.CommandHandler;
 import com.k9rosie.novswar.config.ConfigurationCache;
 import com.k9rosie.novswar.database.DatabaseThread;
 import com.k9rosie.novswar.gamemode.GamemodeHandler;
@@ -19,6 +20,7 @@ public class NovsWar {
 	private WorldManager worldManager;
 	private DatabaseThread databaseThread;
 	private GamemodeHandler gamemodeHandler;
+	private CommandHandler commandHandler;
 
 	private boolean lobbyEnabled;
 	private boolean votingEnabled;
@@ -80,6 +82,10 @@ public class NovsWar {
     public GamemodeHandler getGamemodeHandler() {
     	return gamemodeHandler;
     }
+
+	public CommandHandler getCommandHandler() {
+		return commandHandler;
+	}
 
 	public boolean isLobbyEnabled() {
 		return lobbyEnabled;
