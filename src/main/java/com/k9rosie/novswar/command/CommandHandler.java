@@ -14,6 +14,9 @@ public class CommandHandler implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length == 1) {
+            new BaseCommand(novsWar, sender).execute();
+        }
         return true;
     }
 }
