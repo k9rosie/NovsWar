@@ -31,15 +31,10 @@ public class DatabaseConnection {
         String className = "";
         DatabaseType type = database.getType();
 
-        System.out.println(type);
-
-        switch (type) {
-            case MySQL:
-                className = "com.mysql.jdbc.Driver";
-                System.out.println("it's mysql");
-            case SQLite:
-                className = "org.sqlite.JDBC";
-                System.out.println("it's mysql");
+        if (type != DatabaseType.SQLite) {
+            className = "com.mysql.jdbc.Driver";
+        } else {
+            className = "org.sqlite.JDBC";
         }
 
         Driver driver = (Driver) classLoader.loadClass(className).newInstance();
