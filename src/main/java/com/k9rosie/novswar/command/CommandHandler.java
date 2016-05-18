@@ -14,9 +14,14 @@ public class CommandHandler implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        // args length 1 commands
         if (args.length == 1) {
-            new BaseCommand(novsWar, sender).execute();
+            if (args[0].equalsIgnoreCase("novswar") || args[0].equalsIgnoreCase("nw")) {
+                new BaseCommand(novsWar, sender).execute();
+                return true;
+            }
         }
-        return true;
+
+        return false;
     }
 }
