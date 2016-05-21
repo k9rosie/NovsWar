@@ -1,6 +1,9 @@
 package com.k9rosie.novswar.database;
 
+import com.k9rosie.novswar.NovsWar;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.sql.*;
 import java.util.Properties;
@@ -28,19 +31,35 @@ public class DatabaseConnection {
         }
 
         ClassLoader classLoader = Bukkit.getServer().getClass().getClassLoader();
-        String className = "";
         DatabaseType type = database.getType();
+
+        FileConfiguration config = NovsWar.getInstance().getConfigurationCache().getConfig("core");
+        String className;
+        String hostnameString;
+        String portString;
+        String databaseString;
+        String userString;
+        String passwordString;
+        String pathString;
 
         if (type != DatabaseType.SQLite) {
             className = "com.mysql.jdbc.Driver";
+            hostnameString = config.getString("core.database.mysql.hostname");
+            portString = config.getString("core.database.mysql.port");
+            databaseString = config.getString("core.database.mysql.database");
+            userString = config.getString("core.database.mysql.username");
+            passwordString = config.getString("core.database.mysql.password");
+            pathString = "//" + hostnameString+":"+portString + "/" + databaseString;
+            setProperties("true", userString, passwordString);
         } else {
+            pathString = config.getString("core.database.path");
             className = "org.sqlite.JDBC";
         }
 
         Driver driver = (Driver) classLoader.loadClass(className).newInstance();
 
         try {
-            connection = driver.connect("jdbc:" + type.toString().toLowerCase() + ":" + database.getPath(), properties);
+            connection = driver.connect("jdbc:" + type.toString().toLowerCase() + ":" + pathString, properties);
             return;
         } catch (SQLException e) {
             e.printStackTrace();

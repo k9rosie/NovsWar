@@ -6,7 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class DatabaseThread implements Runnable {
     private final NovsWar novsWar;
 
-    private Database database;
+    private NovswarDB database;
     private Thread thread;
 
     private boolean running = false;
@@ -34,23 +34,15 @@ public class DatabaseThread implements Runnable {
         String type = coreConfig.getString("core.database.connector");
         String prefix = coreConfig.getString("core.database.prefix");
 
-        if (!type.equalsIgnoreCase("sqlite")) {
-            String hostname = coreConfig.getString("core.database.mysql.hostname");
-            String port = coreConfig.getString("core.database.mysql.port");
-            String database = coreConfig.getString("core.database.mysql.database");
-            String user = coreConfig.getString("core.database.mysql.username");
-            String password = coreConfig.getString("core.database.mysql.password");
+        database = new NovswarDB(DatabaseType.matchType(type), prefix);
 
-            String path = "//" + hostname+":"+port + "/" + database;
-            this.database = new Database(prefix, DatabaseType.matchType(type), path);
-            this.database.getDatabaseConnection().setProperties("true", user, password);
-        } else {
-            String path = coreConfig.getString("core.database.path");
-            database = new Database(prefix, DatabaseType.matchType(type), path);
-        }
     }
 
     public Thread getThread() {
         return thread;
+    }
+
+    public NovswarDB getDatabase() {
+        return database;
     }
 }
