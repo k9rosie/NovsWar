@@ -4,11 +4,20 @@ import java.util.ArrayList;
 
 public class Table {
     private String name;
+    private String prefix;
     private Database database;
     private ArrayList<Column> columns;
 
+    public Table(String name, String prefix, Database database) {
+        this.prefix = prefix;
+        this.name = name;
+        this.database = database;
+        columns = new ArrayList<Column>();
+    }
+
     public Table(String name, Database database) {
         this.name = name;
+        this.database = database;
         columns = new ArrayList<Column>();
     }
 
@@ -19,7 +28,6 @@ public class Table {
 
     public void execute() {
         StringBuilder buffer = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
-        String prefix = database.getPrefix();
 
         if (prefix == null) {
             prefix = "";

@@ -47,6 +47,10 @@ public class Column {
         this.type = type;
     }
 
+    public void setAutoIncrement(boolean autoIncrement) {
+        this.autoIncrement = autoIncrement;
+    }
+
     public boolean shouldAutoIncrement() {
         return autoIncrement;
     }

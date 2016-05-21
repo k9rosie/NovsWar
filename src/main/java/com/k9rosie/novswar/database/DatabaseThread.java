@@ -35,7 +35,6 @@ public class DatabaseThread implements Runnable {
         String prefix = coreConfig.getString("core.database.prefix");
 
         database = new NovswarDB(DatabaseType.matchType(type), prefix);
-
     }
 
     public Thread getThread() {
