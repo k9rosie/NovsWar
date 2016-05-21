@@ -1,5 +1,7 @@
 package com.k9rosie.novswar.database;
 
+import java.sql.SQLException;
+
 public class NovswarDB extends Database {
     private String prefix;
 
@@ -10,6 +12,12 @@ public class NovswarDB extends Database {
 
     @Override
     public void initialize() {
+        try {
+            getDatabaseConnection().connect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         spawnTables();
     }
 
