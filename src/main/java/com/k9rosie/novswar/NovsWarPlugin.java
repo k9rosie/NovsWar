@@ -22,6 +22,8 @@ public class NovsWarPlugin extends JavaPlugin {
 		novswar = new NovsWar(this);
 		novswar.initialize();
 
+        getCommand("novswar").setExecutor(novswar.getCommandHandler());
+        getCommand("nw").setExecutor(novswar.getCommandHandler());
 
 		getLogger().info("novswar enabled. written by k9rosie.");
 	}
