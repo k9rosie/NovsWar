@@ -3,11 +3,9 @@ package com.k9rosie.novswar.database;
 import java.sql.SQLException;
 
 public class NovswarDB extends Database {
-    private String prefix;
 
     public NovswarDB(DatabaseType type, String prefix) {
-        super(type);
-        this.prefix = prefix;
+        super(type, prefix);
     }
 
     @Override
@@ -24,7 +22,7 @@ public class NovswarDB extends Database {
     public void spawnTables() {
         Column column;
 
-        Table players = new Table("Players", prefix, this);
+        Table players = new Table("players", this);
         {
             column = new Column("id");
             column.setType("INTEGER");
