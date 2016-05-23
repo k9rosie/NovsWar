@@ -17,13 +17,13 @@ public class NovsWarPlugin extends JavaPlugin {
 		server = getServer();
 		pluginManager = server.getPluginManager();
 
-		registerListeners();
-
 		novswar = new NovsWar(this);
 		novswar.initialize();
 
         getCommand("novswar").setExecutor(novswar.getCommandHandler());
         getCommand("nw").setExecutor(novswar.getCommandHandler());
+
+		registerListeners();
 
 		getLogger().info("novswar enabled. written by k9rosie.");
 	}

@@ -14,11 +14,14 @@ public class CommandHandler implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        for (String arg : args) {
+            System.out.println(arg);
+        }
         if (args.length == 0) {
             new BaseCommand(novsWar, sender).execute();
             return true;
         }
 
-        return false;
+        return true;
     }
 }

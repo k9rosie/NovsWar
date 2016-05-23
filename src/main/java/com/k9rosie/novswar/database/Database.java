@@ -30,7 +30,6 @@ public abstract class Database {
 
     public boolean exists(String table, String column, String search) {
         String query = "SELECT COUNT(1) FROM " + prefix+table + " WHERE " + column + " = '" + search +"';";
-        System.out.println(query);
         ResultSet result = databaseConnection.scheduleQuery(query);
         int count = 0;
         try {
@@ -72,7 +71,6 @@ public abstract class Database {
         }
 
         sql.append(");");
-        System.out.println(sql.toString());
         databaseConnection.scheduleUpdate(sql.toString());
     }
 

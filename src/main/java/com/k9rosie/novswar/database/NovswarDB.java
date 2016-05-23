@@ -17,6 +17,8 @@ public class NovswarDB extends Database {
         }
 
         spawnTables();
+
+        insert("players", new String[] {"uuid", "name", "stats_id"}, new String[] {"0", "k9rosie", "0"});
     }
 
     public void spawnTables() {
