@@ -35,7 +35,7 @@ public class NovsWar {
 		worldManager = new WorldManager(this);
         databaseThread = new DatabaseThread(this);
         gamemodeHandler = new GamemodeHandler(this);
-
+		commandHandler = new CommandHandler(this);
 		lobbyEnabled = true;
 	}
 	

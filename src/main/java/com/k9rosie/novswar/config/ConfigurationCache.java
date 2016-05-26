@@ -21,7 +21,7 @@ public class ConfigurationCache {
 		addConfig("teams", new NovsConfig("teams.yml"));
 		addConfig("worlds", new NovsConfig("worlds.yml"));
 		addConfig("regions", new NovsConfig("regions.yml"));
-
+		addConfig("messages", new NovsConfig("messages.yml"));
 	}
 	
 	public FileConfiguration getConfig(String key) {

@@ -5,5 +5,8 @@ commands:
   novswar:
     description: Base NovsWar command
     usage: /<command> [options]
-    alias: [nw]
+    permission: novswar.command
+  nw:
+    description: Base NovsWar command
+    usage: /<command> [options]
     permission: novswar.command

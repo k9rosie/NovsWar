@@ -14,9 +14,6 @@ public class BaseCommand implements ICommand {
     }
 
     public void execute() {
-        sender.sendMessage(new String[] {
-                "NovsWar (${version})",
-                "authored by k9rosie"
-        });
+
     }
 }
