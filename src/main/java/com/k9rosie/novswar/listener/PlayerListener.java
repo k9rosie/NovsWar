@@ -25,6 +25,9 @@ public class PlayerListener implements Listener {
         // create novswar player
         novswar.getPlayerManager().createNovsPlayer(player);
 
+        if (!novswar.getDatabase().exists("players", "uuid", player.getUniqueId().toString())) {
+
+        }
     }
 
 }

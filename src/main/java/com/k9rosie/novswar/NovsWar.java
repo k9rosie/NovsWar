@@ -3,6 +3,7 @@ package com.k9rosie.novswar;
 import com.k9rosie.novswar.command.CommandHandler;
 import com.k9rosie.novswar.config.ConfigurationCache;
 import com.k9rosie.novswar.database.DatabaseThread;
+import com.k9rosie.novswar.database.NovswarDB;
 import com.k9rosie.novswar.gamemode.GamemodeHandler;
 import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.manager.TeamManager;
@@ -78,6 +79,10 @@ public class NovsWar {
     public DatabaseThread getDatabaseThread() {
     	return databaseThread;
     }
+
+	public NovswarDB getDatabase() {
+		return databaseThread.getDatabase();
+	}
     
     public GamemodeHandler getGamemodeHandler() {
     	return gamemodeHandler;

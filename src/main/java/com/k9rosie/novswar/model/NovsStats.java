@@ -9,6 +9,7 @@ public class NovsStats {
     private int suicides;
     private int wins;
     private int losses;
+    private int connects;
     private double damageGiven;
     private double damageTaken;
 
