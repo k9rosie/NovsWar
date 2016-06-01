@@ -8,7 +8,8 @@ core:
     connector: sqlite # sqlite or mysql
 
     # the path to the database (for sqlite)
-    path: plugins/NovsWar/novswar.db
+    # generally you don't need to change this
+    path: plugins/novswar/novswar.db
 
     # the prefix for database tables
     prefix: nw_

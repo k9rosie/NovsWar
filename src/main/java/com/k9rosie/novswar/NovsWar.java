@@ -23,7 +23,6 @@ public class NovsWar {
 	private GamemodeHandler gamemodeHandler;
 	private CommandHandler commandHandler;
 
-	private boolean lobbyEnabled;
 	private boolean votingEnabled;
 
 	public NovsWar(NovsWarPlugin plugin) {
@@ -37,13 +36,11 @@ public class NovsWar {
         databaseThread = new DatabaseThread(this);
         gamemodeHandler = new GamemodeHandler(this);
 		commandHandler = new CommandHandler(this);
-		lobbyEnabled = true;
 	}
 	
 	public void initialize() {
 		configurationCache.initialize();
 
-        lobbyEnabled = configurationCache.getConfig("core").getBoolean("core.lobby.enabled");
         votingEnabled = configurationCache.getConfig("core").getBoolean("core.voting.enabled");
 
         databaseThread.start();
@@ -90,9 +87,5 @@ public class NovsWar {
 
 	public CommandHandler getCommandHandler() {
 		return commandHandler;
-	}
-
-	public boolean isLobbyEnabled() {
-		return lobbyEnabled;
 	}
 }

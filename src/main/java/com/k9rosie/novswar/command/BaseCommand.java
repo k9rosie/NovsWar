@@ -14,6 +14,11 @@ public class BaseCommand implements ICommand {
     }
 
     public void execute() {
-
+        sender.sendMessage(new String[] {
+                "§9NovsWar §av1.0.0",
+                "§3§oA monolithic Bukkit plugin created for team-based PvP combat.",
+                "§bWritten by k9rosie.",
+                "§4Use §c/novswar help §4for more information"
+        });
     }
 }

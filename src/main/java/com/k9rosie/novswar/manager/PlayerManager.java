@@ -16,6 +16,7 @@ public class PlayerManager {
 
     public PlayerManager(NovsWar novswar) {
         this.novswar = novswar;
+        players = new HashMap<Player, NovsPlayer>();
     }
 
     public HashMap<Player, NovsPlayer> getPlayers() {
