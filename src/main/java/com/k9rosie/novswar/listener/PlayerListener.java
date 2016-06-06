@@ -39,7 +39,7 @@ public class PlayerListener implements Listener {
         Player bukkitPlayer = event.getPlayer();
         NovsPlayer player = novswar.getPlayerManager().getPlayerFromBukkitPlayer(bukkitPlayer);
 
-        event.setFormat(player.getTeam().getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ":" + event.getMessage());
+        event.setFormat(player.getTeam().getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

@@ -14,6 +14,9 @@ core:
     # the prefix for database tables
     prefix: nw_
 
+    # the amount of time in seconds the server will wait before flushing the cache
+    flush_interval: 60
+
     # mysql settings
     mysql:
       hostname: localhost
@@ -66,7 +69,6 @@ core:
     minimum_players: 3
 
     # can players join a game after it has started?
-    # if the lobby isn't enabled then players will be kicked from the server while the game is in progress
     join_in_progress: false
 
     # the amount in seconds players will be forced to stay in spawn before the game begins
