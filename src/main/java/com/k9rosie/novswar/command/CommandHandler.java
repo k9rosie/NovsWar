@@ -17,6 +17,14 @@ public class CommandHandler implements CommandExecutor {
         if (args.length == 0) {
             new BaseCommand(novsWar, sender).execute();
             return true;
+        } else if (args.length == 1) {
+            if (args[0].equalsIgnoreCase("team")) {
+                new TeamCommand(novsWar, sender).execute();
+                return true;
+            } else if (args[0].equalsIgnoreCase("stats")) {
+                new StatsCommand(novsWar, sender).execute();
+                return true;
+            }
         }
 
         return false;

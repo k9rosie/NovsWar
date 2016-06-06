@@ -12,13 +12,11 @@ public class Game {
     private GameHandler gameHandler;
     private NovsWorld world;
     private Gamemode gamemode;
-    private HashMap<NovsTeam, HashSet<NovsPlayer>> activeTeams;
 
-    public Game(GameHandler gameHandler, NovsWorld world) {
+    public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
         this.world = world;
-        gamemode = world.getGamemode();
-        activeTeams = new HashMap<NovsTeam, HashSet<NovsPlayer>>();
+        this.gamemode = gamemode;
     }
 
     public void initialize() {

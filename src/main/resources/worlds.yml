@@ -3,13 +3,13 @@
 worlds:
   world_nether: # name of the world directory
     name: Nether World # name of the world self defined by you
-    gamemode: ctf # gamemode
+    gamemode: none # gamemode
     enabled_teams: # a list of teams that players can join when in this world
       - Red
       - Blue
   world_the_end:
     name: End World
-    gamemode: ctf
+    gamemode: none
     enabled_teams:
       - Red
       - Blue

@@ -1,8 +1,10 @@
 package com.k9rosie.novswar.database;
 
 import com.k9rosie.novswar.model.NovsPlayer;
+import com.k9rosie.novswar.model.NovsStats;
 import org.bukkit.entity.Player;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -22,7 +24,6 @@ public class NovswarDB extends Database {
 
         spawnTables();
         String uuid = UUID.randomUUID().toString();
-        insert("players", new String[] {"uuid", "name", "stats_id"}, new String[] {uuid, "k9rosie", "0"});
     }
 
     public void spawnTables() {
@@ -43,10 +44,6 @@ public class NovswarDB extends Database {
             column = new Column("name");
             column.setType("VARCHAR(255)");
             players.add(column);
-
-            column = new Column("stats_id");
-            column.setType("INTEGER");
-            players.add(column);
         }
         players.execute();
 
@@ -58,8 +55,8 @@ public class NovswarDB extends Database {
             column.setAutoIncrement(true);
             stats.add(column);
 
-            column = new Column("player_id");
-            column.setType("INTEGER");
+            column = new Column("player_uuid");
+            column.setType("CHAR(36)");
             stats.add(column);
 
             column = new Column("kills");
@@ -107,14 +104,60 @@ public class NovswarDB extends Database {
             column.setDefaultValue("0");
             stats.add(column);
 
-            column = new Column("damange_taken");
+            column = new Column("damage_taken");
             column.setType("DOUBLE");
             column.setDefaultValue("0");
             stats.add(column);
         }
+        stats.execute();
     }
 
-    public void createPlayerData(Player player) {
+    public void fetchPlayerData(NovsPlayer player) {
+        Player bukkitPlayer = player.getBukkitPlayer();
 
+        if (!exists("players", "uuid", bukkitPlayer.getUniqueId().toString())) {
+            createPlayerData(player);
+        }
+
+        NovsStats playerStats = player.getStats();
+        ResultSet stats = select("stats", "player_uuid", bukkitPlayer.getUniqueId().toString());
+
+        try {
+            while (stats.next()) {
+                playerStats.setKills(stats.getInt("kills"));
+                playerStats.setArrowKills(stats.getInt("arrow_kills"));
+                playerStats.setDeaths(stats.getInt("deaths"));
+                playerStats.setArrowDeaths(stats.getInt("arrow_deaths"));
+                playerStats.setSuicides(stats.getInt("suicides"));
+                playerStats.setWins(stats.getInt("wins"));
+                playerStats.setLosses(stats.getInt("losses"));
+                playerStats.setConnects(stats.getInt("connects"));
+                playerStats.setDamageGiven(stats.getDouble("damage_given"));
+                playerStats.setDamageTaken(stats.getDouble("damage_taken"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createPlayerData(NovsPlayer player) {
+        Player bukkitPlayer = player.getBukkitPlayer();
+        insert("players", new String[] {"uuid", "name"}, new String[] {bukkitPlayer.getUniqueId().toString(), bukkitPlayer.getDisplayName()});
+        insert("stats", new String[] {"player_uuid"}, new String[] {bukkitPlayer.getUniqueId().toString()});
+    }
+
+    public void flushPlayerData(NovsPlayer player) {
+        String playerUUIDString = player.getBukkitPlayer().getUniqueId().toString();
+        NovsStats stats = player.getStats();
+        set("stats", "kills", Integer.toString(stats.getKills()), "player_uuid", playerUUIDString);
+        set("stats", "arrow_kills", Integer.toString(stats.getArrowKills()), "player_uuid", playerUUIDString);
+        set("stats", "deaths", Integer.toString(stats.getDeaths()), "player_uuid", playerUUIDString);
+        set("stats", "arrow_deaths", Integer.toString(stats.getArrowDeaths()), "player_uuid", playerUUIDString);
+        set("stats", "suicides", Integer.toString(stats.getSuicides()), "player_uuid", playerUUIDString);
+        set("stats", "wins", Integer.toString(stats.getWins()), "player_uuid", playerUUIDString);
+        set("stats", "losses", Integer.toString(stats.getLosses()), "player_uuid", playerUUIDString);
+        set("stats", "connects", Integer.toString(stats.getConnects()), "player_uuid", playerUUIDString);
+        set("stats", "damage_given", Double.toString(stats.getDamageGiven()), "player_uuid", playerUUIDString);
+        set("stats", "damage_taken", Double.toString(stats.getDamageTaken()), "player_uuid", playerUUIDString);
     }
 }

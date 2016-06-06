@@ -16,7 +16,15 @@ public abstract class Gamemode {
     public void setGame(Game game) {
         this.game = game;
     }
-    
+
+    public Game getGame() {
+        return game;
+    }
+
+    public NovsWar getNovsWarInstance() {
+        return novsWarInstance;
+    }
+
     /*
         hook() should be called when the Gamemode plugin is enabled
     */

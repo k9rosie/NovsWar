@@ -2,11 +2,15 @@ package com.k9rosie.novswar.listener;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
+import com.k9rosie.novswar.model.NovsPlayer;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
 
@@ -20,14 +24,30 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
+        Player bukkitPlayer = event.getPlayer();
+        NovsPlayer player = novswar.getPlayerManager().createNovsPlayer(bukkitPlayer);
 
-        // create novswar player
-        novswar.getPlayerManager().createNovsPlayer(player);
+        novswar.getDatabase().fetchPlayerData(player);
+        novswar.getTeamManager().setPlayerTeam(player, novswar.getTeamManager().getDefaultTeam());
+        bukkitPlayer.teleport(novswar.getWorldManager().getLobbyWorld().getTeamSpawns().get(player.getTeam()));
 
-        if (!novswar.getDatabase().exists("players", "uuid", player.getUniqueId().toString())) {
+        player.getStats().incrementConnects();
+    }
 
-        }
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
+        Player bukkitPlayer = event.getPlayer();
+        NovsPlayer player = novswar.getPlayerManager().getPlayerFromBukkitPlayer(bukkitPlayer);
+
+        event.setFormat(player.getTeam().getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ":" + event.getMessage());
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player bukkitPlayer = event.getPlayer();
+        NovsPlayer player = novswar.getPlayerManager().getPlayerFromBukkitPlayer(bukkitPlayer);
+
+        novswar.getDatabase().flushPlayerData(player);
     }
 
 }

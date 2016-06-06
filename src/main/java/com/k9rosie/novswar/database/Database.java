@@ -79,27 +79,27 @@ public abstract class Database {
         return databaseConnection.scheduleQuery(sql);
     }
 
-    public void add(String table, String column, String update, String search, String add) {
+    public void add(String table, String update, String add, String column, String search) {
         String sql = "UPDATE " + prefix + table + " SET " + update + " = " + update + " + " + add + " WHERE " + column + "= '" + search + "';";
         databaseConnection.scheduleUpdate(sql);
     }
 
-    public void subtract(String table, String column, String update, String search, String subtract) {
+    public void subtract(String table, String update, String subtract, String column, String search) {
         String sql = "UPDATE " + prefix + table + " SET " + update + " = " + update + " - " + subtract + " WHERE " + column + "= '" + search + "';";
         databaseConnection.scheduleUpdate(sql);
     }
 
-    public void increment(String table, String column, String update, String search) {
+    public void increment(String table, String update, String column, String search) {
         String sql = "UPDATE " + prefix + table + " SET " + update + " = " + update + " + 1 WHERE " + column + "= '" + search + "';";
         databaseConnection.scheduleUpdate(sql);
     }
 
-    public void decrement(String table, String column, String update, String search) {
+    public void decrement(String table, String update, String column, String search) {
         String sql = "UPDATE " + prefix + table + " SET " + update + " = " + update + " - 1 WHERE " + column + "= '" + search + "';";
         databaseConnection.scheduleUpdate(sql);
     }
 
-    public void set(String table, String column, String update, String set, String search) {
+    public void set(String table, String update, String set, String column, String search) {
         String sql = "UPDATE " + prefix + table + " SET " + update + " = " + set + " WHERE " + column + " = '" + search + "'";
         databaseConnection.scheduleUpdate(sql);
     }

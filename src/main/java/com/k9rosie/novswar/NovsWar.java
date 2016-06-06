@@ -8,7 +8,10 @@ import com.k9rosie.novswar.gamemode.GamemodeHandler;
 import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.manager.TeamManager;
 import com.k9rosie.novswar.manager.WorldManager;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+
+import java.util.logging.Level;
 
 public class NovsWar {
 	
@@ -40,7 +43,6 @@ public class NovsWar {
 	
 	public void initialize() {
 		configurationCache.initialize();
-
         votingEnabled = configurationCache.getConfig("core").getBoolean("core.voting.enabled");
 
         databaseThread.start();
@@ -87,5 +89,21 @@ public class NovsWar {
 
 	public CommandHandler getCommandHandler() {
 		return commandHandler;
+	}
+
+	public boolean isVotingEnabled() {
+		return votingEnabled;
+	}
+
+	public static void info(String message) {
+		Bukkit.getLogger().info(message);
+	}
+
+	public static void log(String message) {
+		Bukkit.getLogger().log(Level.INFO, message);
+	}
+
+	public static void log(Level level, String message) {
+		Bukkit.getLogger().log(level, message);
 	}
 }

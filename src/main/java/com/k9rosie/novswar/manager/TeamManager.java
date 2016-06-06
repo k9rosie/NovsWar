@@ -1,6 +1,7 @@
 package com.k9rosie.novswar.manager;
 
 import com.k9rosie.novswar.NovsWar;
+import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.util.ColorParser;
 import org.bukkit.ChatColor;
@@ -23,10 +24,15 @@ public class TeamManager {
 
     public void initialize() {
         loadTeams(); // load teams' data from config
+        defaultTeam = new NovsTeam("No Team", ChatColor.GRAY, false, false);
     }
 
     public ArrayList<NovsTeam> getTeams() {
         return teams;
+    }
+
+    public NovsTeam getDefaultTeam() {
+        return defaultTeam;
     }
 
     public void loadTeams() {
@@ -41,6 +47,14 @@ public class TeamManager {
             NovsTeam team = new NovsTeam(teamName, color, canBeDamaged, canAttack);
             teams.add(team);
         }
+    }
+
+    public void setPlayerTeam(NovsPlayer player, NovsTeam team) {
+        if (player.getTeam() != null) {
+            player.getTeam().getPlayers().remove(player);
+        }
+        player.setTeam(team);
+        team.getPlayers().add(player);
     }
 
 }

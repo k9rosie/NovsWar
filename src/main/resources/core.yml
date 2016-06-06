@@ -39,6 +39,12 @@ core:
     # note: you don't have to include this world in core.world.enabled_worlds as it's already enabled by default
     lobby_world: world
 
+    # the spawn point of the lobby
+    spawn:
+      x: 0
+      y: 64
+      z: 0
+
   # voting settings
   voting:
 
@@ -68,9 +74,3 @@ core:
 
     # the amount in seconds players will be forced to stay in spawn after a game ends
     post_game_timer: 30
-
-  # tdm settings
-  # novswar comes built in with a team deathmatch gamemode
-  # set the gamemode field in your worlds settings to 'tdm' to use this gamemode
-  tdm:
-
