@@ -26,8 +26,6 @@ public class NovsWar {
 	private GamemodeHandler gamemodeHandler;
 	private CommandHandler commandHandler;
 
-	private boolean votingEnabled;
-
 	public NovsWar(NovsWarPlugin plugin) {
 		this.plugin = plugin;
 		instance = this;
@@ -43,9 +41,8 @@ public class NovsWar {
 	
 	public void initialize() {
 		configurationCache.initialize();
-        votingEnabled = configurationCache.getConfig("core").getBoolean("core.voting.enabled");
 
-        databaseThread.start();
+        databaseThread.getThread().start();
 
 		teamManager.initialize();
 		worldManager.initialize();
@@ -89,10 +86,6 @@ public class NovsWar {
 
 	public CommandHandler getCommandHandler() {
 		return commandHandler;
-	}
-
-	public boolean isVotingEnabled() {
-		return votingEnabled;
 	}
 
 	public static void info(String message) {

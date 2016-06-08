@@ -1,6 +1,7 @@
 package com.k9rosie.novswar.database;
 
 import com.k9rosie.novswar.NovsWar;
+import com.k9rosie.novswar.model.NovsPlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class DatabaseThread implements Runnable {
@@ -13,13 +14,7 @@ public class DatabaseThread implements Runnable {
 
     public DatabaseThread(NovsWar novsWar) {
         this.novsWar = novsWar;
-    }
-
-    public void start() {
-        if (thread == null) {
-            thread = new Thread(this);
-            thread.start();
-        }
+        thread = new Thread(this);
     }
 
     public void run() {
@@ -27,6 +22,25 @@ public class DatabaseThread implements Runnable {
 
         createDatabase();
         database.initialize();
+
+        Thread databaseFlusher = new Thread(new Runnable() {
+            int sleep = novsWar.getConfigurationCache().getConfig("core").getInt("core.database.flush_interval");
+            @Override
+            public void run() {
+                while (true) {
+                    novsWar.log("Flushing database");
+                    try {
+                        Thread.sleep(sleep*1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    flushDatabase();
+                }
+            }
+        });
+
+        databaseFlusher.run();
     }
 
     public void createDatabase() {
@@ -43,5 +57,11 @@ public class DatabaseThread implements Runnable {
 
     public NovswarDB getDatabase() {
         return database;
+    }
+
+    public void flushDatabase() {
+        for (NovsPlayer player : novsWar.getPlayerManager().getPlayers()) {
+            database.flushPlayerData(player);
+        }
     }
 }
