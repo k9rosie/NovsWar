@@ -28,7 +28,6 @@ public class DatabaseThread implements Runnable {
             @Override
             public void run() {
                 while (true) {
-                    novsWar.log("Flushing database");
                     try {
                         Thread.sleep(sleep*1000);
                     } catch (InterruptedException e) {

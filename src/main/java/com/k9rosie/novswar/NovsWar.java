@@ -34,15 +34,15 @@ public class NovsWar {
 		teamManager = new TeamManager(this);
 		playerManager = new PlayerManager(this);
 		worldManager = new WorldManager(this);
-        databaseThread = new DatabaseThread(this);
-        gamemodeHandler = new GamemodeHandler(this);
+    	databaseThread = new DatabaseThread(this);
+    	gamemodeHandler = new GamemodeHandler(this);
 		commandHandler = new CommandHandler(this);
 	}
 	
 	public void initialize() {
 		configurationCache.initialize();
 
-        databaseThread.getThread().start();
+		databaseThread.getThread().start();
 
 		teamManager.initialize();
 		worldManager.initialize();
@@ -68,21 +68,21 @@ public class NovsWar {
 		return worldManager;
 	}
 
-    public PlayerManager getPlayerManager() {
-        return playerManager;
-    }
+	public PlayerManager getPlayerManager() {
+		return playerManager;
+	}
     
-    public DatabaseThread getDatabaseThread() {
-    	return databaseThread;
-    }
+	public DatabaseThread getDatabaseThread() {
+		return databaseThread;
+	}
 
 	public NovswarDB getDatabase() {
 		return databaseThread.getDatabase();
 	}
     
-    public GamemodeHandler getGamemodeHandler() {
-    	return gamemodeHandler;
-    }
+	public GamemodeHandler getGamemodeHandler() {
+		return gamemodeHandler;
+	}
 
 	public CommandHandler getCommandHandler() {
 		return commandHandler;

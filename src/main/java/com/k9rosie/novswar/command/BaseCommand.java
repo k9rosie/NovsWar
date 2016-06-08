@@ -3,18 +3,14 @@ package com.k9rosie.novswar.command;
 import com.k9rosie.novswar.NovsWar;
 import org.bukkit.command.CommandSender;
 
-public class BaseCommand implements ICommand {
-
-    public NovsWar novsWar;
-    public CommandSender sender;
+public class BaseCommand extends NovsCommand {
 
     public BaseCommand(NovsWar novsWar, CommandSender sender) {
-        this.novsWar = novsWar;
-        this.sender = sender;
+        super(novsWar, sender);
     }
 
     public void execute() {
-        sender.sendMessage(new String[] {
+        getSender().sendMessage(new String[] {
                 "§9NovsWar §av1.0.0",
                 "§3§oA monolithic Bukkit plugin created for team-based PvP combat.",
                 "§bWritten by k9rosie.",

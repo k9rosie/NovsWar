@@ -6,18 +6,14 @@ import com.k9rosie.novswar.model.NovsStats;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class StatsCommand implements ICommand {
+public class StatsCommand extends NovsCommand {
 
-    public NovsWar novsWar;
-    public CommandSender sender;
-
-    public StatsCommand(NovsWar novsWar, CommandSender sender) {
-        this.novsWar = novsWar;
-        this.sender = sender;
+    public StatsCommand(NovsWar novsWar, CommandSender sender, String[] args) {
+        super(novsWar, sender, args);
     }
 
     public void execute() {
-        NovsPlayer player = novsWar.getPlayerManager().getPlayerFromBukkitPlayer((Player) sender);
+        NovsPlayer player = getNovsWar().getPlayerManager().getPlayerFromBukkitPlayer((Player) getSender());
         NovsStats stats = player.getStats();
 
         player.getBukkitPlayer().sendMessage(new String[] {
