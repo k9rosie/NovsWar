@@ -34,8 +34,8 @@ public class NovsWar {
 		teamManager = new TeamManager(this);
 		playerManager = new PlayerManager(this);
 		worldManager = new WorldManager(this);
-    	databaseThread = new DatabaseThread(this);
-    	gamemodeHandler = new GamemodeHandler(this);
+		databaseThread = new DatabaseThread(this);
+		gamemodeHandler = new GamemodeHandler(this);
 		commandHandler = new CommandHandler(this);
 	}
 	
