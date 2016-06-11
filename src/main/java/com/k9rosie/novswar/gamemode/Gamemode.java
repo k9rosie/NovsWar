@@ -3,9 +3,12 @@ package com.k9rosie.novswar.gamemode;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.game.Game;
 
+import java.sql.Time;
+
 public abstract class Gamemode {
     private final String name;
     private Game game;
+    private Time gameTime;
     private NovsWar novsWarInstance;
 
     public Gamemode(String name) {

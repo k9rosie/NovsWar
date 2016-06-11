@@ -12,11 +12,13 @@ public class Game {
     private GameHandler gameHandler;
     private NovsWorld world;
     private Gamemode gamemode;
+    private GameState gameState;
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
         this.world = world;
         this.gamemode = gamemode;
+        gameState = GameState.PRE_GAME;
     }
 
     public void initialize() {
@@ -45,8 +47,4 @@ public class Game {
         // TODO: start voting if enabled
         // TODO: pick next world and request a new game from the gameHandler
     }
-
-
-
-
 }
