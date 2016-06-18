@@ -13,11 +13,15 @@ public class Game {
     private NovsWorld world;
     private Gamemode gamemode;
     private GameState gameState;
+    private HashMap<NovsPlayer, NovsTeam> players;
+    private HashMap<NovsTeam, Integer> score;
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
         this.world = world;
         this.gamemode = gamemode;
+        players = new HashMap<NovsPlayer, NovsTeam>();
+        score = new HashMap<NovsTeam, Integer>();
         gameState = GameState.PRE_GAME;
     }
 
@@ -46,5 +50,13 @@ public class Game {
         // TODO: teleport players to spawn points
         // TODO: start voting if enabled
         // TODO: pick next world and request a new game from the gameHandler
+    }
+
+    public HashMap<NovsPlayer, NovsTeam> getGamePlayers() {
+        return players;
+    }
+
+    public HashMap<NovsTeam, Integer> getGameScore() {
+        return score;
     }
 }

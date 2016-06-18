@@ -61,12 +61,11 @@ public class WorldManager {
 
     public void loadWorlds() {
         FileConfiguration worldConfig = novswar.getConfigurationCache().getConfig("worlds");
-        List<String> enabledWorldNames = novswar.getConfigurationCache().getConfig("core").getStringList("core.worlds.enabled_worlds");
-
+        List<String> enabledWorldNames = novswar.getConfigurationCache().getConfig("core").getStringList("core.world.enabled_worlds");
+        System.out.println(enabledWorldNames.size());
         for (String worldName : enabledWorldNames) {
             World world = novswar.getPlugin().getServer().getWorld(worldName);
             String name = worldConfig.getString("worlds."+worldName+".name");
-
             NovsWorld novsWorld = new NovsWorld(name, world);
             // TODO: load world regions here
             worlds.add(novsWorld);

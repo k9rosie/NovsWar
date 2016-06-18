@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 public class NovsPlayer {
 
     private Player bukkitPlayer;
-    private NovsTeam team;
     private NovsStats stats;
 
     public NovsPlayer (Player bukkitPlayer) {
@@ -19,13 +18,5 @@ public class NovsPlayer {
 
     public NovsStats getStats() {
         return stats;
-    }
-
-    public void setTeam(NovsTeam team) {
-        this.team = team;
-    }
-
-    public NovsTeam getTeam() {
-        return team;
     }
 }

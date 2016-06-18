@@ -24,7 +24,7 @@ public class TeamManager {
 
     public void initialize() {
         loadTeams(); // load teams' data from config
-        defaultTeam = new NovsTeam("No Team", ChatColor.GRAY, false, false);
+        defaultTeam = new NovsTeam("Teamless", ChatColor.GRAY, false, false);
     }
 
     public ArrayList<NovsTeam> getTeams() {
@@ -48,13 +48,4 @@ public class TeamManager {
             teams.add(team);
         }
     }
-
-    public void setPlayerTeam(NovsPlayer player, NovsTeam team) {
-        if (player.getTeam() != null) {
-            player.getTeam().getPlayers().remove(player);
-        }
-        player.setTeam(team);
-        team.getPlayers().add(player);
-    }
-
 }

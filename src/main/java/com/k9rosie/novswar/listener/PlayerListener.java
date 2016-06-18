@@ -3,6 +3,7 @@ package com.k9rosie.novswar.listener;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.model.NovsPlayer;
+import com.k9rosie.novswar.model.NovsTeam;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,10 +27,11 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player bukkitPlayer = event.getPlayer();
         NovsPlayer player = novswar.getPlayerManager().createNovsPlayer(bukkitPlayer);
+        NovsTeam defaultTeam = novswar.getTeamManager().getDefaultTeam();
 
         novswar.getDatabase().fetchPlayerData(player);
-        novswar.getTeamManager().setPlayerTeam(player, novswar.getTeamManager().getDefaultTeam());
-        bukkitPlayer.teleport(novswar.getWorldManager().getLobbyWorld().getTeamSpawns().get(player.getTeam()));
+        novswar.getGameHandler().getGame().getGamePlayers().put(player, defaultTeam);
+        bukkitPlayer.teleport(novswar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
 
         player.getStats().incrementConnects();
     }
@@ -38,8 +40,9 @@ public class PlayerListener implements Listener {
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         Player bukkitPlayer = event.getPlayer();
         NovsPlayer player = novswar.getPlayerManager().getPlayerFromBukkitPlayer(bukkitPlayer);
+        NovsTeam team = novswar.getGameHandler().getGame().getGamePlayers().get(player);
 
-        event.setFormat(player.getTeam().getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
+        event.setFormat(team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -48,6 +51,8 @@ public class PlayerListener implements Listener {
         NovsPlayer player = novswar.getPlayerManager().getPlayerFromBukkitPlayer(bukkitPlayer);
 
         novswar.getDatabase().flushPlayerData(player);
+        novswar.getGameHandler().getGame().getGamePlayers().remove(player);
+        novswar.getPlayerManager().getPlayers().remove(player);
     }
 
 }

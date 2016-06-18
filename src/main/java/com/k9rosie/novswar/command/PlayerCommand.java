@@ -6,9 +6,9 @@ import com.k9rosie.novswar.model.NovsStats;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class StatsCommand extends NovsCommand {
+public class PlayerCommand extends NovsCommand {
 
-    public StatsCommand(NovsWar novsWar, CommandSender sender, String[] args) {
+    public PlayerCommand(NovsWar novsWar, CommandSender sender, String[] args) {
         super(novsWar, sender, args);
     }
 

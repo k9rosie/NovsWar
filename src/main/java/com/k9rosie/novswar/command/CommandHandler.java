@@ -5,7 +5,6 @@ import com.k9rosie.novswar.command.admin.AdminCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
 
 public class CommandHandler implements CommandExecutor {
 
@@ -38,9 +37,9 @@ public class CommandHandler implements CommandExecutor {
                 }
             }
 
-            if (args[0].equalsIgnoreCase("stats")) {
+            if (args[0].equalsIgnoreCase("player")) {
                 if (sender.hasPermission("novswar.command.stats")) {
-                    new StatsCommand(novsWar, sender, args).execute();
+                    new PlayerCommand(novsWar, sender, args).execute();
                     return true;
                 }
             }

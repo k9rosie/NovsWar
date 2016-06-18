@@ -4,6 +4,7 @@ import com.k9rosie.novswar.command.CommandHandler;
 import com.k9rosie.novswar.config.ConfigurationCache;
 import com.k9rosie.novswar.database.DatabaseThread;
 import com.k9rosie.novswar.database.NovswarDB;
+import com.k9rosie.novswar.game.GameHandler;
 import com.k9rosie.novswar.gamemode.GamemodeHandler;
 import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.manager.TeamManager;
@@ -25,6 +26,7 @@ public class NovsWar {
 	private DatabaseThread databaseThread;
 	private GamemodeHandler gamemodeHandler;
 	private CommandHandler commandHandler;
+	private GameHandler gameHandler;
 
 	public NovsWar(NovsWarPlugin plugin) {
 		this.plugin = plugin;
@@ -37,6 +39,7 @@ public class NovsWar {
 		databaseThread = new DatabaseThread(this);
 		gamemodeHandler = new GamemodeHandler(this);
 		commandHandler = new CommandHandler(this);
+		gameHandler = new GameHandler(this);
 	}
 	
 	public void initialize() {
@@ -46,6 +49,7 @@ public class NovsWar {
 
 		teamManager.initialize();
 		worldManager.initialize();
+		gameHandler.initialize();
 	}
 	
 	public static NovsWar getInstance() {
@@ -86,6 +90,10 @@ public class NovsWar {
 
 	public CommandHandler getCommandHandler() {
 		return commandHandler;
+	}
+
+	public GameHandler getGameHandler() {
+		return gameHandler;
 	}
 
 	public static void info(String message) {

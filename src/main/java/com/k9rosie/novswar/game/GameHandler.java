@@ -25,7 +25,18 @@ public class GameHandler {
 
     public void newGame(NovsWorld world) {
         String gamemodeString = novswar.getConfigurationCache().getConfig("worlds").getString("worlds."+world.getBukkitWorld().getName()+".gamemode");
-        Gamemode gamemode = novswar.getGamemodeHandler().getGamemodes().get(gamemodeString);
+        Gamemode gamemode;
+        if (gamemodeString.equalsIgnoreCase("none")) {
+            gamemode = new Gamemode("None") {
+                @Override
+                public void onNewGame() {
+                    novswar.log("No gamemode specified");
+                }
+            };
+        } else {
+           gamemode = novswar.getGamemodeHandler().getGamemodes().get(gamemodeString);
+        }
+
         game = new Game(this, world, gamemode);
     }
 
