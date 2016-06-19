@@ -1,32 +1,48 @@
 package com.k9rosie.novswar.game;
 
+import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 
 public class Game {
     private GameHandler gameHandler;
     private NovsWorld world;
     private Gamemode gamemode;
     private GameState gameState;
-    private HashMap<NovsPlayer, NovsTeam> players;
-    private HashMap<NovsTeam, Integer> score;
+    private HashMap<NovsTeam, TeamData> teamData;
+    private NovsWar novsWar;
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
         this.world = world;
         this.gamemode = gamemode;
-        players = new HashMap<NovsPlayer, NovsTeam>();
-        score = new HashMap<NovsTeam, Integer>();
-        gameState = GameState.PRE_GAME;
+        teamData = new HashMap<NovsTeam, TeamData>();
+        gameState = GameState.WAITING_FOR_PLAYERS;
+        novsWar = gameHandler.getNovsWarInstance();
     }
 
     public void initialize() {
         gamemode.setGame(this);
+
+        NovsTeam defaultTeam = gameHandler.getNovsWarInstance().getTeamManager().getDefaultTeam();
+        teamData.put(defaultTeam, new TeamData(defaultTeam));
+
+        List<String> enabledTeamNames = novsWar.getConfigurationCache().getConfig("worlds").getStringList("worlds."+world.getBukkitWorld().getName()+".enabled_teams");
+        for (String teamName : enabledTeamNames) {
+            for (NovsTeam team : novsWar.getTeamManager().getTeams()) {
+                if (teamName.equalsIgnoreCase(team.getTeamName())) {
+                    teamData.put(team, new TeamData(team));
+                }
+            }
+        }
+
+
     }
 
     public void startGame() {
@@ -52,11 +68,18 @@ public class Game {
         // TODO: pick next world and request a new game from the gameHandler
     }
 
-    public HashMap<NovsPlayer, NovsTeam> getGamePlayers() {
-        return players;
+    public HashMap<NovsTeam, TeamData> getTeamData() {
+        return teamData;
     }
 
-    public HashMap<NovsTeam, Integer> getGameScore() {
-        return score;
+    public NovsTeam getPlayerTeam(NovsPlayer player) {
+        for (TeamData data : teamData.values()) {
+            for (NovsPlayer p : data.getPlayers()) {
+                if (player.equals(p)) {
+                    return data.getTeam();
+                }
+            }
+        }
+        return null;
     }
 }

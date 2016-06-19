@@ -2,6 +2,7 @@ package com.k9rosie.novswar.manager;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.model.NovsPlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Array;
@@ -24,7 +25,7 @@ public class PlayerManager {
         return players;
     }
 
-    public NovsPlayer getPlayerFromBukkitPlayer(Player bukkitPlayer) {
+    public NovsPlayer getNovsPlayer(Player bukkitPlayer) {
         for (NovsPlayer player : players) {
             if (player.getBukkitPlayer().equals(bukkitPlayer)) {
                 return player;
@@ -37,5 +38,14 @@ public class PlayerManager {
         NovsPlayer player = new NovsPlayer(bukkitPlayer);
         players.add(player);
         return player;
+    }
+
+    public NovsPlayer getNovsPlayer(String displayName) {
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            if (player.getDisplayName().equalsIgnoreCase(displayName)) {
+                return getNovsPlayer(player);
+            }
+        }
+        return null;
     }
 }

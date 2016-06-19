@@ -10,8 +10,11 @@ import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.manager.TeamManager;
 import com.k9rosie.novswar.manager.WorldManager;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class NovsWar {
@@ -106,5 +109,28 @@ public class NovsWar {
 
 	public static void log(Level level, String message) {
 		Bukkit.getLogger().log(level, message);
+	}
+
+	public static boolean isOnline(String displayName) {
+		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+			if (player.getDisplayName().equalsIgnoreCase(displayName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static UUID getUUID(String displayName) {
+		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+			if (displayName.equalsIgnoreCase(player.getDisplayName())) {
+				return player.getUniqueId();
+			}
+		}
+		for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {
+			if (displayName.equalsIgnoreCase(player.getName())) {
+				return player.getUniqueId();
+			}
+		}
+		return null;
 	}
 }

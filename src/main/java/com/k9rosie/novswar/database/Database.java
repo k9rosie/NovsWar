@@ -40,7 +40,6 @@ public abstract class Database {
             e.printStackTrace();
             return false;
         }
-        System.out.println(count);
 
         if (count == 0) {
             return false;

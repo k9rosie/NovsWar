@@ -38,7 +38,7 @@ public class CommandHandler implements CommandExecutor {
             }
 
             if (args[0].equalsIgnoreCase("player")) {
-                if (sender.hasPermission("novswar.command.stats")) {
+                if (sender.hasPermission("novswar.command.player")) {
                     new PlayerCommand(novsWar, sender, args).execute();
                     return true;
                 }

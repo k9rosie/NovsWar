@@ -16,4 +16,5 @@ public class GamemodeHandler {
     public HashMap<String, Gamemode> getGamemodes() {
         return gamemodes;
     }
+
 }

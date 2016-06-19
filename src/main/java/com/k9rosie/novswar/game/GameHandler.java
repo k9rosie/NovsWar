@@ -20,6 +20,7 @@ public class GameHandler {
         NovsWorld initialWorld = novswar.getWorldManager().getWorldFromBukkitWorld(initialBukkitWorld);
 
         newGame(initialWorld);
+        game.initialize();
         game.startGame();
     }
 
@@ -42,6 +43,10 @@ public class GameHandler {
 
     public Game getGame() {
         return game;
+    }
+
+    public NovsWar getNovsWarInstance() {
+        return novswar;
     }
 
 }

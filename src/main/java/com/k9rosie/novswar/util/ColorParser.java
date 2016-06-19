@@ -1,3 +1,4 @@
+// §
 package com.k9rosie.novswar.util;
 
 import org.bukkit.ChatColor;
