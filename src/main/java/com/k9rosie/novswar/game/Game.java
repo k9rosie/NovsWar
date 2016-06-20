@@ -5,6 +5,7 @@ import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.util.packet.NametagEdit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.HashMap;
@@ -72,6 +73,10 @@ public class Game {
         return teamData;
     }
 
+    public Gamemode getGamemode() {
+        return gamemode;
+    }
+
     public NovsTeam getPlayerTeam(NovsPlayer player) {
         for (TeamData data : teamData.values()) {
             for (NovsPlayer p : data.getPlayers()) {
@@ -81,5 +86,13 @@ public class Game {
             }
         }
         return null;
+    }
+
+    public void setPlayerTeam(NovsPlayer player, NovsTeam team) {
+        NovsTeam currentTeam = getPlayerTeam(player);
+        TeamData currentTeamData = teamData.get(currentTeam);
+        currentTeamData.getPlayers().remove(player);
+        teamData.get(team).getPlayers().add(player);
+        NametagEdit.setPlayerTagColor(player.getBukkitPlayer(), team.getColor());
     }
 }

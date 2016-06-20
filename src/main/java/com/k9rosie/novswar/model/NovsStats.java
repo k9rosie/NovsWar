@@ -137,6 +137,10 @@ public class NovsStats {
         damageGiven++;
     }
 
+    public void incrementDamageGiven(double damage) {
+        damageGiven += damage;
+    }
+
     public double getDamageTaken() {
         return damageTaken;
     }
@@ -147,5 +151,9 @@ public class NovsStats {
 
     public void incrementDamageTaken() {
         damageTaken++;
+    }
+
+    public void incrementDamageTaken(double damage) {
+        damageTaken += damage;
     }
 }

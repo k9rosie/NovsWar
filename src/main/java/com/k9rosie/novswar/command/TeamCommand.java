@@ -14,15 +14,57 @@ import java.util.Set;
 
 public class TeamCommand extends NovsCommand {
 
+    private Game game;
+
     public TeamCommand(NovsWar novsWar, CommandSender sender, String[] args) {
         super(novsWar, sender, args);
+        game = getNovsWar().getGameHandler().getGame();
     }
 
     public void execute() {
-        Game game = getNovsWar().getGameHandler().getGame();
-        NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayer((Player) getSender());
-        NovsTeam team = game.getPlayerTeam(player);
+        if (getArgs().length == 1) {
+            NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayer((Player) getSender());
+            NovsTeam team = game.getPlayerTeam(player);
 
+        } else if (getArgs().length == 2) {
+            String arg = getArgs()[1];
+            NovsTeam team = null;
+            for (NovsTeam t : game.getTeamData().keySet()) {
+                if (t.getTeamName().equalsIgnoreCase(arg)) {
+                    team = t;
+                }
+            }
+
+            if (team != null) {
+                printTeam(team);
+                return;
+            } else {
+                NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayer(arg);
+
+                if (player == null) {
+                    getSender().sendMessage("That specific player/team couldn't be found");
+                    return;
+                } else {
+                    printTeam(player);
+                    return;
+                }
+            }
+
+        }
+    }
+
+    public void printTeam(NovsTeam team) {
+        getSender().sendMessage(team.getColor()+team.getTeamName());
+        getSender().sendMessage(generatePlayerList(team));
+    }
+
+    public void printTeam(NovsPlayer player) {
+        NovsTeam team = game.getPlayerTeam(player);
+        getSender().sendMessage(team.getColor()+team.getTeamName());
+        getSender().sendMessage(generatePlayerList(team));
+    }
+
+    public String generatePlayerList(NovsTeam team) {
         StringBuilder playersList = new StringBuilder();
         Object[] playersArray = game.getTeamData().get(team).getPlayers().toArray();
         for (int i = 0; i < playersArray.length; i++) {
@@ -34,7 +76,6 @@ public class TeamCommand extends NovsCommand {
                 }
             }
         }
-        getSender().sendMessage(team.getColor()+team.getTeamName());
-        getSender().sendMessage(playersList.toString());
+        return playersList.toString();
     }
 }

@@ -24,7 +24,7 @@ public class TeamManager {
 
     public void initialize() {
         loadTeams(); // load teams' data from config
-        defaultTeam = new NovsTeam("Teamless", ChatColor.GRAY, false, false);
+        defaultTeam = new NovsTeam("Teamless", ChatColor.GRAY, false, false, false);
     }
 
     public ArrayList<NovsTeam> getTeams() {
@@ -43,8 +43,8 @@ public class TeamManager {
             ChatColor color = ColorParser.parseString(teamsConfig.getString("teams."+teamName+".color"));
             boolean canBeDamaged = teamsConfig.getBoolean("teams."+teamName+".can_be_damaged");
             boolean canAttack = teamsConfig.getBoolean("teams."+teamName+".can_attack");
-
-            NovsTeam team = new NovsTeam(teamName, color, canBeDamaged, canAttack);
+            boolean friendlyFire = teamsConfig.getBoolean("teams."+teamName+".friendly_fire");
+            NovsTeam team = new NovsTeam(teamName, color, canBeDamaged, canAttack, friendlyFire);
             teams.add(team);
         }
     }

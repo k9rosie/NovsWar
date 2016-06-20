@@ -76,3 +76,4 @@ core:
 
     # the amount in seconds players will be forced to stay in spawn after a game ends
     post_game_timer: 30
+

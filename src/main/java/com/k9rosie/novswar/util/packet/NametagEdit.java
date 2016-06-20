@@ -36,8 +36,8 @@ public class NametagEdit {
         setField("b", displayName);
         setField("c", "§"+color.getChar());
         setField("d", "");
-        setField("i", 0);
         setField("h", new ArrayList<>());
+        setField("i", 0);
         setField("j", 1);
 
     }
@@ -54,8 +54,8 @@ public class NametagEdit {
         setField("b", displayName);
         setField("c", prefix);
         setField("d", suffix);
-        setField("i", 0);
         setField("h", new ArrayList<>());
+        setField("i", 0);
         setField("j", 1);
     }
 
@@ -71,8 +71,8 @@ public class NametagEdit {
         setField("b", displayName);
         setField("c", prefix);
         setField("d", "");
-        setField("i", 0);
         setField("h", new ArrayList<>());
+        setField("i", 0);
         setField("j", 1);
     }
 
@@ -121,5 +121,9 @@ public class NametagEdit {
         ((Collection) f.get(packet)).add(player.getName());
     }
 
-
+    public static void setPlayerTagColor(Player player, ChatColor color) {
+        NametagEdit nametagEdit = new NametagEdit(player.getDisplayName(), color+player.getDisplayName(), color);
+        nametagEdit.addPlayers(Bukkit.getServer().getOnlinePlayers());
+        nametagEdit.updateAll();
+    }
 }

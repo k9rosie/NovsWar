@@ -12,12 +12,14 @@ public class NovsTeam {
     private ChatColor color;
     private boolean canBeDamaged;
     private boolean canAttack;
+    private boolean friendlyFire;
 
-    public NovsTeam(String teamName, ChatColor color, boolean canBeDamaged, boolean canAttack) {
+    public NovsTeam(String teamName, ChatColor color, boolean canBeDamaged, boolean canAttack, boolean friendlyFire) {
         this.teamName = teamName;
         this.color = color;
         this.canBeDamaged = canBeDamaged;
         this.canAttack = canAttack;
+        this.friendlyFire = friendlyFire;
     }
 
     public String getTeamName() {
@@ -50,5 +52,13 @@ public class NovsTeam {
 
     public void setCanAttack(boolean canAttack) {
         this.canAttack = canAttack;
+    }
+
+    public void setFriendlyFire(boolean friendlyFire) {
+        this.friendlyFire = friendlyFire;
+    }
+
+    public boolean getFriendlyFire() {
+        return friendlyFire;
     }
 }

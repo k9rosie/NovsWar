@@ -24,12 +24,12 @@ public class PlayerCommand extends NovsCommand {
     public void execute() {
         if (getArgs().length == 1) {
             NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayer((Player) getSender());
-            printStats((Player) getSender(), player);
+            printStats(player);
         } else if (getArgs().length == 2) {
             String playerName = getArgs()[1];
             if (NovsWar.isOnline(playerName)) {
                 NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayer(playerName);
-                printStats((Player) getSender(), player);
+                printStats(player);
             } else {
                 UUID uuid = NovsWar.getUUID(playerName);
                 if (uuid == null) {
@@ -41,13 +41,15 @@ public class PlayerCommand extends NovsCommand {
                     return;
                 } else {
                     OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-                    printStats((Player) getSender(), offlinePlayer);
+                    printStats(offlinePlayer);
                 }
             }
+        } else {
+            getSender().sendMessage(Messages.INVALID_PARAMETERS.toString());
         }
     }
 
-    public void printStats(Player sender, NovsPlayer player) {
+    public void printStats(NovsPlayer player) {
         NovsStats stats = player.getStats();
         Player bukkitPlayer = player.getBukkitPlayer();
         NovsTeam team = getNovsWar().getGameHandler().getGame().getPlayerTeam(player);
@@ -72,11 +74,11 @@ public class PlayerCommand extends NovsCommand {
                 "§7Damage Taken: §f" + stats.getDamageTaken(),
                 "§7Connects: §f" + stats.getConnects()
         };
-        sender.sendMessage("§aPlayer data for "+team.getColor()+bukkitPlayer.getDisplayName()+"§a:");
-        sender.sendMessage(statsString);
+        getSender().sendMessage("§aPlayer data for "+team.getColor()+bukkitPlayer.getDisplayName()+"§a:");
+        getSender().sendMessage(statsString);
     }
 
-    public void printStats(Player sender, OfflinePlayer offlinePlayer) {
+    public void printStats(OfflinePlayer offlinePlayer) {
         String uuid = offlinePlayer.getUniqueId().toString();
 
         ResultSet results = getNovsWar().getDatabase().select("stats", "player_uuid", uuid);
@@ -108,8 +110,8 @@ public class PlayerCommand extends NovsCommand {
             e.printStackTrace();
         }
 
-        sender.sendMessage("§aPlayer data for §7"+offlinePlayer.getName()+"§a:");
-        sender.sendMessage(statsString);
+        getSender().sendMessage("§aPlayer data for §7"+offlinePlayer.getName()+"§a:");
+        getSender().sendMessage(statsString);
 
     }
 }
