@@ -3,15 +3,19 @@ package com.k9rosie.novswar.game;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsWorld;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.scoreboard.ScoreboardManager;
 
 public class GameHandler {
 
     private NovsWar novswar;
     private Game game;
+    private ScoreboardManager scoreboardManager;
 
     public GameHandler(NovsWar novswar) {
         this.novswar = novswar;
+        scoreboardManager = Bukkit.getScoreboardManager();
     }
 
     public void initialize() {
@@ -21,7 +25,6 @@ public class GameHandler {
 
         newGame(initialWorld);
         game.initialize();
-        game.startGame();
     }
 
     public void newGame(NovsWorld world) {
@@ -32,6 +35,10 @@ public class GameHandler {
                 @Override
                 public void onNewGame() {
                     novswar.log("No gamemode specified");
+                }
+
+                public void onEndGame() {
+
                 }
             };
         } else {
@@ -49,4 +56,7 @@ public class GameHandler {
         return novswar;
     }
 
+    public ScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
+    }
 }

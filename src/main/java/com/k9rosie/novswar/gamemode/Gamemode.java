@@ -62,4 +62,6 @@ public abstract class Gamemode {
         onNewGame() is called at the beginning of every game
     */
     public abstract void onNewGame();
+
+    public abstract void onEndGame();
 }

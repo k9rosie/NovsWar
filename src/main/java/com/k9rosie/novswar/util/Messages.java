@@ -20,7 +20,8 @@ public enum Messages {
     SPAWN_SET("spawn_set"),
     CANNOT_JOIN_TEAM("cannot_join_team"),
     COMMAND_NONEXISTENT("command_nonexistent"),
-    PLAYER_DATA_NONEXISTENT("player_data_nonexistent");
+    PLAYER_DATA_NONEXISTENT("player_data_nonexistent"),
+    NOT_ENOUGH_PLAYERS("not_enough_players");
 
     private NovsWar novsWar;
     private FileConfiguration config;

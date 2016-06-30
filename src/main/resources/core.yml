@@ -65,7 +65,7 @@ core:
   # game settings
   game:
 
-    # the minimum amount of players on each team needed to start the game
+    # the minimum amount of players in the game needed to start the game
     minimum_players: 3
 
     # can players join a game after it has started?
@@ -76,4 +76,10 @@ core:
 
     # the amount in seconds players will be forced to stay in spawn after a game ends
     post_game_timer: 30
+
+    # the amount of time in seconds that players will have to wait to respawn
+    respawn_timer: 5
+
+    # disable/enable minecraft's hunger
+    enable_hunger: false
 

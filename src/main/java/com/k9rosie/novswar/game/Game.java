@@ -6,10 +6,13 @@ import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
 import com.k9rosie.novswar.util.packet.NametagEdit;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Game {
     private GameHandler gameHandler;
@@ -18,6 +21,9 @@ public class Game {
     private GameState gameState;
     private HashMap<NovsTeam, TeamData> teamData;
     private NovsWar novsWar;
+    private Timer deathTimer;
+    private GameTimer gameTimer;
+    private Scoreboard scoreboard;
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
@@ -26,6 +32,9 @@ public class Game {
         teamData = new HashMap<NovsTeam, TeamData>();
         gameState = GameState.WAITING_FOR_PLAYERS;
         novsWar = gameHandler.getNovsWarInstance();
+        deathTimer = new Timer();
+        gameTimer = new GameTimer(this);
+        scoreboard = gameHandler.getScoreboardManager().getNewScoreboard();
     }
 
     public void initialize() {
@@ -34,6 +43,7 @@ public class Game {
         NovsTeam defaultTeam = gameHandler.getNovsWarInstance().getTeamManager().getDefaultTeam();
         teamData.put(defaultTeam, new TeamData(defaultTeam));
 
+        // create team data for all enabled teams for the world
         List<String> enabledTeamNames = novsWar.getConfigurationCache().getConfig("worlds").getStringList("worlds."+world.getBukkitWorld().getName()+".enabled_teams");
         for (String teamName : enabledTeamNames) {
             for (NovsTeam team : novsWar.getTeamManager().getTeams()) {
@@ -43,12 +53,24 @@ public class Game {
             }
         }
 
+        // setup scoreboard
+        Objective objective = scoreboard.registerNewObjective("", "");
 
     }
 
+    public void waitForPlayers() {
+        gameState = GameState.WAITING_FOR_PLAYERS;
+
+    }
+
+    public void preGame() {
+        gameState = GameState.PRE_GAME;
+    }
+
     public void startGame() {
+        gameState = GameState.DURING_GAME;
         gamemode.onNewGame();
-        // TODO: check if there are enough players to start
+
         // TODO: start timer
         // TODO: adjust game score according to gamemode
         // TODO: teleport all players to their team's designated spawn points
@@ -57,16 +79,41 @@ public class Game {
     }
 
     public void pauseGame() {
+        gameState = GameState.PAUSED;
         // TODO: teleport all players to their spawn points
         // TODO: stop timer
         // TODO: stop schedulers for the world's regions
     }
 
     public void endGame() {
+        gameState = GameState.POST_GAME;
+        gamemode.onEndGame();
         // TODO: stop timer
         // TODO: teleport players to spawn points
         // TODO: start voting if enabled
         // TODO: pick next world and request a new game from the gameHandler
+    }
+
+    public void startVoting() {
+        gameState = GameState.VOTING;
+    }
+
+    public void update() {
+
+    }
+
+    public boolean checkPlayerCount() {
+        int total = 0;
+        for (TeamData data : teamData.values()) {
+            total += data.getPlayers().size();
+        }
+
+        int required = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.minimum_players");
+        if (total >= required) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public HashMap<NovsTeam, TeamData> getTeamData() {
@@ -94,5 +141,21 @@ public class Game {
         currentTeamData.getPlayers().remove(player);
         teamData.get(team).getPlayers().add(player);
         NametagEdit.setPlayerTagColor(player.getBukkitPlayer(), team.getColor());
+    }
+
+    public void scheduleDeath(NovsPlayer player, int seconds) {
+        player.setDeath(true);
+        player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
+        int rand = new Random().nextInt();
+        NovsPlayer spec = (NovsPlayer) teamData.get(getPlayerTeam(player)).getPlayers().toArray()[rand];
+        player.getBukkitPlayer().setSpectatorTarget(spec.getBukkitPlayer());
+
+        deathTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                player.setDeath(false);
+
+            }
+        }, seconds*1000);
     }
 }
