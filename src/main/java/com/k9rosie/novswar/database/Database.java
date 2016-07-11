@@ -79,22 +79,22 @@ public abstract class Database {
     }
 
     public void add(String table, String update, String add, String column, String search) {
-        String sql = "UPDATE " + prefix + table + " SET " + update + " = " + update + " + " + add + " WHERE " + column + "= '" + search + "';";
+        String sql = "UPDATE " + prefix + table + " SET " + update + " = " + update + " + " + add + " WHERE " + column + " = '" + search + "';";
         databaseConnection.scheduleUpdate(sql);
     }
 
     public void subtract(String table, String update, String subtract, String column, String search) {
-        String sql = "UPDATE " + prefix + table + " SET " + update + " = " + update + " - " + subtract + " WHERE " + column + "= '" + search + "';";
+        String sql = "UPDATE " + prefix + table + " SET " + update + " = " + update + " - " + subtract + " WHERE " + column + " = '" + search + "';";
         databaseConnection.scheduleUpdate(sql);
     }
 
     public void increment(String table, String update, String column, String search) {
-        String sql = "UPDATE " + prefix + table + " SET " + update + " = " + update + " + 1 WHERE " + column + "= '" + search + "';";
+        String sql = "UPDATE " + prefix + table + " SET " + update + " = " + update + " + 1 WHERE " + column + " = '" + search + "';";
         databaseConnection.scheduleUpdate(sql);
     }
 
     public void decrement(String table, String update, String column, String search) {
-        String sql = "UPDATE " + prefix + table + " SET " + update + " = " + update + " - 1 WHERE " + column + "= '" + search + "';";
+        String sql = "UPDATE " + prefix + table + " SET " + update + " = " + update + " - 1 WHERE " + column + " = '" + search + "';";
         databaseConnection.scheduleUpdate(sql);
     }
 

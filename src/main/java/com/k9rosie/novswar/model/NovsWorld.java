@@ -14,13 +14,16 @@ public class NovsWorld {
     private String name;
     private World bukkitWorld;
     private HashMap<NovsTeam, Location> teamSpawns;
-    private HashSet<NovsRegion> intermissionGateRegions;
-    private HashSet<NovsRegion> respawnGateRegions;
+    private NovsRegion battlefield;
+    private HashSet<NovsRegion> intermissionGates;
+    private HashSet<NovsRegion> deathRegions;
 
     public NovsWorld(String name, World bukkitWorld) {
         this.name = name;
         this.bukkitWorld = bukkitWorld;
         teamSpawns = new HashMap<NovsTeam, Location>();
+        intermissionGates = new HashSet<NovsRegion>();
+        deathRegions = new HashSet<NovsRegion>();
     }
 
     public String getName() {
@@ -39,11 +42,19 @@ public class NovsWorld {
         return teamSpawns;
     }
 
-    public HashSet<NovsRegion> getIntermissionGateRegions() {
-        return intermissionGateRegions;
+    public NovsRegion getBattlefield() {
+        return battlefield;
     }
 
-    public HashSet<NovsRegion> getRespawnGateRegions() {
-        return respawnGateRegions;
+    public void setBattlefield(NovsRegion battlefield) {
+        this.battlefield = battlefield;
+    }
+
+    public HashSet<NovsRegion> getIntermissionGates() {
+        return intermissionGates;
+    }
+
+    public HashSet<NovsRegion> getDeathRegions() {
+        return deathRegions;
     }
 }

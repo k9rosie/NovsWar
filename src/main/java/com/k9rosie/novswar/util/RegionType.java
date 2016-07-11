@@ -7,9 +7,9 @@ public enum RegionType {
 
     public static RegionType parseString(String regionType) {
         switch (regionType.toLowerCase()) {
-            case "battlefield": return BATTLEFIELD;
-            case "intermission_gate": return INTERMISSION_GATE;
-            case "death_region": return DEATH_REGION;
+            case "battlefield": return RegionType.BATTLEFIELD;
+            case "intermission_gate": return RegionType.INTERMISSION_GATE;
+            case "death_region": return RegionType.DEATH_REGION;
         }
         return null;
     }

@@ -158,7 +158,7 @@ public class NovswarDB extends Database {
     public void flushPlayerData(NovsPlayer player) {
         String playerUUIDString = player.getBukkitPlayer().getUniqueId().toString();
         NovsStats stats = player.getStats();
-        set("players", "name", player.getBukkitPlayer().getDisplayName(), "uuid", playerUUIDString);
+        set("players", "name", "'"+player.getBukkitPlayer().getDisplayName()+"'", "uuid", playerUUIDString);
         set("players", "death_messages", Boolean.toString(player.canSeeDeathMessages()), "uuid", playerUUIDString);
         set("stats", "kills", Integer.toString(stats.getKills()), "player_uuid", playerUUIDString);
         set("stats", "arrow_kills", Integer.toString(stats.getArrowKills()), "player_uuid", playerUUIDString);

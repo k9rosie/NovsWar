@@ -11,7 +11,7 @@ import java.sql.Time;
 public abstract class Gamemode {
     private final String name;
     private Game game;
-    private Time gameTime;
+    private int gameTime;
     private NovsWar novsWarInstance;
 
     public Gamemode(String name) {
@@ -25,6 +25,14 @@ public abstract class Gamemode {
 
     public Game getGame() {
         return game;
+    }
+
+    public int getGameTime() {
+        return gameTime;
+    }
+
+    public void setGameTime(int gameTime) {
+        this.gameTime = gameTime;
     }
 
     public NovsWar getNovsWarInstance() {

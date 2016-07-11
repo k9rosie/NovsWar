@@ -9,6 +9,7 @@ public class NovsPlayer {
     private boolean deathMessages;
     private boolean isDead;
     private boolean isSpectating;
+    private boolean isSettingRegion;
 
     public NovsPlayer (Player bukkitPlayer) {
         this.bukkitPlayer = bukkitPlayer;
@@ -16,6 +17,7 @@ public class NovsPlayer {
         deathMessages = true;
         isDead = false;
         isSpectating = false;
+        isSettingRegion = false;
     }
 
     public Player getBukkitPlayer() {
@@ -48,5 +50,13 @@ public class NovsPlayer {
 
     public void setSpectating(boolean isSpectating) {
         this.isSpectating = isSpectating;
+    }
+
+    public void setSettingRegion(boolean isSettingRegion) {
+        this.isSettingRegion = isSettingRegion;
+    }
+
+    public boolean isSettingRegion() {
+        return isSettingRegion;
     }
 }

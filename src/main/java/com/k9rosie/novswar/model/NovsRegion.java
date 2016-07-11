@@ -4,6 +4,7 @@ import com.k9rosie.novswar.util.RegionType;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class NovsRegion {
@@ -58,6 +59,14 @@ public class NovsRegion {
 
     public void setRegionType(RegionType regionType) {
         this.regionType = regionType;
+    }
+
+    public ArrayList<Block> getBlocks() {
+        return blocks;
+    }
+
+    public void setBlocks(ArrayList<Block> blocks) {
+        this.blocks = blocks;
     }
 
     public ArrayList<Block> getCuboid() {

@@ -12,5 +12,7 @@ public class SetRegionCommand extends NovsCommand {
 
     public void execute() {
 
+        //nw admin setregion regionOne battlefield
+
     }
 }

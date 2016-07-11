@@ -35,6 +35,7 @@ public class GameHandler {
                 @Override
                 public void onNewGame() {
                     novswar.log("No gamemode specified");
+                    setGameTime(60);
                 }
 
                 public void onEndGame() {

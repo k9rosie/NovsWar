@@ -31,6 +31,16 @@ public class TeamManager {
         return teams;
     }
 
+    public NovsTeam getTeam(String teamName) {
+        for (NovsTeam team : teams) {
+            if (teamName.equalsIgnoreCase(team.getTeamName())) {
+                return team;
+            }
+        }
+
+        return null;
+    }
+
     public NovsTeam getDefaultTeam() {
         return defaultTeam;
     }

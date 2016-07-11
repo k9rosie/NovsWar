@@ -66,7 +66,12 @@ public class TeamCommand extends NovsCommand {
 
     public String generatePlayerList(NovsTeam team) {
         StringBuilder playersList = new StringBuilder();
-        Object[] playersArray = game.getTeamData().get(team).getPlayers().toArray();
+        Object[] playersArray;
+        if (team.equals(getNovsWar().getTeamManager().getDefaultTeam())) {
+            playersArray = game.getNeutralTeamData().getPlayers().toArray();
+        } else {
+            playersArray = game.getTeamData().get(team).getPlayers().toArray();
+        }
         for (int i = 0; i < playersArray.length; i++) {
             NovsPlayer p = (NovsPlayer) playersArray[i];
             if (game.getPlayerTeam(p).equals(team)) {

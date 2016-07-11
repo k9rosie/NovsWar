@@ -54,9 +54,6 @@ core:
     # enable voting for a new map at the end of each game
     enabled: true
 
-    # the amount in seconds to vote before voting ends
-    timer: 60
-
     # worlds that will not be listed in the voting rotation
     disabled_worlds:
       - world_nether
@@ -72,10 +69,10 @@ core:
     join_in_progress: false
 
     # the amount in seconds players will be forced to stay in spawn before the game begins
-    pre_game_timer: 30
+    pre_game_timer: 120
 
     # the amount in seconds players will be forced to stay in spawn after a game ends
-    post_game_timer: 30
+    post_game_timer: 120
 
     # the amount of time in seconds that players will have to wait to respawn
     respawn_timer: 5

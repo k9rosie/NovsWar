@@ -19,6 +19,7 @@ public enum Messages {
     SHOT_MESSAGE("shot_message"),
     SPAWN_SET("spawn_set"),
     CANNOT_JOIN_TEAM("cannot_join_team"),
+    CANNOT_JOIN_GAME("cannot_join_game"),
     COMMAND_NONEXISTENT("command_nonexistent"),
     PLAYER_DATA_NONEXISTENT("player_data_nonexistent"),
     NOT_ENOUGH_PLAYERS("not_enough_players");

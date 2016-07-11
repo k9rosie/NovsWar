@@ -1,5 +1,7 @@
 package com.k9rosie.novswar.game;
 
+import org.bukkit.Bukkit;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -7,6 +9,7 @@ public class GameTimer {
 
     private Game game;
     private Timer timer;
+    private TimerTask task;
     private int time;
 
     public GameTimer(Game game) {
@@ -31,15 +34,20 @@ public class GameTimer {
         return time / 60;
     }
 
+    public TimerTask getTask() {
+        return task;
+    }
+
     public void startTimer() {
-        timer.scheduleAtFixedRate(new TimerTask() {
+        task = new TimerTask() {
             public void run() {
+                Bukkit.broadcastMessage(getMinutes() + ":" + getSeconds());
                 time--;
-                game.update(); // called every second
                 if (time <= 0) {
-                    this.cancel();
+                    game.endTimer();
                 }
             }
-        }, 0, 1000);
+        };
+        timer.scheduleAtFixedRate(task, 0, 1000);
     }
 }

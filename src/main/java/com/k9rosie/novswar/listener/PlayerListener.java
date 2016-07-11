@@ -7,8 +7,6 @@ import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.util.Messages;
-import com.k9rosie.novswar.util.packet.NametagEdit;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -17,7 +15,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -34,7 +31,7 @@ public class PlayerListener implements Listener {
         this.plugin = plugin;
         novswar = plugin.getNovswarInstance();
         game = novswar.getGameHandler().getGame();
-        playerManager = playerManager;
+        playerManager = novswar.getPlayerManager();
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -44,10 +41,10 @@ public class PlayerListener implements Listener {
         NovsTeam defaultTeam = novswar.getTeamManager().getDefaultTeam();
 
         novswar.getDatabase().fetchPlayerData(player);
-        game.getTeamData().get(defaultTeam).getPlayers().add(player);
+        game.getNeutralTeamData().getPlayers().add(player);
+        game.getNeutralTeamData().getScoreboardTeam().addEntry(player.getBukkitPlayer().getDisplayName());
+        bukkitPlayer.setScoreboard(game.getScoreboard());
         bukkitPlayer.teleport(novswar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
-
-        NametagEdit.setPlayerTagColor(bukkitPlayer, defaultTeam.getColor());
 
         player.getStats().incrementConnects();
     }
@@ -68,7 +65,11 @@ public class PlayerListener implements Listener {
         NovsTeam team = game.getPlayerTeam(player);
 
         novswar.getDatabase().flushPlayerData(player);
-        game.getTeamData().get(team).getPlayers().remove(player);
+        if (game.getPlayerTeam(player).equals(novswar.getTeamManager().getDefaultTeam())) {
+            game.getNeutralTeamData().getPlayers().remove(player);
+        } else {
+            game.getTeamData().get(team).getPlayers().remove(player);
+        }
         playerManager.getPlayers().remove(player);
     }
 
