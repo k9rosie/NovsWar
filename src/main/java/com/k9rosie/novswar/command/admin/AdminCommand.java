@@ -14,19 +14,18 @@ public class AdminCommand extends NovsCommand {
         if (getArgs().length == 1) {
             getSender().sendMessage("reserved for display stats");
         } else if (getArgs().length >= 2) {
-            if (getArgs()[1].equalsIgnoreCase("setspawn")) {
-                new SetSpawnCommand(getNovsWar(), getSender(), getArgs()).execute();
-                return;
-            }
+            switch (getArgs()[1]) {
+                case "setspawn":
+                    new SetSpawnCommand(getNovsWar(), getSender(), getArgs()).execute();
+                    return;
 
-            if (getArgs()[1].equalsIgnoreCase("setregion")) {
-                new SetRegionCommand(getNovsWar(), getSender(), getArgs()).execute();
-                return;
-            }
+                case "setregion":
+                    new SetRegionCommand(getNovsWar(), getSender(), getArgs()).execute();
+                    return;
 
-            if (getArgs()[1].equalsIgnoreCase("setteam")) {
-                new SetTeamCommand(getNovsWar(), getSender(), getArgs()).execute();
-                return;
+                case "setteam":
+                    new SetTeamCommand(getNovsWar(), getSender(), getArgs()).execute();
+                    return;
             }
         }
     }

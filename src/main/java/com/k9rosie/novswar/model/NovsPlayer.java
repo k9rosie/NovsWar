@@ -1,5 +1,7 @@
 package com.k9rosie.novswar.model;
 
+import com.k9rosie.novswar.util.RegionType;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class NovsPlayer {
@@ -10,6 +12,10 @@ public class NovsPlayer {
     private boolean isDead;
     private boolean isSpectating;
     private boolean isSettingRegion;
+
+    private Location cornerOneBuffer;
+    private RegionType regionTypeBuffer;
+    private String regionNameBuffer;
 
     public NovsPlayer (Player bukkitPlayer) {
         this.bukkitPlayer = bukkitPlayer;
@@ -58,5 +64,29 @@ public class NovsPlayer {
 
     public boolean isSettingRegion() {
         return isSettingRegion;
+    }
+
+    public void setCornerOneBuffer(Location cornerOne) {
+        cornerOneBuffer = cornerOne;
+    }
+
+    public Location getCornerOneBuffer() {
+        return cornerOneBuffer;
+    }
+
+    public void setRegionTypeBuffer(RegionType regionType) {
+        regionTypeBuffer = regionType;
+    }
+
+    public RegionType getRegionTypeBuffer() {
+        return regionTypeBuffer;
+    }
+
+    public void setRegionNameBuffer(String regionName) {
+        regionNameBuffer = regionName;
+    }
+
+    public String getRegionNameBuffer() {
+        return regionNameBuffer;
     }
 }

@@ -6,14 +6,18 @@ import com.k9rosie.novswar.model.NovsRegion;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
 import com.k9rosie.novswar.util.RegionType;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 public class WorldManager {
 
@@ -40,7 +44,10 @@ public class WorldManager {
         return lobbyWorld;
     }
 
-    public NovsWorld getWorldFromBukkitWorld(World bukkitWorld) {
+    public NovsWorld getWorld(World bukkitWorld) {
+        if (lobbyWorld.getBukkitWorld().equals(bukkitWorld)) {
+            return lobbyWorld;
+        }
         for (NovsWorld world : worlds) {
             if (world.getBukkitWorld().equals(bukkitWorld)) {
                 return world;
@@ -53,6 +60,10 @@ public class WorldManager {
         FileConfiguration coreConfig = novswar.getConfigurationCache().getConfig("core");
         String worldName = coreConfig.getString("core.lobby.lobby_world");
         World bukkitWorld = novswar.getPlugin().getServer().getWorld(worldName);
+        if (bukkitWorld == null) {
+            Bukkit.createWorld(new WorldCreator(worldName));
+            bukkitWorld = novswar.getPlugin().getServer().getWorld(worldName);
+        }
         lobbyWorld = new NovsWorld(worldName, bukkitWorld);
 
         NovsTeam defaultTeam = novswar.getTeamManager().getDefaultTeam();
@@ -68,8 +79,13 @@ public class WorldManager {
         List<String> enabledWorldNames = novswar.getConfigurationCache().getConfig("core").getStringList("core.world.enabled_worlds");
         for (String worldName : enabledWorldNames) {
             World world = novswar.getPlugin().getServer().getWorld(worldName);
+            if (world == null) {
+                Bukkit.createWorld(new WorldCreator(worldName));
+                world = novswar.getPlugin().getServer().getWorld(worldName);
+            }
             String name = worldConfig.getString("worlds."+worldName+".name");
             NovsWorld novsWorld = new NovsWorld(name, world);
+
 
             loadRegions(novsWorld);
 
@@ -95,7 +111,6 @@ public class WorldManager {
         ConfigurationSection regions = regionsConfig.getConfigurationSection("regions."+world.getBukkitWorld().getName()+".regions");
 
         for (String regionName : regions.getKeys(false)) {
-            System.out.println(regions.getString(regionName+".type"));
             RegionType type = RegionType.parseString(regions.getString(regionName+".type"));
             int cornerOneX = regions.getInt(regionName+".corner_one.x");
             int cornerOneY = regions.getInt(regionName+".corner_one.y");
@@ -104,20 +119,59 @@ public class WorldManager {
             int cornerTwoY = regions.getInt(regionName+".corner_two.y");
             int cornerTwoZ = regions.getInt(regionName+".corner_two.z");
 
-            NovsRegion region = new NovsRegion(world, regionName,
+            NovsRegion region = new NovsRegion(world,
                     new Location(world.getBukkitWorld(), cornerOneX, cornerOneY, cornerOneZ),
                     new Location(world.getBukkitWorld(), cornerTwoX, cornerTwoY, cornerTwoZ), type);
 
-            region.setBlocks(region.getCuboid());
+            region.saveBlocks();
+            world.getRegions().put(regionName, region);
+        }
+    }
 
-            switch (type) {
-                case BATTLEFIELD:
-                    world.setBattlefield(region);
-                case DEATH_REGION:
-                    world.getDeathRegions().add(region);
-                case INTERMISSION_GATE:
-                    world.getIntermissionGates().add(region);
+    public HashSet<NovsRegion> getRegionsInLocation(Location location) {
+        HashSet regions = new HashSet<NovsRegion>();
+        NovsWorld world = getWorld(location.getWorld());
+        for (NovsRegion region : world.getRegions().values()) {
+            if (region.inRegion(location)) {
+                regions.add(region);
+            }
+        }
+        return regions;
+    }
+
+    public void saveRegions() {
+        FileConfiguration regionsConfig = novswar.getConfigurationCache().getConfig("regions");
+        regionsConfig.set("regions", null);
+        ConfigurationSection root = regionsConfig.createSection("regions");
+
+        for (NovsWorld world : worlds) {
+            ConfigurationSection worldSection = root.createSection(world.getBukkitWorld().getName());
+            ConfigurationSection spawnsSection = worldSection.createSection("spawns");
+
+            for (Map.Entry<NovsTeam, Location> entry : world.getTeamSpawns().entrySet()) {
+                ConfigurationSection teamSection = spawnsSection.createSection(entry.getKey().getTeamName());
+                teamSection.set("x", (int) entry.getValue().getBlockX());
+                teamSection.set("y", (int) entry.getValue().getBlockY());
+                teamSection.set("z", (int) entry.getValue().getBlockZ());
+            }
+
+            ConfigurationSection regionsSection = worldSection.createSection("regions");
+            for (Map.Entry<String, NovsRegion> entry : world.getRegions().entrySet()) {
+                ConfigurationSection regionSection = regionsSection.createSection(entry.getKey());
+                regionSection.set("type", entry.getValue().getRegionType().toString());
+
+                ConfigurationSection cornerOneSection = regionSection.createSection("corner_one");
+                cornerOneSection.set("x", (int) entry.getValue().getCornerOne().getBlockX());
+                cornerOneSection.set("y", (int) entry.getValue().getCornerOne().getBlockY());
+                cornerOneSection.set("z", (int) entry.getValue().getCornerOne().getBlockZ());
+
+                ConfigurationSection cornerTwoSection = regionSection.createSection("corner_two");
+                cornerTwoSection.set("x", (int) entry.getValue().getCornerTwo().getBlockX());
+                cornerTwoSection.set("y", (int) entry.getValue().getCornerTwo().getBlockY());
+                cornerTwoSection.set("z", (int) entry.getValue().getCornerTwo().getBlockZ());
+
             }
         }
     }
+
 }

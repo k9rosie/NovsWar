@@ -1,6 +1,10 @@
 package com.k9rosie.novswar.game;
 
+import com.k9rosie.novswar.NovsWar;
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -8,14 +12,15 @@ import java.util.TimerTask;
 public class GameTimer {
 
     private Game game;
-    private Timer timer;
-    private TimerTask task;
+    private BukkitScheduler scheduler;
+    private Runnable task;
+    private int taskID;
     private int time;
 
     public GameTimer(Game game) {
         this.game = game;
         time = 0;
-        timer = new Timer();
+        scheduler = Bukkit.getScheduler();
     }
 
     public int getTime() {
@@ -34,20 +39,25 @@ public class GameTimer {
         return time / 60;
     }
 
-    public TimerTask getTask() {
+    public Runnable getTask() {
         return task;
     }
 
+    public int getTaskID() {
+        return taskID;
+    }
+
     public void startTimer() {
-        task = new TimerTask() {
+        task = new Runnable() {
             public void run() {
-                Bukkit.broadcastMessage(getMinutes() + ":" + getSeconds());
+                game.clockTick();
                 time--;
                 if (time <= 0) {
                     game.endTimer();
                 }
             }
         };
-        timer.scheduleAtFixedRate(task, 0, 1000);
+
+        taskID = scheduler.scheduleSyncRepeatingTask(NovsWar.getInstance().getPlugin(), task, 0, 20);
     }
 }

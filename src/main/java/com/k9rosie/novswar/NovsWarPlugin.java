@@ -29,7 +29,8 @@ public class NovsWarPlugin extends JavaPlugin {
 	}
 	
 	public void onDisable() {
-		
+		novswar.getWorldManager().saveRegions();
+		novswar.getConfigurationCache().saveConfigs();
 	}
 	
 	public NovsWar getNovswarInstance() {

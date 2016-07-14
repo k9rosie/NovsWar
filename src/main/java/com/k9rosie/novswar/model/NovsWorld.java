@@ -1,7 +1,9 @@
 package com.k9rosie.novswar.model;
 
 import com.k9rosie.novswar.gamemode.Gamemode;
+import com.k9rosie.novswar.util.RegionType;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.event.Listener;
 
@@ -14,16 +16,13 @@ public class NovsWorld {
     private String name;
     private World bukkitWorld;
     private HashMap<NovsTeam, Location> teamSpawns;
-    private NovsRegion battlefield;
-    private HashSet<NovsRegion> intermissionGates;
-    private HashSet<NovsRegion> deathRegions;
+    private HashMap<String, NovsRegion> regions;
 
     public NovsWorld(String name, World bukkitWorld) {
         this.name = name;
         this.bukkitWorld = bukkitWorld;
         teamSpawns = new HashMap<NovsTeam, Location>();
-        intermissionGates = new HashSet<NovsRegion>();
-        deathRegions = new HashSet<NovsRegion>();
+        regions = new HashMap<String, NovsRegion>();
     }
 
     public String getName() {
@@ -42,19 +41,64 @@ public class NovsWorld {
         return teamSpawns;
     }
 
-    public NovsRegion getBattlefield() {
-        return battlefield;
+    public HashMap<String, NovsRegion> getRegions() {
+        return regions;
     }
 
-    public void setBattlefield(NovsRegion battlefield) {
-        this.battlefield = battlefield;
+    public HashSet<NovsRegion> getBattlefields() {
+        HashSet<NovsRegion> battlefields = new HashSet<NovsRegion>();
+        for (NovsRegion region : regions.values()) {
+            if (region.getRegionType().equals(RegionType.BATTLEFIELD)) {
+                battlefields.add(region);
+            }
+        }
+
+        return battlefields;
+    }
+    public HashSet<NovsRegion> getDeathRegions() {
+        HashSet<NovsRegion> battlefields = new HashSet<NovsRegion>();
+        for (NovsRegion region : regions.values()) {
+            if (region.getRegionType().equals(RegionType.DEATH_REGION)) {
+                battlefields.add(region);
+            }
+        }
+
+        return battlefields;
     }
 
     public HashSet<NovsRegion> getIntermissionGates() {
-        return intermissionGates;
+        HashSet<NovsRegion> battlefields = new HashSet<NovsRegion>();
+        for (NovsRegion region : regions.values()) {
+            if (region.getRegionType().equals(RegionType.INTERMISSION_GATE)) {
+                battlefields.add(region);
+            }
+        }
+
+        return battlefields;
     }
 
-    public HashSet<NovsRegion> getDeathRegions() {
-        return deathRegions;
+    public void respawnBattlefields() {
+        for (NovsRegion region : regions.values()) {
+            if (region.getRegionType().equals(RegionType.BATTLEFIELD)) {
+                region.resetBlocks();
+            }
+        }
     }
+
+    public void openIntermissionGates() {
+        for (NovsRegion region : regions.values()) {
+            if (region.getRegionType().equals(RegionType.INTERMISSION_GATE)) {
+                region.setBlocksWithinCuboid(Material.AIR);
+            }
+        }
+    }
+
+    public void closeIntermissionGates() {
+        for (NovsRegion region : regions.values()) {
+            if (region.getRegionType().equals(RegionType.INTERMISSION_GATE)) {
+                region.resetBlocks();
+            }
+        }
+    }
+
 }

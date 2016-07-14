@@ -7,6 +7,7 @@ import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
 import com.k9rosie.novswar.util.Messages;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -27,7 +28,7 @@ public class Game {
     private NovsWar novsWar;
     private Timer deathTimer;
     private GameTimer gameTimer;
-    private Scoreboard scoreboard;
+    private GameScoreboard scoreboard;
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
@@ -38,14 +39,14 @@ public class Game {
         novsWar = gameHandler.getNovsWarInstance();
         deathTimer = new Timer();
         gameTimer = new GameTimer(this);
-        scoreboard = gameHandler.getScoreboardManager().getNewScoreboard();
+        scoreboard = new GameScoreboard(this);
     }
 
     public void initialize() {
         gamemode.setGame(this);
 
         NovsTeam defaultTeam = gameHandler.getNovsWarInstance().getTeamManager().getDefaultTeam();
-        Team defaultScoreboardTeam = createScoreboardTeam(defaultTeam);
+        Team defaultScoreboardTeam = scoreboard.createScoreboardTeam(defaultTeam);
         neutralTeamData = new TeamData(defaultTeam, defaultScoreboardTeam);
 
         // create team data for all enabled teams for the world
@@ -53,24 +54,23 @@ public class Game {
         for (String teamName : enabledTeamNames) {
             for (NovsTeam team : novsWar.getTeamManager().getTeams()) {
                 if (teamName.equalsIgnoreCase(team.getTeamName())) {
-                    teamData.put(team, new TeamData(team, createScoreboardTeam(team)));
+                    teamData.put(team, new TeamData(team, scoreboard.createScoreboardTeam(team)));
                 }
             }
         }
 
-        setupScoreboard();
+        scoreboard.initialize();
 
         waitForPlayers();
     }
 
     public void endTimer() {
-        gameTimer.getTask().cancel();
+        Bukkit.getScheduler().cancelTask(gameTimer.getTaskID());
 
         if (gameState.equals(GameState.PRE_GAME)) {
             startGame();
             return;
         } else if (gameState.equals(GameState.DURING_GAME)) {
-            Bukkit.broadcastMessage("Time's up!");
             endGame();
         }
 
@@ -78,12 +78,14 @@ public class Game {
 
     public void waitForPlayers() {
         gameState = GameState.WAITING_FOR_PLAYERS;
-        Bukkit.broadcastMessage("Waiting for players");
+        scoreboard.setSidebarTitle("Waiting for players");
 
     }
 
     public void preGame() {
         gameState = GameState.PRE_GAME;
+        world.respawnBattlefields();
+
         int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.pre_game_timer");
         gameTimer.setTime(gameTime);
         gameTimer.startTimer();
@@ -92,6 +94,8 @@ public class Game {
     public void startGame() {
         gameState = GameState.DURING_GAME;
         gamemode.onNewGame();
+
+        world.openIntermissionGates();
 
         int gameTime = gamemode.getGameTime();
         gameTimer.setTime(gameTime);
@@ -106,6 +110,8 @@ public class Game {
 
     public void pauseGame() {
         gameState = GameState.PAUSED;
+
+        world.closeIntermissionGates();
         // TODO: teleport all players to their spawn points
         // TODO: stop timer
         // TODO: stop schedulers for the world's regions
@@ -122,7 +128,8 @@ public class Game {
     public void endGame() {
         gameState = GameState.POST_GAME;
         gamemode.onEndGame();
-
+        world.closeIntermissionGates();
+        world.respawnBattlefields();
         int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
         gameTimer.setTime(gameTime);
         gameTimer.startTimer();
@@ -134,6 +141,32 @@ public class Game {
 
     public void startVoting() {
 
+    }
+
+    public void clockTick() {
+        String secondsString = Integer.toString(gameTimer.getSeconds());
+        String minutesString = Integer.toString(gameTimer.getMinutes());
+        String gameStateString = "";
+
+        if (gameState == GameState.PRE_GAME) {
+            gameStateString = ChatColor.GRAY + "Setting up: ";
+        } else if (gameState == GameState.DURING_GAME) {
+            gameStateString = "";
+        } else if (gameState == GameState.POST_GAME) {
+            gameStateString = ChatColor.GRAY + "Post game: ";
+        }
+
+        if (gameTimer.getSeconds() < 10) {
+            secondsString = "0" + Integer.toString(gameTimer.getSeconds());
+        } else if (gameTimer.getSeconds() <= 0) {
+            secondsString = "00";
+        }
+        if (gameTimer.getMinutes() < 10) {
+            minutesString = "0" + Integer.toString(gameTimer.getMinutes());
+        } else if (gameTimer.getMinutes() <= 0) {
+            minutesString = "00";
+        }
+        scoreboard.setSidebarTitle(gameStateString + ChatColor.GREEN + minutesString + ":" + secondsString);
     }
 
     public boolean checkPlayerCount() {
@@ -205,6 +238,7 @@ public class Game {
         NovsPlayer spec = (NovsPlayer) teamData.get(getPlayerTeam(player)).getPlayers().toArray()[rand];
         player.getBukkitPlayer().setSpectatorTarget(spec.getBukkitPlayer());
 
+        // called when the player's death timer is over
         deathTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -243,31 +277,17 @@ public class Game {
             if (gameState.equals(GameState.WAITING_FOR_PLAYERS)) {
                 if (checkPlayerCount()) {
                     preGame();
-                } else {
-                    Bukkit.broadcastMessage("Need more players");
                 }
             }
         }
 
     }
 
-    public Scoreboard getScoreboard() {
+    public GameScoreboard getScoreboard() {
         return scoreboard;
     }
 
-    public Team createScoreboardTeam(NovsTeam team) {
-        Team scoreboardTeam = scoreboard.registerNewTeam(team.getColor()+team.getTeamName());
-        scoreboardTeam.setPrefix(team.getColor().toString());
-        scoreboardTeam.setDisplayName(team.getColor()+team.getTeamName());
-        scoreboardTeam.setAllowFriendlyFire(team.getFriendlyFire());
-        scoreboardTeam.setCanSeeFriendlyInvisibles(false);
-        return scoreboardTeam;
-    }
-
-    public void setupScoreboard() {
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            player.setScoreboard(scoreboard);
-        }
+    public GameHandler getGameHandler() {
+        return gameHandler;
     }
 }

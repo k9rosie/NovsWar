@@ -6,7 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public enum Messages {
     PLUGIN_TAG("plugin_tag"),
-    INVALID_PARAMETERS("invalid_params"),
+    INVALID_PARAMETERS("invalid_parameters"),
     PLAYER_OFFLINE("player_offline"),
     TEAM_MISSING("team_missing"),
     SIGN_CREATED("sign_created"),

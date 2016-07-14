@@ -5,9 +5,13 @@ import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.model.NovsPlayer;
+import com.k9rosie.novswar.model.NovsRegion;
 import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.model.NovsWorld;
 import com.k9rosie.novswar.util.Messages;
+import com.k9rosie.novswar.util.RegionType;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,9 +20,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
+
+import java.util.HashSet;
 
 public class PlayerListener implements Listener {
 
@@ -43,7 +47,7 @@ public class PlayerListener implements Listener {
         novswar.getDatabase().fetchPlayerData(player);
         game.getNeutralTeamData().getPlayers().add(player);
         game.getNeutralTeamData().getScoreboardTeam().addEntry(player.getBukkitPlayer().getDisplayName());
-        bukkitPlayer.setScoreboard(game.getScoreboard());
+        bukkitPlayer.setScoreboard(game.getScoreboard().getBukkitScoreboard());
         bukkitPlayer.teleport(novswar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
 
         player.getStats().incrementConnects();
@@ -173,4 +177,59 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player bukkitPlayer = event.getPlayer();
+        NovsPlayer player = playerManager.getNovsPlayer(bukkitPlayer);
+
+        if (player.isSettingRegion()) {
+            if (event.getClickedBlock() == null) {
+                bukkitPlayer.sendMessage("You need to click a block");
+                event.setCancelled(true);
+                return;
+            }
+            Location location = event.getClickedBlock().getLocation();
+
+            if (novswar.getWorldManager().getWorld(bukkitPlayer.getWorld()) == null) {
+                bukkitPlayer.sendMessage("The world you're in isn't enabled in NovsWar.");
+                event.setCancelled(true);
+                return;
+            }
+
+            if (player.getCornerOneBuffer() == null) {
+                player.setCornerOneBuffer(location);
+                bukkitPlayer.sendMessage("Setting corner two...");
+            } else if (player.getCornerOneBuffer() != null) {
+                NovsWorld world = novswar.getWorldManager().getWorld(bukkitPlayer.getWorld());
+                NovsRegion region = new NovsRegion(world,
+                        player.getCornerOneBuffer(), location, player.getRegionTypeBuffer());
+
+                world.getRegions().put(player.getRegionNameBuffer(), region);
+
+                bukkitPlayer.sendMessage("Region set");
+                player.setCornerOneBuffer(null);
+                player.setRegionTypeBuffer(null);
+                player.setRegionNameBuffer(null);
+                player.setSettingRegion(false);
+            }
+
+            event.setCancelled(true);
+        }
+
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        HashSet<NovsRegion> regions = novswar.getWorldManager().getRegionsInLocation(event.getPlayer().getLocation());
+
+        if (regions.size() != 0) {
+            StringBuilder stringB = new StringBuilder();
+            for (NovsRegion region : regions) {
+                stringB.append(region.getRegionType().toString()).append(", ");
+                if (region.getRegionType().equals(RegionType.DEATH_REGION)) {
+                    event.getPlayer().setHealth(0.0D);
+                }
+            }
+        }
+    }
 }
