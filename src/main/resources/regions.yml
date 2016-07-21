@@ -1,34 +1,3 @@
 # YAML file that stores the different regions in the worlds
 # it's not recommended that you edit this file unless you are sure on what you are doing
 regions:
-  world_nether:
-    spawns:
-      Red:
-        x: 0
-        y: 64
-        z: 0
-      Blue:
-        x: 0
-        y: 0
-        z: 0
-    regions:
-      region_1:
-        type: INTERMISSION_GATE
-        corner_one:
-          x: 0
-          y: 0
-          z: 0
-        corner_two:
-          x: 10
-          y: 10
-          z: 10
-      region_2:
-        type: BATTLEFIELD
-        corner_one:
-          x: 0
-          y: 0
-          z: 0
-        corner_two:
-          x: 10
-          y: 10
-          z: 10

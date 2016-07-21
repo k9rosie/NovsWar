@@ -1,6 +1,8 @@
 package com.k9rosie.novswar.game;
 
 import com.k9rosie.novswar.NovsWar;
+import com.k9rosie.novswar.event.NovsWarEndGameEvent;
+import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
 import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
@@ -12,6 +14,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -25,8 +28,8 @@ public class Game {
     private GameState gameState;
     private TeamData neutralTeamData;
     private HashMap<NovsTeam, TeamData> teamData;
+    private HashMap<NovsPlayer, DeathTimer> deathTimers;
     private NovsWar novsWar;
-    private Timer deathTimer;
     private GameTimer gameTimer;
     private GameScoreboard scoreboard;
 
@@ -35,17 +38,15 @@ public class Game {
         this.world = world;
         this.gamemode = gamemode;
         teamData = new HashMap<NovsTeam, TeamData>();
+        deathTimers = new HashMap<NovsPlayer, DeathTimer>();
         gameState = GameState.WAITING_FOR_PLAYERS;
         novsWar = gameHandler.getNovsWarInstance();
-        deathTimer = new Timer();
         gameTimer = new GameTimer(this);
         scoreboard = new GameScoreboard(this);
     }
 
     public void initialize() {
-        gamemode.setGame(this);
-
-        NovsTeam defaultTeam = gameHandler.getNovsWarInstance().getTeamManager().getDefaultTeam();
+        NovsTeam defaultTeam = novsWar.getTeamManager().getDefaultTeam();
         Team defaultScoreboardTeam = scoreboard.createScoreboardTeam(defaultTeam);
         neutralTeamData = new TeamData(defaultTeam, defaultScoreboardTeam);
 
@@ -59,14 +60,17 @@ public class Game {
             }
         }
 
+        for (NovsPlayer player : novsWar.getPlayerManager().getPlayers()) {
+            setPlayerTeam(player, defaultTeam);
+            player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+        }
+
         scoreboard.initialize();
 
         waitForPlayers();
     }
 
     public void endTimer() {
-        Bukkit.getScheduler().cancelTask(gameTimer.getTaskID());
-
         if (gameState.equals(GameState.PRE_GAME)) {
             startGame();
             return;
@@ -93,7 +97,6 @@ public class Game {
 
     public void startGame() {
         gameState = GameState.DURING_GAME;
-        gamemode.onNewGame();
 
         world.openIntermissionGates();
 
@@ -126,17 +129,21 @@ public class Game {
     }
 
     public void endGame() {
-        gameState = GameState.POST_GAME;
-        gamemode.onEndGame();
-        world.closeIntermissionGates();
-        world.respawnBattlefields();
-        int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
-        gameTimer.setTime(gameTime);
-        gameTimer.startTimer();
-        // TODO: stop timer
-        // TODO: teleport players to spawn points
-        // TODO: start voting if enabled
-        // TODO: pick next world and request a new game from the gameHandler
+        NovsWarEndGameEvent event = new NovsWarEndGameEvent(this);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+
+        if (!event.isCancelled()) {
+            gameState = GameState.POST_GAME;
+            world.closeIntermissionGates();
+            world.respawnBattlefields();
+            int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
+            gameTimer.setTime(gameTime);
+            gameTimer.startTimer();
+            // TODO: stop timer
+            // TODO: teleport players to spawn points
+            // TODO: start voting if enabled
+            // TODO: pick next world and request a new game from the gameHandler
+        }
     }
 
     public void startVoting() {
@@ -219,14 +226,17 @@ public class Game {
         NovsTeam currentTeam = getPlayerTeam(player);
         TeamData currentTeamData;
 
-        // if the player belongs to the neutral team
-        if (neutralTeamData.getPlayers().contains(player)) {
-            currentTeamData = neutralTeamData;
-        } else {
-            currentTeamData = teamData.get(currentTeam);
+
+        if (currentTeam != null) { // if a player even belongs to a team in the first place
+            // if the player belongs to the neutral team
+            if (neutralTeamData.getPlayers().contains(player)) {
+                currentTeamData = neutralTeamData;
+            } else {
+                currentTeamData = teamData.get(currentTeam);
+            }
+            currentTeamData.getPlayers().remove(player);
+            currentTeamData.getScoreboardTeam().removeEntry(player.getBukkitPlayer().getDisplayName());
         }
-        currentTeamData.getPlayers().remove(player);
-        currentTeamData.getScoreboardTeam().removeEntry(player.getBukkitPlayer().getDisplayName());
         teamData.get(team).getPlayers().add(player);
         teamData.get(team).getScoreboardTeam().addEntry(player.getBukkitPlayer().getDisplayName());
     }
@@ -234,53 +244,76 @@ public class Game {
     public void scheduleDeath(NovsPlayer player, int seconds) {
         player.setDeath(true);
         player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
-        int rand = new Random().nextInt();
+        player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+
+        // code to set spectator target
+        /*int rand = new Random().nextInt();
         NovsPlayer spec = (NovsPlayer) teamData.get(getPlayerTeam(player)).getPlayers().toArray()[rand];
-        player.getBukkitPlayer().setSpectatorTarget(spec.getBukkitPlayer());
+        player.getBukkitPlayer().setSpectatorTarget(spec.getBukkitPlayer());*/
 
-        // called when the player's death timer is over
-        deathTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                player.setDeath(false);
+        DeathTimer timer = new DeathTimer(this, seconds, player);
+        timer.startTimer();
+        deathTimers.put(player, timer);
+    }
 
-            }
-        }, seconds*1000);
+    public void deathTick(NovsPlayer player) {
+        DeathTimer timer = deathTimers.get(player);
+
+        player.getBukkitPlayer().getScoreboard().getObjective(DisplaySlot.SIDEBAR).setDisplayName("Respawn in " + timer.getSeconds() + "...");
+    }
+
+    public void respawn(NovsPlayer player) {
+        DeathTimer timer = deathTimers.get(player);
+        timer.stopTimer();
+        deathTimers.remove(player);
+        player.getBukkitPlayer().getScoreboard().getObjective(DisplaySlot.SIDEBAR).setDisplayName(scoreboard.getSidebarTitle());
+
+        if (player.isDead()) {
+            NovsTeam team = getPlayerTeam(player);
+
+            player.setDeath(false);
+            player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
+            player.getBukkitPlayer().teleport(world.getTeamSpawns().get(team));
+        }
     }
 
     public void joinGame(NovsPlayer player) {
-        boolean canJoinInProgress = novsWar.getConfigurationCache().getConfig("core").getBoolean("core.game.join_in_progress");
+        NovsWarJoinGameEvent event = new NovsWarJoinGameEvent(this, player);
+        Bukkit.getServer().getPluginManager().callEvent(event);
 
-        if (!canJoinInProgress && gameState.equals(GameState.DURING_GAME)) {
-            player.getBukkitPlayer().sendMessage(Messages.CANNOT_JOIN_GAME.toString());
-            return;
-        }
+        if (!event.isCancelled()) {
+            boolean canJoinInProgress = novsWar.getConfigurationCache().getConfig("core").getBoolean("core.game.join_in_progress");
 
-        // novsloadout has its own way of sorting players, only run this code if it isnt enabled
-        if (!Bukkit.getPluginManager().isPluginEnabled("NovsLoadout")) {
-            int pCount = 0;
-            NovsTeam team = null;
-            for (TeamData data : teamData.values()) {
-                if (data.getPlayers().size() <= pCount) {
-                    pCount = data.getPlayers().size();
-                    team = data.getTeam();
-                }
+            if (!canJoinInProgress && gameState.equals(GameState.DURING_GAME)) {
+                player.getBukkitPlayer().sendMessage(Messages.CANNOT_JOIN_GAME.toString());
+                return;
             }
 
-            setPlayerTeam(player, team);
-            Location teamSpawn = world.getTeamSpawns().get(team);
-            player.getBukkitPlayer().teleport(teamSpawn);
+            // novsloadout has its own way of sorting players, only run this code if it isnt enabled
+            if (!Bukkit.getPluginManager().isPluginEnabled("NovsLoadout")) {
+                int pCount = 0;
+                NovsTeam team = null;
+                for (TeamData data : teamData.values()) {
+                    if (data.getPlayers().size() <= pCount) {
+                        pCount = data.getPlayers().size();
+                        team = data.getTeam();
+                    }
+                }
 
-            String message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
-            player.getBukkitPlayer().sendMessage(message);
+                setPlayerTeam(player, team);
+                Location teamSpawn = world.getTeamSpawns().get(team);
+                player.getBukkitPlayer().teleport(teamSpawn);
 
-            if (gameState.equals(GameState.WAITING_FOR_PLAYERS)) {
-                if (checkPlayerCount()) {
-                    preGame();
+                String message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
+                player.getBukkitPlayer().sendMessage(message);
+
+                if (gameState.equals(GameState.WAITING_FOR_PLAYERS)) {
+                    if (checkPlayerCount()) {
+                        preGame();
+                    }
                 }
             }
         }
-
     }
 
     public GameScoreboard getScoreboard() {

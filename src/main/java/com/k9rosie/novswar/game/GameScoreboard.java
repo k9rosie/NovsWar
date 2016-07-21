@@ -15,6 +15,7 @@ public class GameScoreboard {
     private Objective sidebar;
     private HashMap<NovsTeam, Score> scores;
     private Objective healthObjective;
+    private String displayName;
 
     public GameScoreboard(Game game) {
         this.game = game;
@@ -22,6 +23,7 @@ public class GameScoreboard {
         sidebar = scoreboard.registerNewObjective("sidebar", "dummy");
         healthObjective = scoreboard.registerNewObjective("showhealth", "health");
         scores = new HashMap<NovsTeam, Score>();
+        displayName = "";
     }
 
     public void initialize() {
@@ -51,7 +53,12 @@ public class GameScoreboard {
     }
 
     public void setSidebarTitle(String displayName) {
+        this.displayName = displayName;
         sidebar.setDisplayName(displayName);
+    }
+
+    public String getSidebarTitle() {
+        return displayName;
     }
 
     public Scoreboard getBukkitScoreboard() {

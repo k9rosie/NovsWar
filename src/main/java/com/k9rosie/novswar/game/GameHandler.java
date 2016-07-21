@@ -1,13 +1,38 @@
 package com.k9rosie.novswar.game;
 
 import com.k9rosie.novswar.NovsWar;
+import com.k9rosie.novswar.event.NovsWarEndGameEvent;
+import com.k9rosie.novswar.event.NovsWarNewGameEvent;
 import com.k9rosie.novswar.gamemode.Gamemode;
+import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 public class GameHandler {
+
+    private class EmptyGamemode implements Gamemode {
+        int gameTime = 60;
+        String gamemodeName = "none";
+
+        public int getGameTime() {
+            return gameTime;
+        }
+
+        public String getGamemodeName() {
+            return gamemodeName;
+        }
+
+        public int getDeathTime() {
+            return 5;
+        }
+
+        public void hook() {
+            novswar.getGamemodeHandler().getGamemodes().put(gamemodeName, this);
+        }
+
+    }
 
     private NovsWar novswar;
     private Game game;
@@ -24,29 +49,26 @@ public class GameHandler {
         NovsWorld initialWorld = novswar.getWorldManager().getWorld(initialBukkitWorld);
 
         newGame(initialWorld);
-        game.initialize();
+
     }
 
     public void newGame(NovsWorld world) {
         String gamemodeString = novswar.getConfigurationCache().getConfig("worlds").getString("worlds."+world.getBukkitWorld().getName()+".gamemode");
         Gamemode gamemode;
         if (gamemodeString.equalsIgnoreCase("none")) {
-            gamemode = new Gamemode("None") {
-                @Override
-                public void onNewGame() {
-                    novswar.log("No gamemode specified");
-                    setGameTime(60);
-                }
-
-                public void onEndGame() {
-
-                }
-            };
+            gamemode = new EmptyGamemode();
         } else {
            gamemode = novswar.getGamemodeHandler().getGamemodes().get(gamemodeString);
         }
 
         game = new Game(this, world, gamemode);
+        NovsWarNewGameEvent event = new NovsWarNewGameEvent(game);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (!event.isCancelled()) {
+            game.initialize();
+        }
+
     }
 
     public Game getGame() {

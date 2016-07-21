@@ -1,25 +1,23 @@
 package com.k9rosie.novswar.game;
 
 import com.k9rosie.novswar.NovsWar;
+import com.k9rosie.novswar.model.NovsPlayer;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-public class GameTimer {
+public class DeathTimer {
 
     private Game game;
+    private NovsPlayer player;
     private BukkitScheduler scheduler;
     private Runnable task;
     private int taskID;
     private int time;
 
-    public GameTimer(Game game) {
+    public DeathTimer(Game game, int time, NovsPlayer player) {
         this.game = game;
-        time = 0;
+        this.time = time;
+        this.player = player;
         scheduler = Bukkit.getScheduler();
     }
 
@@ -50,11 +48,10 @@ public class GameTimer {
     public void startTimer() {
         task = new Runnable() {
             public void run() {
-                game.clockTick();
+                game.deathTick(player);
                 time--;
                 if (time <= 0) {
-                    stopTimer();
-                    game.endTimer();
+                    game.respawn(player);
                 }
             }
         };

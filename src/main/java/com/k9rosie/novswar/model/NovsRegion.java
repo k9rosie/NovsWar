@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -15,14 +16,14 @@ public class NovsRegion {
     private Location cornerOne;
     private Location cornerTwo;
     private RegionType regionType;
-    private ArrayList<Block> blocks;
+    private ArrayList<BlockState> blocks;
 
     public NovsRegion(NovsWorld world, Location cornerOne, Location cornerTwo, RegionType regionType) {
         this.world = world;
         this.cornerOne = cornerOne;
         this.cornerTwo = cornerTwo;
         this.regionType = regionType;
-        blocks = new ArrayList<Block>();
+        blocks = new ArrayList<BlockState>();
     }
 
     public NovsWorld getWorld() {
@@ -53,16 +54,16 @@ public class NovsRegion {
         this.regionType = regionType;
     }
 
-    public ArrayList<Block> getBlocks() {
+    public ArrayList<BlockState> getBlocks() {
         return blocks;
     }
 
-    public void setBlocks(ArrayList<Block> blocks) {
+    public void setBlocks(ArrayList<BlockState> blocks) {
         this.blocks = blocks;
     }
 
-    public ArrayList<Block> getCuboid() {
-        ArrayList<Block> blocks = new ArrayList<Block>();
+    public ArrayList<BlockState> getCuboid() {
+        ArrayList<BlockState> blocks = new ArrayList<BlockState>();
 
         int topBlockX = Math.max(cornerOne.getBlockX(), cornerTwo.getBlockX());
         int topBlockY = Math.max(cornerOne.getBlockY(), cornerTwo.getBlockY());
@@ -74,7 +75,7 @@ public class NovsRegion {
         for (int x = bottomBlockX; x <= topBlockX; x++) {
             for (int y = bottomBlockY; y <= topBlockY; y++) {
                 for (int z = bottomBlockZ; z <= topBlockZ; z++) {
-                    Block block = cornerOne.getWorld().getBlockAt(x, y, z);
+                    BlockState block = cornerOne.getWorld().getBlockAt(x, y, z).getState();
                     blocks.add(block);
                 }
             }
@@ -103,13 +104,8 @@ public class NovsRegion {
     }
 
     public void resetBlocks() {
-        World bukkitWorld = getWorld().getBukkitWorld();
-
-        for (Block block : blocks) {
-            Block oldBlock = bukkitWorld.getBlockAt(block.getLocation());
-            if (!oldBlock.getType().equals(block.getType())) {
-                oldBlock.setType(block.getType());
-            }
+        for (BlockState block : blocks) {
+            block.update(true, false);
         }
     }
 
