@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -14,36 +15,35 @@ public class PlayerManager {
 
     private NovsWar novswar;
 
-    private HashSet<NovsPlayer> players;
+    private HashMap<Player, NovsPlayer> players;
 
     public PlayerManager(NovsWar novswar) {
         this.novswar = novswar;
-        players = new HashSet<NovsPlayer>();
+        players = new HashMap<Player, NovsPlayer>();
     }
 
-    public HashSet<NovsPlayer> getPlayers() {
+    public Collection<Player> getBukkitPlayers() {
+        return players.keySet();
+    }
+
+    public Collection<NovsPlayer> getNovsPlayers() {
+        return players.values();
+    }
+
+    public HashMap<Player, NovsPlayer> getPlayers() {
         return players;
-    }
-
-    public NovsPlayer getNovsPlayer(Player bukkitPlayer) {
-        for (NovsPlayer player : players) {
-            if (player.getBukkitPlayer().equals(bukkitPlayer)) {
-                return player;
-            }
-        }
-        return null;
     }
 
     public NovsPlayer createNovsPlayer(Player bukkitPlayer) {
         NovsPlayer player = new NovsPlayer(bukkitPlayer, novswar.getTeamManager().getDefaultTeam());
-        players.add(player);
+        players.put(bukkitPlayer, player);
         return player;
     }
 
-    public NovsPlayer getNovsPlayer(String displayName) {
+    public NovsPlayer getNovsPlayerFromUsername(String displayName) {
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             if (player.getDisplayName().equalsIgnoreCase(displayName)) {
-                return getNovsPlayer(player);
+                return players.get(player);
             }
         }
         return null;

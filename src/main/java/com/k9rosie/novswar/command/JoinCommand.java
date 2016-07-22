@@ -16,7 +16,7 @@ public class JoinCommand extends NovsCommand {
     }
 
     public void execute() {
-        NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayer((Player) getSender());
+        NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
 
         game.joinGame(player);
     }

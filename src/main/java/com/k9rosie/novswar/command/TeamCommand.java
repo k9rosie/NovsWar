@@ -21,7 +21,7 @@ public class TeamCommand extends NovsCommand {
 
     public void execute() {
         if (getArgs().length == 1) {
-            NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayer((Player) getSender());
+            NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
             NovsTeam team = player.getTeam();
             printTeam(team);
         } else if (getArgs().length == 2) {
@@ -37,7 +37,7 @@ public class TeamCommand extends NovsCommand {
                 printTeam(team);
                 return;
             } else {
-                NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayer(arg);
+                NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get(arg);
 
                 if (player == null) {
                     getSender().sendMessage("That specific player/team couldn't be found");

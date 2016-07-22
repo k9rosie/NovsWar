@@ -27,7 +27,7 @@ public class SetSpawnCommand extends NovsCommand {
         } else {
             Player bukkitPlayer = (Player) getSender();
             World bukkitWorld = bukkitPlayer.getWorld();
-            NovsWorld world = getNovsWar().getWorldManager().getWorld(bukkitWorld);
+            NovsWorld world = getNovsWar().getWorldManager().getWorlds().get(bukkitWorld);
 
             if (world == null) {
                 bukkitPlayer.sendMessage("The world you're in isn't enabled in NovsWar.");

@@ -90,7 +90,7 @@ public class NovsTeam {
     }
 
     public HashSet<NovsPlayer> getPlayers() {
-        HashSet<NovsPlayer> players = NovsWar.getInstance().getPlayerManager().getPlayers();
+        HashSet<NovsPlayer> players = (HashSet) NovsWar.getInstance().getPlayerManager().getNovsPlayers();
         HashSet<NovsPlayer> teamMembers = new HashSet<NovsPlayer>();
         for (NovsPlayer player : players) {
             if (player.getTeam().equals(this)) {

@@ -22,12 +22,12 @@ public class PlayerCommand extends NovsCommand {
 
     public void execute() {
         if (getArgs().length == 1) {
-            NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayer((Player) getSender());
+            NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
             printStats(player);
         } else if (getArgs().length == 2) {
             String playerName = getArgs()[1];
             if (NovsWar.isOnline(playerName)) {
-                NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayer(playerName);
+                NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get(playerName);
                 printStats(player);
             } else {
                 UUID uuid = NovsWar.getUUID(playerName);

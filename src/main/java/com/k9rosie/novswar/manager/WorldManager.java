@@ -13,22 +13,19 @@ import org.bukkit.WorldCreator;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 public class WorldManager {
 
     private NovsWar novswar;
 
-    private HashSet<NovsWorld> worlds;
+    private HashMap<World, NovsWorld> worlds;
     private NovsWorld lobbyWorld;
 
     public WorldManager(NovsWar novswar) {
         this.novswar = novswar;
-        worlds = new HashSet<NovsWorld>();
+        worlds = new HashMap<World, NovsWorld>();
     }
 
     public void initialize() {
@@ -36,24 +33,20 @@ public class WorldManager {
         loadLobbyWorld();
     }
 
-    public HashSet<NovsWorld> getWorlds(){
+    public Set<World> getBukkitWorlds() {
+        return worlds.keySet();
+    }
+
+    public Collection<NovsWorld> getNovsWorlds() {
+        return worlds.values();
+    }
+
+    public HashMap<World, NovsWorld> getWorlds(){
         return worlds;
     }
 
     public NovsWorld getLobbyWorld() {
         return lobbyWorld;
-    }
-
-    public NovsWorld getWorld(World bukkitWorld) {
-        if (lobbyWorld.getBukkitWorld().equals(bukkitWorld)) {
-            return lobbyWorld;
-        }
-        for (NovsWorld world : worlds) {
-            if (world.getBukkitWorld().equals(bukkitWorld)) {
-                return world;
-            }
-        }
-        return null;
     }
 
     public void loadLobbyWorld() {
@@ -89,7 +82,7 @@ public class WorldManager {
 
             loadRegions(novsWorld);
 
-            worlds.add(novsWorld);
+            worlds.put(world, novsWorld);
         }
     }
 
@@ -130,7 +123,7 @@ public class WorldManager {
 
     public HashSet<NovsRegion> getRegionsInLocation(Location location) {
         HashSet regions = new HashSet<NovsRegion>();
-        NovsWorld world = getWorld(location.getWorld());
+        NovsWorld world = worlds.get(location.getWorld());
         for (NovsRegion region : world.getRegions().values()) {
             if (region.inRegion(location)) {
                 regions.add(region);
@@ -144,7 +137,7 @@ public class WorldManager {
         regionsConfig.set("regions", null);
         ConfigurationSection root = regionsConfig.createSection("regions");
 
-        for (NovsWorld world : worlds) {
+        for (NovsWorld world : worlds.values()) {
             ConfigurationSection worldSection = root.createSection(world.getBukkitWorld().getName());
             ConfigurationSection spawnsSection = worldSection.createSection("spawns");
 

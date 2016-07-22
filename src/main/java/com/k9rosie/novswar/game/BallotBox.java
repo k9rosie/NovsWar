@@ -33,7 +33,7 @@ public class BallotBox {
 		List<String> enabledWorlds = novswar.getConfigurationCache().getConfig("core").getStringList("core.world.enabled_worlds");
 
 		//Choose 9 gamemodes randomly, and get their names and gamemodes
-    	HashSet<NovsWorld> worlds = novswar.getWorldManager().getWorlds();
+    	HashSet<NovsWorld> worlds = (HashSet) novswar.getWorldManager().getNovsWorlds();
     	ballotList.addAll(worlds);
     	Collections.shuffle(ballotList);
     	int worldCount = worlds.size();
@@ -66,7 +66,7 @@ public class BallotBox {
     	}
     	
     	//Open the voting screen for each player
-    	for(NovsPlayer player : novswar.getPlayerManager().getPlayers()) {
+    	for(NovsPlayer player : novswar.getPlayerManager().getNovsPlayers()) {
     		//player.getBukkitPlayer().sendMessage("Cast your Vote");
     		player.getBukkitPlayer().openInventory(ballotBox);
     	}
@@ -107,7 +107,7 @@ public class BallotBox {
 				if(nextIndex == enabledWorlds.size()) {
 					nextIndex = 0;
 				}
-				for(NovsWorld nworld : novswar.getWorldManager().getWorlds()) {
+				for(NovsWorld nworld : novswar.getWorldManager().getNovsWorlds()) {
 					if(nworld.getBukkitWorld().getName().equals(enabledWorlds.get(nextIndex))) {
 						nextWorld = nworld;
 					}
