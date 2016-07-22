@@ -67,7 +67,6 @@ public class Game {
 
         for (NovsPlayer player : novsWar.getPlayerManager().getPlayers()) {
         	player.setTeam(defaultTeam); // NovsPlayer now has private NovsTeam var
-        	defaultTeam.incrementMember();
             player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
         }
 
@@ -170,7 +169,6 @@ public class Game {
             for (NovsPlayer player : novsWar.getPlayerManager().getPlayers()) {
             	NovsTeam defaultTeam = novsWar.getTeamManager().getDefaultTeam();
             	player.setTeam(defaultTeam);
-            	defaultTeam.incrementMember();
                 player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
             }
             
@@ -291,14 +289,13 @@ public class Game {
             	int smallest = 0;
             	NovsTeam smallestTeam = null;
                 for (NovsTeam team : enabledTeams) {
-                	if(team.getMemberCount() <= smallest) {
-                		smallest = team.getMemberCount();
+                	if(team.getPlayers().size() <= smallest) {
+                		smallest = team.getPlayers().size();
                 		smallestTeam = team;
                 	}
                 }
                 player.setTeam(smallestTeam);
-                smallestTeam.incrementMember();
-                
+
                 Location teamSpawn = world.getTeamSpawns().get(smallestTeam);
                 player.getBukkitPlayer().teleport(teamSpawn);
 
