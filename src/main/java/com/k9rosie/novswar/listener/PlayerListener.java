@@ -236,15 +236,15 @@ public class PlayerListener implements Listener {
 
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
 	public void onInventoryClick(InventoryClickEvent event) {
-		Inventory voter = Game.getBallotBox().getBallots();
-		Player player = (Player) event.getWhoClicked();
-		int slot = event.getSlot();
-		ItemStack clicked = event.getCurrentItem();
+		Inventory ballotBox = Game.getBallotBox().getBallots();
 		Inventory inventory = event.getInventory();
 		//check to make sure click occurs inside voting Inventory screen
-		if(inventory.getName().equals(voter.getName())) {
+		if(inventory.getName().equals(ballotBox.getName())) {
+			Player player = (Player) event.getWhoClicked();
+			int slot = event.getSlot();
+			ItemStack clicked = event.getCurrentItem();
 			//check that the click was on a BEDROCK voting item
 			if(clicked.getType().equals(Material.BEDROCK)){
 				Game.getBallotBox().recordResult(slot);
