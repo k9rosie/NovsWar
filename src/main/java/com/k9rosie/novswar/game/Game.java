@@ -224,6 +224,7 @@ public class Game {
         player.setDeath(true);
         player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
         player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+        player.getBukkitPlayer().setFoodLevel(20);
 
         // code to set spectator target
         /*int rand = new Random().nextInt();
