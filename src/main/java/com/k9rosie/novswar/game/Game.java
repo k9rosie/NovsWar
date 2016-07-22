@@ -88,8 +88,11 @@ public class Game {
     		endGame();
     		break;
     	case POST_GAME :
-
-    		gameHandler.newGame(ballotBox.tallyResults());
+    		NovsWorld nextMap = ballotBox.tallyResults();
+    		if(nextMap == null) {
+    			nextMap = world;
+    		}
+    		gameHandler.newGame(nextMap);
     		break;
     	default :
     		break;
