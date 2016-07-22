@@ -16,6 +16,7 @@ import com.k9rosie.novswar.util.RegionType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -203,7 +204,6 @@ public class PlayerListener implements Listener {
         }
     }
 
-    //TODO Cancel interactions when not setting regions?
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player bukkitPlayer = event.getPlayer();
@@ -247,26 +247,20 @@ public class PlayerListener implements Listener {
     
     @EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
-		Inventory voter = Game.votingBooth;
+		Inventory voter = Game.getBallotBox().getBallots();
 		Player player = (Player) event.getWhoClicked();
+		int slot = event.getSlot();
 		ItemStack clicked = event.getCurrentItem();
 		Inventory inventory = event.getInventory();
+		//check to make sure click occurs inside voting Inventory screen
 		if(inventory.getName().equals(voter.getName())) {
-			switch(clicked.getType()) {
-			case DIRT :
-				//Bukkit.broadcastMessage("Voted for Dirt");
-				//player.sendMessage(message);
+			//check that the click was on a BEDROCK voting item
+			if(clicked.getType().equals(Material.BEDROCK)){
+				Game.getBallotBox().recordResult(slot);
 				player.closeInventory();
-				break;
-			case GOLD_BLOCK :
-				Bukkit.broadcastMessage("Voted for Gold");
-				player.closeInventory();
-				break;
-			default :
-				break;
+				player.sendMessage("You voted for "+clicked.getItemMeta().getDisplayName());
 			}
 			event.setCancelled(true);
 		}
-		
 	}
 }

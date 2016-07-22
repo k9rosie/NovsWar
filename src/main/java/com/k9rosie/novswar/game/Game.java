@@ -33,8 +33,7 @@ public class Game {
     private NovsWar novsWar;
     private GameTimer gameTimer;
     private GameScoreboard scoreboard;
-    
-    public static Inventory votingBooth = Bukkit.createInventory(null, 9, "Vote for the next map");
+    private static BallotBox ballotBox;
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
@@ -46,6 +45,7 @@ public class Game {
         novsWar = gameHandler.getNovsWarInstance();
         gameTimer = new GameTimer(this);
         scoreboard = new GameScoreboard(this);
+        ballotBox = new BallotBox(novsWar);
     }
 
     public void initialize() {
@@ -89,7 +89,7 @@ public class Game {
     		endGame();
     		break;
     	case POST_GAME :
-    		initialize();
+    		gameHandler.newGame(ballotBox.tallyResults());
     		break;
     	default :
     		break;
@@ -166,31 +166,20 @@ public class Game {
             int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
             gameTimer.setTime(gameTime);
             gameTimer.startTimer();
-
+            
+            //Teleport each player to their team's spawn
             for (NovsPlayer player : novsWar.getPlayerManager().getPlayers()) {
             	NovsTeam defaultTeam = novsWar.getTeamManager().getDefaultTeam();
             	player.setTeam(defaultTeam);
             	defaultTeam.incrementMember();
-                player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+                player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(player.getTeam()));
             }
             
-            promptVotingScreen();
-            
-            
-        	// TODO: Listen for interaction events to see which item was clicked. Put an effect on the selected item
-            // TODO: pick next world and request a new game from the gameHandler
+            //Check if voting is enabled
+            if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
+            	ballotBox.castVotes();
+            }
         }
-    }
-
-    public void promptVotingScreen() {
-    	// TODO: Prompt each player with a chest inventory and items representing the map choices
-    	//Choose 9 gamemodes randomly, and get their names and gamemodes
-    	novsWar.getWorldManager().getWorlds();
-    	
-    	//createOption(Material.DIRT, votingBooth, 0, "Option 1", "Description");
-		//createOption(Material.GOLD_BLOCK, votingBooth, 8, "Option 2", "Description");
-		
-		
     }
 
     public void clockTick() {
@@ -313,17 +302,6 @@ public class Game {
             }
         }
     }
-    
-    public static void createVoteOption(Material material, Inventory inv, int slot, String name, String lore) {
-		ItemStack item = new ItemStack(material);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(name);
-		List<String> loreList = new ArrayList<String>();
-		loreList.add(lore);
-		meta.setLore(loreList);
-		item.setItemMeta(meta);
-		inv.setItem(slot, item);
-	}
 
     public GameScoreboard getScoreboard() {
         return scoreboard;
@@ -331,5 +309,9 @@ public class Game {
 
     public GameHandler getGameHandler() {
         return gameHandler;
+    }
+    
+    public static BallotBox getBallotBox() {
+    	return ballotBox;
     }
 }
