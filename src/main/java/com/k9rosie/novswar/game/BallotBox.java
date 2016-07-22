@@ -48,8 +48,17 @@ public class BallotBox {
 
     	//Remove disabled worlds
     	for(int k = 0; k < ballotList.size(); k++) {
-    		System.out.println("Current world check: "+ballotList.get(k)+" for k="+k);
-    		if(enabledWorlds.contains(ballotList.get(k).getName()) == false) {
+    		System.out.println("Current world check: "+ballotList.get(k).getName()+" for k="+k);
+    		String currentBallotName = ballotList.get(k).getName();
+    		boolean isWorldEnabled = false;
+    		for(String worldName : enabledWorlds) {
+    			System.out.println("Checking against world: "+worldName);
+    			if(currentBallotName.equals(worldName)) {
+    				isWorldEnabled = true;
+    				break;
+    			}
+    		}
+    		if(isWorldEnabled == false) {
     			ballotList.remove(k);
     			k--; //decrement k to account for the left-shift of elements
     			System.out.println("World is disabled, k="+k);
