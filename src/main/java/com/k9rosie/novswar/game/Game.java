@@ -34,8 +34,6 @@ public class Game {
     private GameTimer gameTimer;
     private GameScoreboard scoreboard;
     
-    public static Inventory votingBooth = Bukkit.createInventory(null, 9, "Vote for the next map");
-
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
         this.world = world;
@@ -119,9 +117,6 @@ public class Game {
         gameTimer.setTime(gameTime);
         gameTimer.startTimer();
         Bukkit.broadcastMessage("Starting Round");
-        for (NovsPlayer player : novsWar.getPlayerManager().getPlayers()) {
-            player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(novsWar.getTeamManager().getDefaultTeam()));
-        }
 
         // TODO: start timer
         // TODO: adjust game score according to gamemode
@@ -165,12 +160,6 @@ public class Game {
             int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
             gameTimer.setTime(gameTime);
             gameTimer.startTimer();
-
-            for (NovsPlayer player : novsWar.getPlayerManager().getPlayers()) {
-            	NovsTeam defaultTeam = novsWar.getTeamManager().getDefaultTeam();
-            	player.setTeam(defaultTeam);
-                player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
-            }
             
             promptVotingScreen();
             
@@ -218,8 +207,11 @@ public class Game {
     }
 
     public boolean checkPlayerCount() {
-        int numPlayers = novsWar.getPlayerManager().getPlayers().size();
+        int numPlayers = 0;
         int required = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.minimum_players");
+        for (NovsTeam team : enabledTeams) {
+            numPlayers += team.getPlayers().size();
+        }
         if (numPlayers >= required) {
             return true;
         } else {
@@ -310,17 +302,6 @@ public class Game {
             }
         }
     }
-    
-    public static void createVoteOption(Material material, Inventory inv, int slot, String name, String lore) {
-		ItemStack item = new ItemStack(material);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(name);
-		List<String> loreList = new ArrayList<String>();
-		loreList.add(lore);
-		meta.setLore(loreList);
-		item.setItemMeta(meta);
-		inv.setItem(slot, item);
-	}
 
     public GameScoreboard getScoreboard() {
         return scoreboard;
