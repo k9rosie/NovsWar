@@ -35,7 +35,7 @@ public class BallotBox {
 			//List of enabled world names
 		List<String> enabledWorlds = novswar.getConfigurationCache().getConfig("core").getStringList("core.world.enabled_worlds");
 		System.out.println("Enabled worlds list is: "+enabledWorlds.toString());
-		
+
 		//Choose 9 gamemodes randomly, and get their names and gamemodes
     	HashSet<NovsWorld> worlds = novswar.getWorldManager().getWorlds();
     	ballotList.addAll(worlds);
@@ -45,7 +45,7 @@ public class BallotBox {
     		worldCount = 9; //cap limit at 9
     	}
     	System.out.println("World size is: "+worldCount);
-    	
+
     	//Remove disabled worlds
     	for(int k = 0; k < ballotList.size(); k++) {
     		System.out.println("Current world check: "+ballotList.get(k)+" for k="+k);
