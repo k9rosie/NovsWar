@@ -1,10 +1,8 @@
 package com.k9rosie.novswar.game;
 
 import com.k9rosie.novswar.NovsWar;
-import com.k9rosie.novswar.event.NovsWarEndGameEvent;
 import com.k9rosie.novswar.event.NovsWarNewGameEvent;
 import com.k9rosie.novswar.gamemode.Gamemode;
-import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -14,6 +12,7 @@ public class GameHandler {
 
     private class EmptyGamemode implements Gamemode {
         int gameTime = 60;
+        int maxScore = 2;
         String gamemodeName = "none";
 
         public int getGameTime() {
@@ -23,13 +22,17 @@ public class GameHandler {
         public String getGamemodeName() {
             return gamemodeName;
         }
+        
+        public int getMaxScore() {
+        	return maxScore;
+        }
 
         public int getDeathTime() {
             return 5;
         }
 
-        public void hook() {
-            novswar.getGamemodeHandler().getGamemodes().put(gamemodeName, this);
+        public void hook(Game game) {
+        	novswar.getGamemodeHandler().getGamemodes().put(gamemodeName, this);
         }
 
     }

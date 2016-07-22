@@ -6,7 +6,6 @@ import com.k9rosie.novswar.model.NovsStats;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.util.Messages;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -52,7 +51,7 @@ public class PlayerCommand extends NovsCommand {
     public void printStats(NovsPlayer player) {
         NovsStats stats = player.getStats();
         Player bukkitPlayer = player.getBukkitPlayer();
-        NovsTeam team = getNovsWar().getGameHandler().getGame().getPlayerTeam(player);
+        NovsTeam team = player.getTeam();
         double kd = 0.0;
         if ((stats.getDeaths()+stats.getArrowDeaths()) == 0) {
             kd = stats.getKills()+stats.getArrowKills();

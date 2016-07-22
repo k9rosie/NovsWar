@@ -35,7 +35,7 @@ public class PlayerManager {
     }
 
     public NovsPlayer createNovsPlayer(Player bukkitPlayer) {
-        NovsPlayer player = new NovsPlayer(bukkitPlayer);
+        NovsPlayer player = new NovsPlayer(bukkitPlayer, novswar.getTeamManager().getDefaultTeam());
         players.add(player);
         return player;
     }

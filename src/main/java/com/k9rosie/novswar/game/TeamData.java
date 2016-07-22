@@ -5,7 +5,7 @@ import com.k9rosie.novswar.model.NovsTeam;
 import org.bukkit.scoreboard.Team;
 
 import java.util.HashSet;
-
+/*Redundant
 public class TeamData {
 
     private NovsTeam team;
@@ -60,3 +60,4 @@ public class TeamData {
         score -= increment;
     }
 }
+*/

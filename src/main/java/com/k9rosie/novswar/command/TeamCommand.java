@@ -8,10 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 public class TeamCommand extends NovsCommand {
 
     private Game game;
@@ -24,12 +20,12 @@ public class TeamCommand extends NovsCommand {
     public void execute() {
         if (getArgs().length == 1) {
             NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayer((Player) getSender());
-            NovsTeam team = game.getPlayerTeam(player);
-
+            NovsTeam team = player.getTeam();
+            printTeam(team);
         } else if (getArgs().length == 2) {
             String arg = getArgs()[1];
             NovsTeam team = null;
-            for (NovsTeam t : game.getTeamData().keySet()) {
+            for (NovsTeam t : game.getTeams()) {
                 if (t.getTeamName().equalsIgnoreCase(arg)) {
                     team = t;
                 }
@@ -59,15 +55,20 @@ public class TeamCommand extends NovsCommand {
     }
 
     public void printTeam(NovsPlayer player) {
-        NovsTeam team = game.getPlayerTeam(player);
+        NovsTeam team = player.getTeam();
         getSender().sendMessage(team.getColor()+team.getTeamName());
         getSender().sendMessage(generatePlayerList(team));
     }
 
     public String generatePlayerList(NovsTeam team) {
         StringBuilder playersList = new StringBuilder();
-        Object[] playersArray;
-        if (team.equals(getNovsWar().getTeamManager().getDefaultTeam())) {
+        //Object[] playersArray;
+        for(NovsPlayer player : getNovsWar().getPlayerManager().getPlayers()) {
+        	if(player.getTeam().equals(team)) {
+        		playersList.append(team.getColor()+player.getBukkitPlayer().getDisplayName()+ChatColor.GRAY+", ");
+        	}
+        }
+        /*if (team.equals(getNovsWar().getTeamManager().getDefaultTeam())) {
             playersArray = game.getNeutralTeamData().getPlayers().toArray();
         } else {
             playersArray = game.getTeamData().get(team).getPlayers().toArray();
@@ -80,7 +81,7 @@ public class TeamCommand extends NovsCommand {
                     playersList.append(ChatColor.GRAY+", ");
                 }
             }
-        }
+        }*/
         return playersList.toString();
     }
 }

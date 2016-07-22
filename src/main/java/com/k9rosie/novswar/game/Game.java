@@ -1,5 +1,6 @@
 package com.k9rosie.novswar.game;
 
+
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.event.NovsWarEndGameEvent;
 import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
@@ -8,15 +9,16 @@ import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
 import com.k9rosie.novswar.util.Messages;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
+import org.bukkit.Material;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.*;
@@ -26,18 +28,19 @@ public class Game {
     private NovsWorld world;
     private Gamemode gamemode;
     private GameState gameState;
-    private TeamData neutralTeamData;
-    private HashMap<NovsTeam, TeamData> teamData;
+    private ArrayList<NovsTeam> enabledTeams;
     private HashMap<NovsPlayer, DeathTimer> deathTimers;
     private NovsWar novsWar;
     private GameTimer gameTimer;
     private GameScoreboard scoreboard;
+    
+    public static Inventory votingBooth = Bukkit.createInventory(null, 9, "Vote for the next map");
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
         this.world = world;
         this.gamemode = gamemode;
-        teamData = new HashMap<NovsTeam, TeamData>();
+        enabledTeams = new ArrayList<NovsTeam>();
         deathTimers = new HashMap<NovsPlayer, DeathTimer>();
         gameState = GameState.WAITING_FOR_PLAYERS;
         novsWar = gameHandler.getNovsWarInstance();
@@ -46,22 +49,25 @@ public class Game {
     }
 
     public void initialize() {
+    	//Create default team
         NovsTeam defaultTeam = novsWar.getTeamManager().getDefaultTeam();
         Team defaultScoreboardTeam = scoreboard.createScoreboardTeam(defaultTeam);
-        neutralTeamData = new TeamData(defaultTeam, defaultScoreboardTeam);
+        defaultTeam.setScoreboardTeam(defaultScoreboardTeam);
 
-        // create team data for all enabled teams for the world
+        //Populate the list 'enabledTeams' with valid NovsTeam objects
         List<String> enabledTeamNames = novsWar.getConfigurationCache().getConfig("worlds").getStringList("worlds."+world.getBukkitWorld().getName()+".enabled_teams");
-        for (String teamName : enabledTeamNames) {
+        for (String validTeam : enabledTeamNames) {
             for (NovsTeam team : novsWar.getTeamManager().getTeams()) {
-                if (teamName.equalsIgnoreCase(team.getTeamName())) {
-                    teamData.put(team, new TeamData(team, scoreboard.createScoreboardTeam(team)));
+                if (validTeam.equalsIgnoreCase(team.getTeamName())) {
+                	team.setScoreboardTeam(scoreboard.createScoreboardTeam(team));
+                	enabledTeams.add(team);
                 }
             }
         }
 
         for (NovsPlayer player : novsWar.getPlayerManager().getPlayers()) {
-            setPlayerTeam(player, defaultTeam);
+        	player.setTeam(defaultTeam); // NovsPlayer now has private NovsTeam var
+        	defaultTeam.incrementMember();
             player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
         }
 
@@ -70,14 +76,24 @@ public class Game {
         waitForPlayers();
     }
 
+    /**
+     * endTimer()
+     * Controls the next state of the game when the timer ends
+     */
     public void endTimer() {
-        if (gameState.equals(GameState.PRE_GAME)) {
-            startGame();
-            return;
-        } else if (gameState.equals(GameState.DURING_GAME)) {
-            endGame();
-        }
-
+    	switch(gameState) {
+    	case PRE_GAME :
+    		startGame();
+    		break;
+    	case DURING_GAME :
+    		endGame();
+    		break;
+    	case POST_GAME :
+    		initialize();
+    		break;
+    	default :
+    		break;
+    	}
     }
 
     public void waitForPlayers() {
@@ -103,12 +119,19 @@ public class Game {
         int gameTime = gamemode.getGameTime();
         gameTimer.setTime(gameTime);
         gameTimer.startTimer();
+        Bukkit.broadcastMessage("Starting Round");
+        for (NovsPlayer player : novsWar.getPlayerManager().getPlayers()) {
+            player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(novsWar.getTeamManager().getDefaultTeam()));
+        }
 
         // TODO: start timer
         // TODO: adjust game score according to gamemode
         // TODO: teleport all players to their team's designated spawn points
         // TODO: start schedulers for the world's regions
         // TODO: start game timer according to gamemode
+        
+        //gamemode.hook(this); ???
+        
     }
 
     public void pauseGame() {
@@ -128,6 +151,10 @@ public class Game {
 
     }
 
+    /**
+     * endGame()
+     * Controls what happens during the post-game
+     */
     public void endGame() {
         NovsWarEndGameEvent event = new NovsWarEndGameEvent(this);
         Bukkit.getServer().getPluginManager().callEvent(event);
@@ -139,15 +166,31 @@ public class Game {
             int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
             gameTimer.setTime(gameTime);
             gameTimer.startTimer();
-            // TODO: stop timer
-            // TODO: teleport players to spawn points
-            // TODO: start voting if enabled
+
+            for (NovsPlayer player : novsWar.getPlayerManager().getPlayers()) {
+            	NovsTeam defaultTeam = novsWar.getTeamManager().getDefaultTeam();
+            	player.setTeam(defaultTeam);
+            	defaultTeam.incrementMember();
+                player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+            }
+            
+            promptVotingScreen();
+            
+            
+        	// TODO: Listen for interaction events to see which item was clicked. Put an effect on the selected item
             // TODO: pick next world and request a new game from the gameHandler
         }
     }
 
-    public void startVoting() {
-
+    public void promptVotingScreen() {
+    	// TODO: Prompt each player with a chest inventory and items representing the map choices
+    	//Choose 9 gamemodes randomly, and get their names and gamemodes
+    	novsWar.getWorldManager().getWorlds();
+    	
+    	//createOption(Material.DIRT, votingBooth, 0, "Option 1", "Description");
+		//createOption(Material.GOLD_BLOCK, votingBooth, 8, "Option 2", "Description");
+		
+		
     }
 
     public void clockTick() {
@@ -177,68 +220,21 @@ public class Game {
     }
 
     public boolean checkPlayerCount() {
-        int total = 0;
-        for (TeamData data : teamData.values()) {
-            total += data.getPlayers().size();
-        }
-
+        int numPlayers = novsWar.getPlayerManager().getPlayers().size();
         int required = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.minimum_players");
-        if (total >= required) {
+        if (numPlayers >= required) {
             return true;
         } else {
             return false;
         }
     }
-
-    public TeamData getNeutralTeamData() {
-        return neutralTeamData;
-    }
-
-    public HashMap<NovsTeam, TeamData> getTeamData() {
-        return teamData;
+    
+    public ArrayList<NovsTeam> getTeams() {
+    	return enabledTeams;
     }
 
     public Gamemode getGamemode() {
         return gamemode;
-    }
-
-    public NovsTeam getPlayerTeam(NovsPlayer player) {
-
-        // first check neutral team data
-        for (NovsPlayer p : neutralTeamData.getPlayers()) {
-            if (player.equals(p)) {
-                return neutralTeamData.getTeam();
-            }
-        }
-
-        for (TeamData data : teamData.values()) {
-            for (NovsPlayer p : data.getPlayers()) {
-                if (player.equals(p)) {
-                    return data.getTeam();
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public void setPlayerTeam(NovsPlayer player, NovsTeam team) {
-        NovsTeam currentTeam = getPlayerTeam(player);
-        TeamData currentTeamData;
-
-
-        if (currentTeam != null) { // if a player even belongs to a team in the first place
-            // if the player belongs to the neutral team
-            if (neutralTeamData.getPlayers().contains(player)) {
-                currentTeamData = neutralTeamData;
-            } else {
-                currentTeamData = teamData.get(currentTeam);
-            }
-            currentTeamData.getPlayers().remove(player);
-            currentTeamData.getScoreboardTeam().removeEntry(player.getBukkitPlayer().getDisplayName());
-        }
-        teamData.get(team).getPlayers().add(player);
-        teamData.get(team).getScoreboardTeam().addEntry(player.getBukkitPlayer().getDisplayName());
     }
 
     public void scheduleDeath(NovsPlayer player, int seconds) {
@@ -269,7 +265,7 @@ public class Game {
         player.getBukkitPlayer().getScoreboard().getObjective(DisplaySlot.SIDEBAR).setDisplayName(scoreboard.getSidebarTitle());
 
         if (player.isDead()) {
-            NovsTeam team = getPlayerTeam(player);
+            NovsTeam team = player.getTeam();
 
             player.setDeath(false);
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
@@ -291,20 +287,22 @@ public class Game {
 
             // novsloadout has its own way of sorting players, only run this code if it isnt enabled
             if (!Bukkit.getPluginManager().isPluginEnabled("NovsLoadout")) {
-                int pCount = 0;
-                NovsTeam team = null;
-                for (TeamData data : teamData.values()) {
-                    if (data.getPlayers().size() <= pCount) {
-                        pCount = data.getPlayers().size();
-                        team = data.getTeam();
-                    }
+            	//Determine which team has fewer players
+            	int smallest = 0;
+            	NovsTeam smallestTeam = null;
+                for (NovsTeam team : enabledTeams) {
+                	if(team.getMemberCount() <= smallest) {
+                		smallest = team.getMemberCount();
+                		smallestTeam = team;
+                	}
                 }
-
-                setPlayerTeam(player, team);
-                Location teamSpawn = world.getTeamSpawns().get(team);
+                player.setTeam(smallestTeam);
+                smallestTeam.incrementMember();
+                
+                Location teamSpawn = world.getTeamSpawns().get(smallestTeam);
                 player.getBukkitPlayer().teleport(teamSpawn);
 
-                String message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
+                String message = Messages.JOIN_TEAM.toString().replace("%team_color%", smallestTeam.getColor().toString()).replace("%team%", smallestTeam.getTeamName());
                 player.getBukkitPlayer().sendMessage(message);
 
                 if (gameState.equals(GameState.WAITING_FOR_PLAYERS)) {
@@ -315,6 +313,17 @@ public class Game {
             }
         }
     }
+    
+    public static void createVoteOption(Material material, Inventory inv, int slot, String name, String lore) {
+		ItemStack item = new ItemStack(material);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(name);
+		List<String> loreList = new ArrayList<String>();
+		loreList.add(lore);
+		meta.setLore(loreList);
+		item.setItemMeta(meta);
+		inv.setItem(slot, item);
+	}
 
     public GameScoreboard getScoreboard() {
         return scoreboard;

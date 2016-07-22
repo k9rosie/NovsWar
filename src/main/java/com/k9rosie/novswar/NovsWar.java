@@ -11,7 +11,6 @@ import com.k9rosie.novswar.manager.TeamManager;
 import com.k9rosie.novswar.manager.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -52,6 +51,7 @@ public class NovsWar {
 
 		teamManager.initialize();
 		worldManager.initialize();
+		gamemodeHandler.initialize();
 		gameHandler.initialize();
 	}
 	

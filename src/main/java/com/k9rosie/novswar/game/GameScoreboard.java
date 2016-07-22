@@ -1,11 +1,13 @@
 package com.k9rosie.novswar.game;
 
 import com.k9rosie.novswar.model.NovsTeam;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GameScoreboard {
@@ -16,6 +18,7 @@ public class GameScoreboard {
     private HashMap<NovsTeam, Score> scores;
     private Objective healthObjective;
     private String displayName;
+    private ArrayList<Team> scoreboardTeams;
 
     public GameScoreboard(Game game) {
         this.game = game;
@@ -29,8 +32,8 @@ public class GameScoreboard {
     public void initialize() {
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        for (NovsTeam team : game.getTeamData().keySet()) {
-            int score = game.getTeamData().get(team).getScore();
+        for (NovsTeam team : game.getTeams()) {
+            int score = team.getScore();
             Score scScore = sidebar.getScore(team.getColor() + team.getTeamName());
             scScore.setScore(score);
         }

@@ -8,6 +8,7 @@ public class NovsPlayer {
 
     private Player bukkitPlayer;
     private NovsStats stats;
+    private NovsTeam myTeam;
     private boolean deathMessages;
     private boolean isDead;
     private boolean isSpectating;
@@ -17,8 +18,9 @@ public class NovsPlayer {
     private RegionType regionTypeBuffer;
     private String regionNameBuffer;
 
-    public NovsPlayer (Player bukkitPlayer) {
+    public NovsPlayer (Player bukkitPlayer, NovsTeam aTeam) {
         this.bukkitPlayer = bukkitPlayer;
+        myTeam = aTeam;
         stats = new NovsStats(this);
         deathMessages = true;
         isDead = false;
@@ -32,6 +34,14 @@ public class NovsPlayer {
 
     public NovsStats getStats() {
         return stats;
+    }
+    
+    public NovsTeam getTeam() {
+    	return myTeam;
+    }
+    
+    public void setTeam(NovsTeam team) {
+    	myTeam = team;
     }
 
     public boolean canSeeDeathMessages() {
