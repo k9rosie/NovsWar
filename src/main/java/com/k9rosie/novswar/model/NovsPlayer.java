@@ -13,6 +13,7 @@ public class NovsPlayer {
     private boolean isDead;
     private boolean isSpectating;
     private boolean isSettingRegion;
+    private boolean hasVoted;
 
     private Location cornerOneBuffer;
     private RegionType regionTypeBuffer;
@@ -26,6 +27,7 @@ public class NovsPlayer {
         isDead = false;
         isSpectating = false;
         isSettingRegion = false;
+        hasVoted = false;
     }
 
     public Player getBukkitPlayer() {
@@ -60,6 +62,14 @@ public class NovsPlayer {
 
     public void setDeath(boolean isDead) {
         this.isDead = isDead;
+    }
+    
+    public boolean hasVoted() {
+        return hasVoted;
+    }
+
+    public void setVoted(boolean voted) {
+        this.hasVoted = voted;
     }
 
     public boolean isSpectating() {

@@ -61,15 +61,16 @@ public class BallotBox {
     	for (int i = 0; i < worldCount && i < ballotList.size(); i++) {
     		String name = ballotList.get(i).getName();
     		String bukkitWorldName = ballotList.get(i).getBukkitWorld().getName();
-    		String gamemode = novswar.getConfigurationCache().getConfig("worlds").getString(bukkitWorldName+".gamemode");
+    		String gamemode = novswar.getConfigurationCache().getConfig("worlds").getString("worlds."+bukkitWorldName+".gamemode");
     		createVoteOption(Material.BEDROCK, ballotBox, i, name, gamemode);
     	}
     	
     	//Open the voting screen for each player
     	for(NovsPlayer player : novswar.getPlayerManager().getPlayers()) {
-    		player.getBukkitPlayer().sendMessage("Cast your Vote");
+    		//player.getBukkitPlayer().sendMessage("Cast your Vote");
     		player.getBukkitPlayer().openInventory(ballotBox);
     	}
+    	Bukkit.broadcastMessage("Type '/nw vote' to vote for the next map");
 	}
 	
 	public void recordResult(int result) {

@@ -47,6 +47,12 @@ public class CommandHandler implements CommandExecutor {
                         new JoinCommand(novsWar, sender, args).execute();
                         return true;
                     }
+                    
+                case "vote":
+                    if (sender.hasPermission("novswar.command.vote")) {
+                        new VoteCommand(novsWar, sender, args).execute();
+                        return true;
+                    }
             }
         }
         return false;

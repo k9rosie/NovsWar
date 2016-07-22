@@ -257,6 +257,8 @@ public class PlayerListener implements Listener {
 				Game.getBallotBox().recordResult(slot);
 				player.closeInventory();
 				player.sendMessage("You voted for "+clicked.getItemMeta().getDisplayName());
+				NovsPlayer nplayer = novswar.getPlayerManager().getNovsPlayer(player);
+				nplayer.setVoted(true);
 			}
 			event.setCancelled(true);
 		}
