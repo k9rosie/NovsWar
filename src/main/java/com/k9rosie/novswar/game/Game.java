@@ -33,7 +33,8 @@ public class Game {
     private NovsWar novsWar;
     private GameTimer gameTimer;
     private GameScoreboard scoreboard;
-    
+    private static BallotBox ballotBox;
+
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
         this.world = world;
@@ -44,6 +45,7 @@ public class Game {
         novsWar = gameHandler.getNovsWarInstance();
         gameTimer = new GameTimer(this);
         scoreboard = new GameScoreboard(this);
+        ballotBox = new BallotBox(novsWar);
     }
 
     public void initialize() {
@@ -86,7 +88,8 @@ public class Game {
     		endGame();
     		break;
     	case POST_GAME :
-    		
+
+    		gameHandler.newGame(ballotBox.tallyResults());
     		break;
     	default :
     		break;
@@ -161,23 +164,11 @@ public class Game {
             gameTimer.setTime(gameTime);
             gameTimer.startTimer();
             
-            promptVotingScreen();
-            
-            
-        	// TODO: Listen for interaction events to see which item was clicked. Put an effect on the selected item
-            // TODO: pick next world and request a new game from the gameHandler
+            //Check if voting is enabled
+            if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
+            	ballotBox.castVotes();
+            }
         }
-    }
-
-    public void promptVotingScreen() {
-    	// TODO: Prompt each player with a chest inventory and items representing the map choices
-    	//Choose 9 gamemodes randomly, and get their names and gamemodes
-    	novsWar.getWorldManager().getWorlds();
-    	
-    	//createOption(Material.DIRT, votingBooth, 0, "Option 1", "Description");
-		//createOption(Material.GOLD_BLOCK, votingBooth, 8, "Option 2", "Description");
-		
-		
     }
 
     public void clockTick() {
@@ -310,5 +301,9 @@ public class Game {
 
     public GameHandler getGameHandler() {
         return gameHandler;
+    }
+
+    public static BallotBox getBallotBox() {
+    	return ballotBox;
     }
 }
