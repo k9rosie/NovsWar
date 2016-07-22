@@ -18,7 +18,7 @@ public class VoteCommand extends NovsCommand {
     }
 
     public void execute() {
-    	NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayer((Player) getSender());
+    	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
     	if(game.getGameState().equals(GameState.POST_GAME)) {
 	        if(player.hasVoted() == false) {
 	        	player.getBukkitPlayer().sendMessage("Cast your Vote");
