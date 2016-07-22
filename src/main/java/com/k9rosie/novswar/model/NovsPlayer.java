@@ -41,6 +41,8 @@ public class NovsPlayer {
     }
     
     public void setTeam(NovsTeam team) {
+        this.team.getScoreboardTeam().removeEntry(bukkitPlayer.getDisplayName());
+        team.getScoreboardTeam().addEntry(bukkitPlayer.getDisplayName());
     	this.team = team;
     }
 

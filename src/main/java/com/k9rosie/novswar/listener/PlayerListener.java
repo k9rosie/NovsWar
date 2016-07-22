@@ -242,29 +242,5 @@ public class PlayerListener implements Listener {
         }
 
     }
-    
-    @EventHandler
-	public void onInventoryClick(InventoryClickEvent event) {
-		Inventory voter = Game.votingBooth;
-		Player player = (Player) event.getWhoClicked();
-		ItemStack clicked = event.getCurrentItem();
-		Inventory inventory = event.getInventory();
-		if(inventory.getName().equals(voter.getName())) {
-			switch(clicked.getType()) {
-			case DIRT :
-				//Bukkit.broadcastMessage("Voted for Dirt");
-				//player.sendMessage(message);
-				player.closeInventory();
-				break;
-			case GOLD_BLOCK :
-				Bukkit.broadcastMessage("Voted for Gold");
-				player.closeInventory();
-				break;
-			default :
-				break;
-			}
-			event.setCancelled(true);
-		}
-		
-	}
+
 }

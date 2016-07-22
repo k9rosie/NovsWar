@@ -86,7 +86,7 @@ public class Game {
     		endGame();
     		break;
     	case POST_GAME :
-    		initialize();
+    		
     		break;
     	default :
     		break;
@@ -286,6 +286,7 @@ public class Game {
                 		smallestTeam = team;
                 	}
                 }
+
                 player.setTeam(smallestTeam);
 
                 Location teamSpawn = world.getTeamSpawns().get(smallestTeam);

@@ -54,11 +54,6 @@ core:
     # enable voting for a new map at the end of each game
     enabled: true
 
-    # worlds that will not be listed in the voting rotation
-    disabled_worlds:
-      - world_nether
-      - world_the_end
-
   # game settings
   game:
 
