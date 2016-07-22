@@ -27,7 +27,7 @@ public class PlayerCommand extends NovsCommand {
         } else if (getArgs().length == 2) {
             String playerName = getArgs()[1];
             if (NovsWar.isOnline(playerName)) {
-                NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get(playerName);
+                NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayerFromUsername(playerName);
                 printStats(player);
             } else {
                 UUID uuid = NovsWar.getUUID(playerName);
