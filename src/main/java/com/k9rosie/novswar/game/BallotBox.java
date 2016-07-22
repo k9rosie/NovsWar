@@ -69,6 +69,7 @@ public class BallotBox {
     	for(NovsPlayer player : novswar.getPlayerManager().getPlayers()) {
     		//player.getBukkitPlayer().sendMessage("Cast your Vote");
     		player.getBukkitPlayer().openInventory(ballotBox);
+    		player.setVoted(false);
     	}
     	Bukkit.broadcastMessage("Type '/nw vote' to vote for the next map");
 	}

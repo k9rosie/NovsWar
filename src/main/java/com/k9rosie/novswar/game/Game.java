@@ -316,4 +316,8 @@ public class Game {
     public Gamemode getGamemode() {
         return gamemode;
     }
+    
+    public GameState getGameState() {
+    	return gameState;
+    }
 }
