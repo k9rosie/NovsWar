@@ -84,8 +84,6 @@ public class PlayerListener implements Listener {
         } else {
             game.getTeamData().get(team).getPlayers().remove(player);
         }*/
-        player.getTeam().decrementMember();
-        player.setTeam(null);
         playerManager.getPlayers().remove(player);
     }
 

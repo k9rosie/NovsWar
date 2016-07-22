@@ -8,6 +8,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.HashSet;
+
 public class TeamCommand extends NovsCommand {
 
     private Game game;
@@ -62,25 +64,20 @@ public class TeamCommand extends NovsCommand {
 
     public String generatePlayerList(NovsTeam team) {
         StringBuilder playersList = new StringBuilder();
-        //Object[] playersArray;
-        for(NovsPlayer player : getNovsWar().getPlayerManager().getPlayers()) {
-        	if(player.getTeam().equals(team)) {
-        		playersList.append(team.getColor()+player.getBukkitPlayer().getDisplayName()+ChatColor.GRAY+", ");
-        	}
-        }
+        HashSet<NovsPlayer> players = team.getPlayers();
+        for (int i = 0; i < players.toArray().length; i++) {
+            NovsPlayer p = (NovsPlayer) players.toArray()[i];
+            playersList.append(team.getColor()+p.getBukkitPlayer().getDisplayName());
+            if (i != players.toArray().length-1) {
+                playersList.append(ChatColor.GRAY+", ");
+            }
+            }
         /*if (team.equals(getNovsWar().getTeamManager().getDefaultTeam())) {
             playersArray = game.getNeutralTeamData().getPlayers().toArray();
         } else {
             playersArray = game.getTeamData().get(team).getPlayers().toArray();
         }
-        for (int i = 0; i < playersArray.length; i++) {
-            NovsPlayer p = (NovsPlayer) playersArray[i];
-            if (game.getPlayerTeam(p).equals(team)) {
-                playersList.append(team.getColor()+p.getBukkitPlayer().getDisplayName());
-                if (i != playersArray.length-1) {
-                    playersList.append(ChatColor.GRAY+", ");
-                }
-            }
+
         }*/
         return playersList.toString();
     }

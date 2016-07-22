@@ -1,5 +1,7 @@
 package com.k9rosie.novswar.model;
 
+import com.k9rosie.novswar.NovsWar;
+import com.k9rosie.novswar.manager.PlayerManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
@@ -16,7 +18,6 @@ public class NovsTeam {
     private boolean canAttack;
     private boolean friendlyFire;
     private int score;
-    private int memberCount;
 
     public NovsTeam(String teamName, ChatColor color, boolean canBeDamaged, boolean canAttack, boolean friendlyFire) {
         this.teamName = teamName;
@@ -25,7 +26,6 @@ public class NovsTeam {
         this.canAttack = canAttack;
         this.friendlyFire = friendlyFire;
         score = 0;
-        memberCount = 0;
         scoreboardTeam = null;
     }
 
@@ -88,19 +88,19 @@ public class NovsTeam {
     public void decrementScore(int increment) {
         score -= increment;
     }
-    
-    public void incrementMember() {
-    	memberCount++;
+
+    public HashSet<NovsPlayer> getPlayers() {
+        HashSet<NovsPlayer> players = NovsWar.getInstance().getPlayerManager().getPlayers();
+        HashSet<NovsPlayer> teamMembers = new HashSet<NovsPlayer>();
+        for (NovsPlayer player : players) {
+            if (player.getTeam().equals(this)) {
+                teamMembers.add(player);
+            }
+        }
+
+        return teamMembers;
     }
-    
-    public void decrementMember() {
-    	memberCount--;
-    }
-    
-    public int getMemberCount() {
-    	return memberCount;
-    }
-    
+
     public void setScoreboardTeam(Team scoreboardTeam) {
         this.scoreboardTeam = scoreboardTeam;
     }

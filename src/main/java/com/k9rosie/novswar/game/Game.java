@@ -67,7 +67,6 @@ public class Game {
 
         for (NovsPlayer player : novsWar.getPlayerManager().getPlayers()) {
         	player.setTeam(defaultTeam); // NovsPlayer now has private NovsTeam var
-        	defaultTeam.incrementMember();
             player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
         }
 
@@ -89,6 +88,7 @@ public class Game {
     		endGame();
     		break;
     	case POST_GAME :
+
     		gameHandler.newGame(ballotBox.tallyResults());
     		break;
     	default :
@@ -120,9 +120,6 @@ public class Game {
         gameTimer.setTime(gameTime);
         gameTimer.startTimer();
         Bukkit.broadcastMessage("Starting Round");
-        for (NovsPlayer player : novsWar.getPlayerManager().getPlayers()) {
-            player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(novsWar.getTeamManager().getDefaultTeam()));
-        }
 
         // TODO: start timer
         // TODO: adjust game score according to gamemode
@@ -167,14 +164,6 @@ public class Game {
             gameTimer.setTime(gameTime);
             gameTimer.startTimer();
             
-            //Teleport each player to their team's spawn
-            for (NovsPlayer player : novsWar.getPlayerManager().getPlayers()) {
-            	NovsTeam defaultTeam = novsWar.getTeamManager().getDefaultTeam();
-            	player.setTeam(defaultTeam);
-            	defaultTeam.incrementMember();
-                player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(player.getTeam()));
-            }
-            
             //Check if voting is enabled
             if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
             	ballotBox.castVotes();
@@ -209,8 +198,11 @@ public class Game {
     }
 
     public boolean checkPlayerCount() {
-        int numPlayers = novsWar.getPlayerManager().getPlayers().size();
+        int numPlayers = 0;
         int required = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.minimum_players");
+        for (NovsTeam team : enabledTeams) {
+            numPlayers += team.getPlayers().size();
+        }
         if (numPlayers >= required) {
             return true;
         } else {
@@ -280,14 +272,14 @@ public class Game {
             	int smallest = 0;
             	NovsTeam smallestTeam = null;
                 for (NovsTeam team : enabledTeams) {
-                	if(team.getMemberCount() <= smallest) {
-                		smallest = team.getMemberCount();
+                	if(team.getPlayers().size() <= smallest) {
+                		smallest = team.getPlayers().size();
                 		smallestTeam = team;
                 	}
                 }
+
                 player.setTeam(smallestTeam);
-                smallestTeam.incrementMember();
-                
+
                 Location teamSpawn = world.getTeamSpawns().get(smallestTeam);
                 player.getBukkitPlayer().teleport(teamSpawn);
 
@@ -310,7 +302,7 @@ public class Game {
     public GameHandler getGameHandler() {
         return gameHandler;
     }
-    
+
     public static BallotBox getBallotBox() {
     	return ballotBox;
     }
