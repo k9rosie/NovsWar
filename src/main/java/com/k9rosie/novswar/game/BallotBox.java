@@ -1,9 +1,6 @@
 package com.k9rosie.novswar.game;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -33,7 +30,7 @@ public class BallotBox {
 		List<String> enabledWorlds = novswar.getConfigurationCache().getConfig("core").getStringList("core.world.enabled_worlds");
 
 		//Choose 9 gamemodes randomly, and get their names and gamemodes
-    	HashSet<NovsWorld> worlds = (HashSet) novswar.getWorldManager().getNovsWorlds();
+    	Collection<NovsWorld> worlds = novswar.getWorldManager().getWorlds().values();
     	ballotList.addAll(worlds);
     	Collections.shuffle(ballotList);
     	int worldCount = worlds.size();
@@ -66,7 +63,7 @@ public class BallotBox {
     	}
     	
     	//Open the voting screen for each player
-    	for(NovsPlayer player : novswar.getPlayerManager().getNovsPlayers()) {
+    	for(NovsPlayer player : novswar.getPlayerManager().getPlayers().values()) {
     		//player.getBukkitPlayer().sendMessage("Cast your Vote");
     		player.getBukkitPlayer().openInventory(ballotBox);
     		player.setVoted(false);
@@ -108,7 +105,7 @@ public class BallotBox {
 				if(nextIndex == enabledWorlds.size()) {
 					nextIndex = 0;
 				}
-				for(NovsWorld nworld : novswar.getWorldManager().getNovsWorlds()) {
+				for(NovsWorld nworld : novswar.getWorldManager().getWorlds().values()) {
 					if(nworld.getBukkitWorld().getName().equals(enabledWorlds.get(nextIndex))) {
 						nextWorld = nworld;
 					}

@@ -140,7 +140,7 @@ public class PlayerListener implements Listener {
                         .replace("%killer%", attackerBukkitPlayer.getDisplayName());
                 
                 System.out.println("Death Message: "+deathMessage);
-                for (NovsPlayer p : playerManager.getNovsPlayers()) {
+                for (NovsPlayer p : playerManager.getPlayers().values()) {
                     //if (p.canSeeDeathMessages()) {
                 	if (true) { //THIS IS TO DEBUG WHETHER PLAYERS HAVE deathMessages = false
                         p.getBukkitPlayer().sendMessage(deathMessage);
@@ -182,7 +182,7 @@ public class PlayerListener implements Listener {
                 deathMessage = deathMessage.replace("%player_tcolor%", player.getTeam().getColor().toString())
                 .replace("%player%", bukkitPlayer.getDisplayName());
 
-                for (NovsPlayer p : playerManager.getNovsPlayers()) {
+                for (NovsPlayer p : playerManager.getPlayers().values()) {
                     if (p.canSeeDeathMessages()) {
                         p.getBukkitPlayer().sendMessage(deathMessage);
                     }

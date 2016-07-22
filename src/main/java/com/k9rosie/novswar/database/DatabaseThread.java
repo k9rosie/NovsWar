@@ -59,7 +59,7 @@ public class DatabaseThread implements Runnable {
     }
 
     public void flushDatabase() {
-        for (NovsPlayer player : novsWar.getPlayerManager().getNovsPlayers()) {
+        for (NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
             database.flushPlayerData(player);
         }
     }

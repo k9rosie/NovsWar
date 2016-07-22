@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -90,9 +91,8 @@ public class NovsTeam {
     }
 
     public HashSet<NovsPlayer> getPlayers() {
-        HashSet<NovsPlayer> players = (HashSet) NovsWar.getInstance().getPlayerManager().getNovsPlayers();
         HashSet<NovsPlayer> teamMembers = new HashSet<NovsPlayer>();
-        for (NovsPlayer player : players) {
+        for (NovsPlayer player : NovsWar.getInstance().getPlayerManager().getPlayers().values()) {
             if (player.getTeam().equals(this)) {
                 teamMembers.add(player);
             }

@@ -65,7 +65,7 @@ public class Game {
             }
         }
 
-        for (NovsPlayer player : novsWar.getPlayerManager().getNovsPlayers()) {
+        for (NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
         	player.setTeam(defaultTeam); // NovsPlayer now has private NovsTeam var
             player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
         }

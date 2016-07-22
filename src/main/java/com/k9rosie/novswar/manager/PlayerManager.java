@@ -6,10 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class PlayerManager {
 
@@ -20,14 +17,6 @@ public class PlayerManager {
     public PlayerManager(NovsWar novswar) {
         this.novswar = novswar;
         players = new HashMap<Player, NovsPlayer>();
-    }
-
-    public Collection<Player> getBukkitPlayers() {
-        return players.keySet();
-    }
-
-    public Collection<NovsPlayer> getNovsPlayers() {
-        return players.values();
     }
 
     public HashMap<Player, NovsPlayer> getPlayers() {

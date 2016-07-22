@@ -33,14 +33,6 @@ public class WorldManager {
         loadLobbyWorld();
     }
 
-    public Set<World> getBukkitWorlds() {
-        return worlds.keySet();
-    }
-
-    public Collection<NovsWorld> getNovsWorlds() {
-        return worlds.values();
-    }
-
     public HashMap<World, NovsWorld> getWorlds(){
         return worlds;
     }
