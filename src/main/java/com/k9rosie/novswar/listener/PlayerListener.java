@@ -147,9 +147,11 @@ public class PlayerListener implements Listener {
                         .replace("%killed%", victimBukkitPlayer.getDisplayName())
                         .replace("%killer_tcolor%", attackerTeam.getColor().toString())
                         .replace("%killer%", attackerBukkitPlayer.getDisplayName());
-
+                
+                System.out.println("Death Message: "+deathMessage);
                 for (NovsPlayer p : playerManager.getPlayers()) {
-                    if (p.canSeeDeathMessages()) {
+                    //if (p.canSeeDeathMessages()) {
+                	if (true) { //THIS IS TO DEBUG WHETHER PLAYERS HAVE deathMessages = false
                         p.getBukkitPlayer().sendMessage(deathMessage);
                     }
                 }

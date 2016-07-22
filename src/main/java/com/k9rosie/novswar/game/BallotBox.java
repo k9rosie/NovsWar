@@ -97,6 +97,27 @@ public class BallotBox {
 		return winnerWinnerChickenDinner;
 	}
 	
+	public NovsWorld nextWorld(NovsWorld currentWorld) {
+		NovsWorld nextWorld = null;
+		String currentWorldName = currentWorld.getBukkitWorld().getName();
+		List<String> enabledWorlds = novswar.getConfigurationCache().getConfig("core").getStringList("core.world.enabled_worlds");
+		for(int i = 0; i < enabledWorlds.size(); i++) {
+			if(enabledWorlds.get(i).equals(currentWorldName)) {
+				int nextIndex = i+1;
+				if(nextIndex == enabledWorlds.size()) {
+					nextIndex = 0;
+				}
+				for(NovsWorld nworld : novswar.getWorldManager().getWorlds()) {
+					if(nworld.getBukkitWorld().getName().equals(enabledWorlds.get(nextIndex))) {
+						nextWorld = nworld;
+					}
+				}
+			}
+		}
+		
+		return nextWorld;
+	}
+	
 	public static void createVoteOption(Material material, Inventory inv, int slot, String name, String lore) {
 		ItemStack item = new ItemStack(material);
 		ItemMeta meta = item.getItemMeta();

@@ -88,9 +88,16 @@ public class Game {
     		endGame();
     		break;
     	case POST_GAME :
-    		NovsWorld nextMap = ballotBox.tallyResults();
+    		NovsWorld nextMap;
+    		if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
+    			nextMap = ballotBox.tallyResults();
+            }
+    		else {
+    			nextMap = ballotBox.nextWorld(world);
+    		}
     		if(nextMap == null) {
     			nextMap = world;
+    			System.out.println("There was a problem getting the next NovsWorld. Using previous world.");
     		}
     		gameHandler.newGame(nextMap);
     		break;
@@ -212,14 +219,6 @@ public class Game {
             return false;
         }
     }
-    
-    public ArrayList<NovsTeam> getTeams() {
-    	return enabledTeams;
-    }
-
-    public Gamemode getGamemode() {
-        return gamemode;
-    }
 
     public void scheduleDeath(NovsPlayer player, int seconds) {
         player.setDeath(true);
@@ -308,5 +307,13 @@ public class Game {
 
     public static BallotBox getBallotBox() {
     	return ballotBox;
+    }
+    
+    public ArrayList<NovsTeam> getTeams() {
+    	return enabledTeams;
+    }
+
+    public Gamemode getGamemode() {
+        return gamemode;
     }
 }
