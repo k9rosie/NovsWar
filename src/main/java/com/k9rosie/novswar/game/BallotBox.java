@@ -48,8 +48,8 @@ public class BallotBox {
 
     	//Remove disabled worlds
     	for(int k = 0; k < ballotList.size(); k++) {
-    		System.out.println("Current world check: "+ballotList.get(k).getName()+" for k="+k);
-    		String currentBallotName = ballotList.get(k).getName();
+    		String currentBallotName = ballotList.get(k).getBukkitWorld().getName();
+    		System.out.println("Current world check: "+currentBallotName+" for k="+k);
     		boolean isWorldEnabled = false;
     		for(String worldName : enabledWorlds) {
     			System.out.println("Checking against world: "+worldName);
