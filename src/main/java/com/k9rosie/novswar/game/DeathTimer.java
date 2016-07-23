@@ -50,7 +50,7 @@ public class DeathTimer {
             public void run() {
                 game.deathTick(player);
                 time--;
-                if (time <= 0) {
+                if (time <= -1) {
                     game.respawn(player);
                 }
             }

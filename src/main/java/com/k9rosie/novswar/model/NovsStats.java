@@ -86,7 +86,7 @@ public class NovsStats {
     }
 
     public void incrementSuicides() {
-        kills++;
+        suicides++;
     }
 
     public int getWins() {

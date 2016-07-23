@@ -10,11 +10,9 @@ import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
 import com.k9rosie.novswar.util.Messages;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import com.k9rosie.novswar.util.SendTitle;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -33,7 +31,7 @@ public class Game {
     private NovsWar novsWar;
     private GameTimer gameTimer;
     private GameScoreboard scoreboard;
-    private static BallotBox ballotBox;
+    private BallotBox ballotBox;
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
@@ -221,15 +219,17 @@ public class Game {
     }
 
     public void scheduleDeath(NovsPlayer player, int seconds) {
+        Player bukkitPlayer = player.getBukkitPlayer();
         player.setDeath(true);
-        player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
-        player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
-        player.getBukkitPlayer().setFoodLevel(20);
+        bukkitPlayer.setGameMode(GameMode.SPECTATOR);
+        bukkitPlayer.setHealth(player.getBukkitPlayer().getMaxHealth());
+        bukkitPlayer.setFoodLevel(20);
+        bukkitPlayer.getWorld().playEffect(player.getBukkitPlayer().getLocation(), Effect.SMOKE, 31);
+        bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 1);
 
-        // code to set spectator target
-        /*int rand = new Random().nextInt();
-        NovsPlayer spec = (NovsPlayer) teamData.get(getPlayerTeam(player)).getPlayers().toArray()[rand];
-        player.getBukkitPlayer().setSpectatorTarget(spec.getBukkitPlayer());*/
+        if (bukkitPlayer.getKiller() != null) {
+            bukkitPlayer.setSpectatorTarget(bukkitPlayer.getKiller());
+        }
 
         DeathTimer timer = new DeathTimer(this, seconds, player);
         timer.startTimer();
@@ -238,11 +238,11 @@ public class Game {
 
     public void deathTick(NovsPlayer player) {
         DeathTimer timer = deathTimers.get(player);
-
-        player.getBukkitPlayer().getScoreboard().getObjective(DisplaySlot.SIDEBAR).setDisplayName("Respawn in " + timer.getSeconds() + "...");
+        SendTitle.sendTitle(player.getBukkitPlayer(), 0, 2000, 0, " ", "Respawn in " + Integer.toString(timer.getSeconds()) + "...");
     }
 
     public void respawn(NovsPlayer player) {
+        SendTitle.sendTitle(player.getBukkitPlayer(), 0, 0, 0, " ", "");
         DeathTimer timer = deathTimers.get(player);
         timer.stopTimer();
         deathTimers.remove(player);
@@ -306,7 +306,7 @@ public class Game {
         return gameHandler;
     }
 
-    public static BallotBox getBallotBox() {
+    public BallotBox getBallotBox() {
     	return ballotBox;
     }
     

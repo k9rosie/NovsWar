@@ -47,6 +47,7 @@ public class NovswarDB extends Database {
 
             column = new Column("death_messages");
             column.setType("TINYINT(1)");
+            column.setDefaultValue("1");
             players.add(column);
         }
         players.execute();
@@ -158,8 +159,9 @@ public class NovswarDB extends Database {
     public void flushPlayerData(NovsPlayer player) {
         String playerUUIDString = player.getBukkitPlayer().getUniqueId().toString();
         NovsStats stats = player.getStats();
+        String deathMessages = player.canSeeDeathMessages() ? "1" : "0";
         set("players", "name", "'"+player.getBukkitPlayer().getDisplayName()+"'", "uuid", playerUUIDString);
-        set("players", "death_messages", Boolean.toString(player.canSeeDeathMessages()), "uuid", playerUUIDString);
+        set("players", "death_messages", deathMessages, "uuid", playerUUIDString);
         set("stats", "kills", Integer.toString(stats.getKills()), "player_uuid", playerUUIDString);
         set("stats", "arrow_kills", Integer.toString(stats.getArrowKills()), "player_uuid", playerUUIDString);
         set("stats", "deaths", Integer.toString(stats.getDeaths()), "player_uuid", playerUUIDString);

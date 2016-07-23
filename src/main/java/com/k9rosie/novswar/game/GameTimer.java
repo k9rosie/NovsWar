@@ -19,7 +19,7 @@ public class GameTimer {
 
     public GameTimer(Game game) {
         this.game = game;
-        time = 0;
+        time = -1;
         scheduler = Bukkit.getScheduler();
     }
 
@@ -52,7 +52,7 @@ public class GameTimer {
             public void run() {
                 game.clockTick();
                 time--;
-                if (time <= 0) {
+                if (time <= -1) {
                     stopTimer();
                     game.endTimer();
                 }

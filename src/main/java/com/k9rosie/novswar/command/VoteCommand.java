@@ -22,7 +22,7 @@ public class VoteCommand extends NovsCommand {
     	if(game.getGameState().equals(GameState.POST_GAME)) {
 	        if(player.hasVoted() == false) {
 	        	player.getBukkitPlayer().sendMessage("Cast your Vote");
-	    		player.getBukkitPlayer().openInventory(Game.getBallotBox().getBallots());
+	    		player.getBukkitPlayer().openInventory(game.getBallotBox().getBallots());
 	        }
 	        else {
 	        	player.getBukkitPlayer().sendMessage("You have already voted");

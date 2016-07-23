@@ -141,8 +141,7 @@ public class PlayerListener implements Listener {
                 
                 System.out.println("Death Message: "+deathMessage);
                 for (NovsPlayer p : playerManager.getPlayers().values()) {
-                    //if (p.canSeeDeathMessages()) {
-                	if (true) { //THIS IS TO DEBUG WHETHER PLAYERS HAVE deathMessages = false
+                    if (p.canSeeDeathMessages()) {
                         p.getBukkitPlayer().sendMessage(deathMessage);
                     }
                 }
@@ -169,6 +168,12 @@ public class PlayerListener implements Listener {
             if (!player.getTeam().canBeDamaged()) {
                 event.setCancelled(true);
                 return;
+            }
+
+            if (bukkitPlayer.getKiller() != null) {
+                if (bukkitPlayer.getKiller() instanceof Player) {
+                    return;
+                }
             }
 
             double damage = event.getFinalDamage();
@@ -238,7 +243,7 @@ public class PlayerListener implements Listener {
     
     @EventHandler(priority = EventPriority.NORMAL)
 	public void onInventoryClick(InventoryClickEvent event) {
-		Inventory ballotBox = Game.getBallotBox().getBallots();
+		Inventory ballotBox = game.getBallotBox().getBallots();
 		Inventory inventory = event.getInventory();
 		//check to make sure click occurs inside voting Inventory screen
 		if(inventory.getName().equals(ballotBox.getName())) {
@@ -247,7 +252,7 @@ public class PlayerListener implements Listener {
 			ItemStack clicked = event.getCurrentItem();
 			//check that the click was on a BEDROCK voting item
 			if(clicked.getType().equals(Material.BEDROCK)){
-				Game.getBallotBox().recordResult(slot);
+				game.getBallotBox().recordResult(slot);
 				player.closeInventory();
 				player.sendMessage("You voted for "+clicked.getItemMeta().getDisplayName());
 				NovsPlayer nplayer = novswar.getPlayerManager().getPlayers().get(player);
