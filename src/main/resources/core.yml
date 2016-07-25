@@ -74,4 +74,3 @@ core:
 
     # disable/enable minecraft's hunger
     enable_hunger: false
-

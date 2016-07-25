@@ -1,8 +1,10 @@
 package com.k9rosie.novswar.gamemode;
 
 import com.k9rosie.novswar.NovsWar;
+import com.k9rosie.novswar.event.GamemodeHandlerInitialization;
+import org.bukkit.Bukkit;
+
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class GamemodeHandler {
     public HashMap<String, Gamemode> gamemodes;
@@ -16,8 +18,8 @@ public class GamemodeHandler {
     
     //Initialize gamemodes - add new gamemode classes here
     public void initialize() {
-    	GamemodeTDM tdm = new GamemodeTDM();
-    	gamemodes.put(tdm.getGamemodeName(), tdm);
+        GamemodeHandlerInitialization event = new GamemodeHandlerInitialization(this);
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     public HashMap<String, Gamemode> getGamemodes() {

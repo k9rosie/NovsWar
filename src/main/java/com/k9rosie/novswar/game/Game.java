@@ -69,6 +69,7 @@ public class Game {
         }
 
         scoreboard.initialize();
+        gamemode.hook(this);
 
         waitForPlayers();
     }
