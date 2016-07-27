@@ -1,4 +1,4 @@
-# NovsWar [![Build Status](https://travis-ci.org/k9rosie/novswar.svg?branch=master)](https://travis-ci.org/k9rosie/novswar)
+# NovsWar [![Build Status](https://travis-ci.com/k9rosie/novswar.svg?token=RYzfajesqLm2vQDyk98W&branch=master)](https://travis-ci.com/k9rosie/novswar)
 
 a monolithic Bukkit plugin for team-based player-versus-player combat.
 currently under development.
