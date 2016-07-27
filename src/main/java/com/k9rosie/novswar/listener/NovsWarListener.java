@@ -26,7 +26,7 @@ public class NovsWarListener implements Listener {
         int newScore = event.getNewScore();
         int maxScore = game.getGamemode().getMaxScore();
         if (newScore >= maxScore) {
-
+            game.endGame();
         }
     }
 }
