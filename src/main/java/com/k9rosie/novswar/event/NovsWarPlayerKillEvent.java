@@ -19,6 +19,8 @@ public class NovsWarPlayerKillEvent extends Event {
         this.game = game;
         this.killer = killer;
         this.killed = killed;
+        this.killerTeam = killerTeam;
+        this.killedTeam = killedTeam;
         cancelled = false;
     }
 
@@ -28,6 +30,14 @@ public class NovsWarPlayerKillEvent extends Event {
 
     public NovsPlayer getKilled() {
         return killed;
+    }
+
+    public NovsTeam getKillerTeam() {
+        return killerTeam;
+    }
+
+    public NovsTeam getKilledTeam() {
+        return killedTeam;
     }
 
     public Game getGame() {

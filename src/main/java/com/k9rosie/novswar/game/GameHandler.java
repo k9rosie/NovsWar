@@ -10,33 +10,6 @@ import org.bukkit.scoreboard.ScoreboardManager;
 
 public class GameHandler {
 
-    private class EmptyGamemode implements Gamemode {
-        int gameTime = 60;
-        int maxScore = 2;
-        String gamemodeName = "none";
-
-        public int getGameTime() {
-            return gameTime;
-        }
-
-        public String getGamemodeName() {
-            return gamemodeName;
-        }
-        
-        public int getMaxScore() {
-        	return maxScore;
-        }
-
-        public int getDeathTime() {
-            return 5;
-        }
-
-        public void hook(Game game) {
-        	novswar.getGamemodeHandler().getGamemodes().put(gamemodeName, this);
-        }
-
-    }
-
     private NovsWar novswar;
     private Game game;
     private ScoreboardManager scoreboardManager;
@@ -57,14 +30,10 @@ public class GameHandler {
 
     public void newGame(NovsWorld world) {
         String gamemodeString = novswar.getConfigurationCache().getConfig("worlds").getString("worlds."+world.getBukkitWorld().getName()+".gamemode");
-        Gamemode gamemode;
-        if (gamemodeString.equalsIgnoreCase("none")) {
-            gamemode = new EmptyGamemode();
-        } else {
-           gamemode = novswar.getGamemodeHandler().getGamemodes().get(gamemodeString);
-        }
-
+        Gamemode gamemode = novswar.getGamemodes().get(gamemodeString);
+        System.out.println(gamemode);
         game = new Game(this, world, gamemode);
+
         NovsWarNewGameEvent event = new NovsWarNewGameEvent(game);
         Bukkit.getPluginManager().callEvent(event);
 

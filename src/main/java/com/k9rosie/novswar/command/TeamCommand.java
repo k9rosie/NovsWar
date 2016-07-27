@@ -72,7 +72,7 @@ public class TeamCommand extends NovsCommand {
             if (i != players.toArray().length-1) {
                 playersList.append(ChatColor.GRAY+", ");
             }
-            }
+        }
         /*if (team.equals(getNovsWar().getTeamManager().getDefaultTeam())) {
             playersArray = game.getNeutralTeamData().getPlayers().toArray();
         } else {

@@ -94,7 +94,7 @@ public class NovswarDB extends Database {
             column.setDefaultValue("0");
             stats.add(column);
 
-            column = new Column("losses");
+            column = new Column("games_played");
             column.setType("INTEGER");
             column.setDefaultValue("0");
             stats.add(column);
@@ -140,7 +140,7 @@ public class NovswarDB extends Database {
                 playerStats.setArrowDeaths(stats.getInt("arrow_deaths"));
                 playerStats.setSuicides(stats.getInt("suicides"));
                 playerStats.setWins(stats.getInt("wins"));
-                playerStats.setLosses(stats.getInt("losses"));
+                playerStats.setGamesPlayed(stats.getInt("games_played"));
                 playerStats.setConnects(stats.getInt("connects"));
                 playerStats.setDamageGiven(stats.getDouble("damage_given"));
                 playerStats.setDamageTaken(stats.getDouble("damage_taken"));
@@ -168,7 +168,7 @@ public class NovswarDB extends Database {
         set("stats", "arrow_deaths", Integer.toString(stats.getArrowDeaths()), "player_uuid", playerUUIDString);
         set("stats", "suicides", Integer.toString(stats.getSuicides()), "player_uuid", playerUUIDString);
         set("stats", "wins", Integer.toString(stats.getWins()), "player_uuid", playerUUIDString);
-        set("stats", "losses", Integer.toString(stats.getLosses()), "player_uuid", playerUUIDString);
+        set("stats", "games_played", Integer.toString(stats.getGamesPlayed()), "player_uuid", playerUUIDString);
         set("stats", "connects", Integer.toString(stats.getConnects()), "player_uuid", playerUUIDString);
         set("stats", "damage_given", Double.toString(stats.getDamageGiven()), "player_uuid", playerUUIDString);
         set("stats", "damage_taken", Double.toString(stats.getDamageTaken()), "player_uuid", playerUUIDString);

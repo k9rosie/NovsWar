@@ -69,7 +69,6 @@ public class Game {
         }
 
         scoreboard.initialize();
-        gamemode.hook(this);
 
         waitForPlayers();
     }
@@ -129,14 +128,6 @@ public class Game {
         gameTimer.setTime(gameTime);
         gameTimer.startTimer();
         Bukkit.broadcastMessage("Starting Round");
-
-        // TODO: start timer
-        // TODO: adjust game score according to gamemode
-        // TODO: teleport all players to their team's designated spawn points
-        // TODO: start schedulers for the world's regions
-        // TODO: start game timer according to gamemode
-        
-        //gamemode.hook(this); ???
         
     }
 
@@ -167,6 +158,36 @@ public class Game {
 
         if (!event.isCancelled()) {
             gameState = GameState.POST_GAME;
+
+            ArrayList<NovsTeam> winners = getWinners();
+            if (winners.size() == 1) {
+                NovsTeam winner = winners.get(0);
+                Bukkit.broadcastMessage(winner.getColor()+winner.getTeamName()+" wins!");
+            } else if (winners.size() < 1) {
+                StringBuilder teamList = new StringBuilder();
+                for (int i = 0; i < winners.toArray().length; i++) {
+                    NovsTeam team = (NovsTeam) winners.toArray()[i];
+                    teamList.append(team.getColor()+team.getTeamName());
+                    if (i != winners.toArray().length-1) {
+                        teamList.append(ChatColor.GRAY+", ");
+                    }
+                }
+
+                Bukkit.broadcastMessage(teamList.toString() + " §fwin!");
+            }
+
+            for (NovsTeam team : winners) {
+                for (NovsPlayer player : team.getPlayers()) {
+                    player.getStats().incrementWins();
+                }
+            }
+
+            for (NovsTeam team : enabledTeams) {
+                for (NovsPlayer player : team.getPlayers()) {
+                    player.getStats().incrementGamesPlayed();
+                }
+            }
+
             world.closeIntermissionGates();
             world.respawnBattlefields();
             int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
@@ -178,6 +199,29 @@ public class Game {
             	ballotBox.castVotes();
             }
         }
+    }
+
+    public ArrayList<NovsTeam> getWinners() {
+        ArrayList<NovsTeam> winningTeams = new ArrayList<NovsTeam>();
+        int winningScore = 0;
+        NovsTeam winningTeam = null;
+        for (NovsTeam team : enabledTeams) {
+            if (team.getBukkitScore().getScore() > winningScore) {
+                winningScore = team.getBukkitScore().getScore();
+                winningTeam = team;
+            }
+        }
+
+        winningTeams.add(winningTeam);
+
+        // loop through again and get ties
+        for (NovsTeam team : enabledTeams) {
+            if (team.getBukkitScore().getScore() == winningScore) {
+                winningTeams.add(team);
+            }
+        }
+
+        return winningTeams;
     }
 
     public void clockTick() {

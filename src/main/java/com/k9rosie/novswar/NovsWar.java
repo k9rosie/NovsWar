@@ -4,8 +4,9 @@ import com.k9rosie.novswar.command.CommandHandler;
 import com.k9rosie.novswar.config.ConfigurationCache;
 import com.k9rosie.novswar.database.DatabaseThread;
 import com.k9rosie.novswar.database.NovswarDB;
+import com.k9rosie.novswar.event.NovsWarInitializationEvent;
 import com.k9rosie.novswar.game.GameHandler;
-import com.k9rosie.novswar.gamemode.GamemodeHandler;
+import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.manager.TeamManager;
 import com.k9rosie.novswar.manager.WorldManager;
@@ -13,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -26,9 +28,10 @@ public class NovsWar {
 	private PlayerManager playerManager;
 	private WorldManager worldManager;
 	private DatabaseThread databaseThread;
-	private GamemodeHandler gamemodeHandler;
 	private CommandHandler commandHandler;
 	private GameHandler gameHandler;
+
+	public HashMap<String, Gamemode> gamemodes;
 
 	public NovsWar(NovsWarPlugin plugin) {
 		this.plugin = plugin;
@@ -39,19 +42,20 @@ public class NovsWar {
 		playerManager = new PlayerManager(this);
 		worldManager = new WorldManager(this);
 		databaseThread = new DatabaseThread(this);
-		gamemodeHandler = new GamemodeHandler(this);
 		commandHandler = new CommandHandler(this);
 		gameHandler = new GameHandler(this);
+
+		gamemodes = new HashMap<String, Gamemode>();
 	}
 	
 	public void initialize() {
+		NovsWarInitializationEvent event = new NovsWarInitializationEvent(this);
+		Bukkit.getPluginManager().callEvent(event);
+
 		configurationCache.initialize();
-
 		databaseThread.getThread().start();
-
 		teamManager.initialize();
 		worldManager.initialize();
-		gamemodeHandler.initialize();
 		gameHandler.initialize();
 	}
 	
@@ -86,10 +90,6 @@ public class NovsWar {
 	public NovswarDB getDatabase() {
 		return databaseThread.getDatabase();
 	}
-    
-	public GamemodeHandler getGamemodeHandler() {
-		return gamemodeHandler;
-	}
 
 	public CommandHandler getCommandHandler() {
 		return commandHandler;
@@ -97,6 +97,10 @@ public class NovsWar {
 
 	public GameHandler getGameHandler() {
 		return gameHandler;
+	}
+
+	public HashMap<String, Gamemode> getGamemodes() {
+		return gamemodes;
 	}
 
 	public static void info(String message) {

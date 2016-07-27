@@ -261,4 +261,24 @@ public class PlayerListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player bukkitPlayer = event.getPlayer();
+        NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
+
+        if (player.isDead() && (bukkitPlayer.getSpectatorTarget() == null)) {
+            event.setCancelled(true);
+            return;
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerToggleSneakEvent(PlayerToggleSneakEvent event) {
+        NovsPlayer player = playerManager.getPlayers().get(event.getPlayer());
+
+        if (player.isDead()) {
+            event.setCancelled(true);
+        }
+    }
 }

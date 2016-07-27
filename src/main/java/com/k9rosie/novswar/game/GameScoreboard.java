@@ -15,17 +15,14 @@ public class GameScoreboard {
     private Game game;
     private Scoreboard scoreboard;
     private Objective sidebar;
-    private HashMap<NovsTeam, Score> scores;
     private Objective healthObjective;
     private String displayName;
-    private ArrayList<Team> scoreboardTeams;
 
     public GameScoreboard(Game game) {
         this.game = game;
         scoreboard = game.getGameHandler().getScoreboardManager().getNewScoreboard();
         sidebar = scoreboard.registerNewObjective("sidebar", "dummy");
         healthObjective = scoreboard.registerNewObjective("showhealth", "health");
-        scores = new HashMap<NovsTeam, Score>();
         displayName = "";
     }
 
@@ -33,9 +30,9 @@ public class GameScoreboard {
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         for (NovsTeam team : game.getTeams()) {
-            int score = team.getScore();
-            Score scScore = sidebar.getScore(team.getColor() + team.getTeamName());
-            scScore.setScore(score);
+            Score score = sidebar.getScore(team.getColor() + team.getTeamName());
+            team.setBukkitScore(score);
+            score.setScore(0);
         }
 
         healthObjective.setDisplaySlot(DisplaySlot.BELOW_NAME);

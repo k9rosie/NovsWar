@@ -1,5 +1,6 @@
 package com.k9rosie.novswar;
 
+import com.k9rosie.novswar.listener.NovsWarListener;
 import com.k9rosie.novswar.listener.PlayerListener;
 import com.k9rosie.novswar.listener.EntityListener;
 import com.k9rosie.novswar.listener.WorldListener;
@@ -40,5 +41,6 @@ public class NovsWarPlugin extends JavaPlugin {
 		pluginManager.registerEvents(new PlayerListener(this), this);
 		pluginManager.registerEvents(new EntityListener(this), this);
 		pluginManager.registerEvents(new WorldListener(this), this);
+		pluginManager.registerEvents(new NovsWarListener(this), this);
 	}
 }

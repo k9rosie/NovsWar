@@ -68,7 +68,7 @@ public class PlayerCommand extends NovsCommand {
                 "§7Arrow Kills: §f" + stats.getArrowKills(),
                 "§7Arrow Deaths: §f" + stats.getArrowDeaths(),
                 "§7Wins: §f" + stats.getWins(),
-                "§7Losses: §f" + stats.getLosses(),
+                "§Games Played: §f" + stats.getGamesPlayed(),
                 "§7Damage Given: §f" + stats.getDamageGiven(),
                 "§7Damage Taken: §f" + stats.getDamageTaken(),
                 "§7Connects: §f" + stats.getConnects()
@@ -100,7 +100,7 @@ public class PlayerCommand extends NovsCommand {
                     "§7Arrow Kills: §f" + results.getInt("arrow_kills"),
                     "§7Arrow Deaths: §f" + results.getInt("arrow_deaths"),
                     "§7Wins: §f" + results.getInt("wins"),
-                    "§7Losses: §f" + results.getInt("losses"),
+                    "§7Games Played: §f" + results.getInt("games_played"),
                     "§7Damage Given: §f" + results.getDouble("damage_given"),
                     "§7Damage Taken: §f" + results.getInt("damage_taken"),
                     "§7Connects: §f" + results.getInt("connects")

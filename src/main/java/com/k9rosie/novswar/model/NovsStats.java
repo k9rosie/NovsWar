@@ -12,7 +12,7 @@ public class NovsStats {
     private int arrowDeaths;
     private int suicides;
     private int wins;
-    private int losses;
+    private int gamesPlayed;
     private int connects;
     private double damageGiven;
     private double damageTaken;
@@ -101,16 +101,16 @@ public class NovsStats {
         wins++;
     }
 
-    public int getLosses() {
-        return losses;
+    public int getGamesPlayed() {
+        return gamesPlayed;
     }
 
-    public void setLosses(int losses) {
-        this.losses = losses;
+    public void setGamesPlayed(int gamesPlayed) {
+        this.gamesPlayed = gamesPlayed;
     }
 
-    public void incrementLosses() {
-        losses++;
+    public void incrementGamesPlayed() {
+        gamesPlayed++;
     }
 
     public int getConnects() {

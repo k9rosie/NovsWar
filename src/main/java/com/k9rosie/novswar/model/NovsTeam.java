@@ -1,9 +1,12 @@
 package com.k9rosie.novswar.model;
 
 import com.k9rosie.novswar.NovsWar;
+import com.k9rosie.novswar.event.NovsWarScoreModifyEvent;
 import com.k9rosie.novswar.manager.PlayerManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Team;
 
 import java.lang.reflect.Array;
@@ -18,7 +21,7 @@ public class NovsTeam {
     private boolean canBeDamaged;
     private boolean canAttack;
     private boolean friendlyFire;
-    private int score;
+    private Score score;
 
     public NovsTeam(String teamName, ChatColor color, boolean canBeDamaged, boolean canAttack, boolean friendlyFire) {
         this.teamName = teamName;
@@ -26,12 +29,23 @@ public class NovsTeam {
         this.canBeDamaged = canBeDamaged;
         this.canAttack = canAttack;
         this.friendlyFire = friendlyFire;
-        score = 0;
         scoreboardTeam = null;
     }
 
-    public int getScore() {
+    public Score getBukkitScore() {
         return score;
+    }
+
+    public void setBukkitScore(Score score) {
+        this.score = score;
+    }
+
+    public void setScore(int score) {
+        NovsWarScoreModifyEvent event = new NovsWarScoreModifyEvent(this, score, this.score.getScore());
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            this.score.setScore(score);
+        }
     }
     
     public String getTeamName() {
@@ -75,19 +89,39 @@ public class NovsTeam {
     }
     
     public void incrementScore() {
-        score++;
+        int newScore = score.getScore() + 1;
+        NovsWarScoreModifyEvent event = new NovsWarScoreModifyEvent(this, newScore, score.getScore());
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            score.setScore(newScore);
+        }
     }
 
     public void incrementScore(int increment) {
-        score += increment;
+        int newScore = score.getScore() + increment;
+        NovsWarScoreModifyEvent event = new NovsWarScoreModifyEvent(this, newScore, score.getScore());
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            score.setScore(newScore);
+        }
     }
 
     public void decrementScore() {
-        score--;
+        int newScore = score.getScore() - 1;
+        NovsWarScoreModifyEvent event = new NovsWarScoreModifyEvent(this, newScore, score.getScore());
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            score.setScore(newScore);
+        }
     }
 
     public void decrementScore(int increment) {
-        score -= increment;
+        int newScore = score.getScore() - increment;
+        NovsWarScoreModifyEvent event = new NovsWarScoreModifyEvent(this, newScore, score.getScore());
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            score.setScore(newScore);
+        }
     }
 
     public HashSet<NovsPlayer> getPlayers() {
