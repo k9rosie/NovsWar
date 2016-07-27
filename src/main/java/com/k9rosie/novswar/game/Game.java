@@ -298,7 +298,11 @@ public class Game {
 
             player.setDeath(false);
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
-            player.getBukkitPlayer().teleport(world.getTeamSpawns().get(team));
+            //DEBUG
+            Location respawnPoint = world.getTeamSpawns().get(team);
+            System.out.println("Respawn tp to: "+respawnPoint.toString());
+            //DEBUG
+            player.getBukkitPlayer().teleport(respawnPoint);
         }
     }
 
@@ -329,6 +333,9 @@ public class Game {
                 player.setTeam(smallestTeam);
 
                 Location teamSpawn = world.getTeamSpawns().get(smallestTeam);
+                //DEBUG
+                System.out.println("JoinGame tp to: "+teamSpawn.toString());
+                //DEBUG
                 player.getBukkitPlayer().teleport(teamSpawn);
 
                 String message = Messages.JOIN_TEAM.toString().replace("%team_color%", smallestTeam.getColor().toString()).replace("%team%", smallestTeam.getTeamName());
