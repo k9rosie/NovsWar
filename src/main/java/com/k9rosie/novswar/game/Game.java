@@ -116,6 +116,7 @@ public class Game {
         world.respawnBattlefields();
 
         int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.pre_game_timer");
+        gameTimer.stopTimer();
         gameTimer.setTime(gameTime);
         gameTimer.startTimer();
     }
@@ -126,6 +127,7 @@ public class Game {
         world.openIntermissionGates();
 
         int gameTime = gamemode.getGameTime();
+        gameTimer.stopTimer();
         gameTimer.setTime(gameTime);
         gameTimer.startTimer();
         Bukkit.broadcastMessage("Starting Round");
@@ -193,6 +195,7 @@ public class Game {
             world.closeIntermissionGates();
             world.respawnBattlefields();
             int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
+            gameTimer.stopTimer();
             gameTimer.setTime(gameTime);
             gameTimer.startTimer();
             
