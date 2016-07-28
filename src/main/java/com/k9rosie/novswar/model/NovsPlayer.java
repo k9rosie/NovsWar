@@ -2,6 +2,7 @@ package com.k9rosie.novswar.model;
 
 import com.k9rosie.novswar.util.RegionType;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class NovsPlayer {

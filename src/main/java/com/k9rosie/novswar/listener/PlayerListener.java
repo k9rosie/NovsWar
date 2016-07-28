@@ -37,13 +37,11 @@ public class PlayerListener implements Listener {
 
     private NovsWarPlugin plugin;
     private NovsWar novswar;
-    //private Game game;
     private PlayerManager playerManager;
 
     public PlayerListener(NovsWarPlugin plugin) {
         this.plugin = plugin;
         novswar = plugin.getNovswarInstance();
-        //game = novswar.getGameHandler().getGame();
         playerManager = novswar.getPlayerManager();
     }
 

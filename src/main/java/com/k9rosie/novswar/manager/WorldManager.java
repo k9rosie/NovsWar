@@ -85,12 +85,14 @@ public class WorldManager {
         }
         Set<String> teamNames = regionsConfig.getConfigurationSection("regions."+world.getBukkitWorld().getName()+".spawns").getKeys(false);
         for (String teamName : teamNames) {
-            int x = novswar.getConfigurationCache().getConfig("regions").getInt("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".x");
-            int y = novswar.getConfigurationCache().getConfig("regions").getInt("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".y");
-            int z = novswar.getConfigurationCache().getConfig("regions").getInt("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".z");
+            double x = novswar.getConfigurationCache().getConfig("regions").getInt("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".x");
+            double y = novswar.getConfigurationCache().getConfig("regions").getInt("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".y");
+            double z = novswar.getConfigurationCache().getConfig("regions").getInt("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".z");
+            float pitch = novswar.getConfigurationCache().getConfig("regions").getInt("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".pitch");
+            float yaw = novswar.getConfigurationCache().getConfig("regions").getInt("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".yaw");
             NovsTeam team = novswar.getTeamManager().getTeam(teamName);
 
-            world.getTeamSpawns().put(team, new Location(world.getBukkitWorld(), x, y, z));
+            world.getTeamSpawns().put(team, new Location(world.getBukkitWorld(), x, y, z, pitch, yaw));
         }
 
         ConfigurationSection regions = regionsConfig.getConfigurationSection("regions."+world.getBukkitWorld().getName()+".regions");
