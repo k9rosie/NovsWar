@@ -89,13 +89,6 @@ public class PlayerListener implements Listener {
 
         if (event.getEntity() instanceof Player) {
         	victimBukkitPlayer = (Player) event.getEntity();
-        	
-        	//Check for player damage DURING_GAME
-            if(game.getGameState().equals(GameState.DURING_GAME)==false) {
-            	victimBukkitPlayer.sendMessage("You can only attack players during the game.");
-            	event.setCancelled(true);
-                return;
-            }
 
             if (event.getDamager() instanceof Arrow) {
                 Arrow arrow = (Arrow) event.getDamager();
@@ -107,6 +100,13 @@ public class PlayerListener implements Listener {
             } else if (event.getDamager() instanceof Player) {
             	attackerBukkitPlayer = (Player) event.getDamager();
             } else { // if neither player nor arrow
+                return;
+            }
+            
+            //Check for player damage DURING_GAME
+            if(game.getGameState().equals(GameState.DURING_GAME)==false) {
+            	attackerBukkitPlayer.sendMessage("You can only attack players during the game.");
+            	event.setCancelled(true);
                 return;
             }
 
@@ -259,11 +259,12 @@ public class PlayerListener implements Listener {
 		Inventory inventory = event.getInventory();
 		//check to make sure click occurs inside voting Inventory screen
 		if(inventory.getName().equals(ballotBox.getName())) {
+			System.out.println("InventoryClickEvent! "+event.toString());
 			Player player = (Player) event.getWhoClicked();
 			int slot = event.getSlot();
 			ItemStack clicked = event.getCurrentItem();
 			//check that the click was on a BEDROCK voting item
-			if(clicked.getType().equals(Material.BEDROCK)){
+			if(clicked.getType().equals(Material.BEDROCK) && player != null){
 				game.getBallotBox().recordResult(slot);
 				player.closeInventory();
 				player.sendMessage("You voted for "+clicked.getItemMeta().getDisplayName());

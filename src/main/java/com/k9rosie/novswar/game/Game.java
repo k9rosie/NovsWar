@@ -156,7 +156,7 @@ public class Game {
 
     /**
      * endGame()
-     * Controls the team victory message and end-game stats
+     * Controls the team victory message and end-game stats. Respawns dead players.
      */
     public void endGame() {
         NovsWarEndGameEvent event = new NovsWarEndGameEvent(this);
@@ -182,7 +182,15 @@ public class Game {
 
                 Bukkit.broadcastMessage(teamList.toString() + " §fwin!");
             }
-
+            
+            //Respawns all dead players
+            for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+            	if(player.isDead()) {
+            		respawn(player);
+            	}
+            }
+            
+            //Stats generation
             for (NovsTeam team : winners) {
                 for (NovsPlayer player : team.getPlayers()) {
                     player.getStats().incrementWins();
@@ -316,11 +324,7 @@ public class Game {
 
             player.setDeath(false);
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
-            //DEBUG
-            Location respawnPoint = world.getTeamSpawns().get(team);
-            System.out.println("Respawn tp for NovsTeam "+team.getTeamName()+" to: "+respawnPoint.toString());
-            //DEBUG
-            player.getBukkitPlayer().teleport(respawnPoint);
+            player.getBukkitPlayer().teleport(world.getTeamSpawns().get(team));
         }
     }
 
@@ -351,9 +355,6 @@ public class Game {
                 player.setTeam(smallestTeam);
 
                 Location teamSpawn = world.getTeamSpawns().get(smallestTeam);
-                //DEBUG
-                System.out.println("JoinGame tp for NovsTeam "+smallestTeam.getTeamName()+"  to: "+teamSpawn.toString());
-                //DEBUG
                 player.getBukkitPlayer().teleport(teamSpawn);
                 String message = Messages.JOIN_TEAM.toString().replace("%team_color%", smallestTeam.getColor().toString()).replace("%team%", smallestTeam.getTeamName());
                 player.getBukkitPlayer().sendMessage(message);
