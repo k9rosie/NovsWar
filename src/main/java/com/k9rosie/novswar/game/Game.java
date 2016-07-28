@@ -198,6 +198,7 @@ public class Game {
             world.closeIntermissionGates();
             world.respawnBattlefields();
             int gameTime = 4;//novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
+            gameTimer.stopTimer();
             gameTimer.setTime(gameTime);
             gameTimer.startTimer();
 
