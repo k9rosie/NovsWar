@@ -4,6 +4,7 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.event.NovsWarScoreModifyEvent;
 import com.k9rosie.novswar.game.Game;
+import com.k9rosie.novswar.model.NovsScore;
 import com.k9rosie.novswar.model.NovsTeam;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,9 +24,9 @@ public class NovsWarListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onNovsWarScoreModify(NovsWarScoreModifyEvent event) {
         NovsTeam team = event.getTeam();
-        int newScore = event.getNewScore();
+        NovsScore score = event.getNovsScore();
         int maxScore = game.getGamemode().getMaxScore();
-        if (newScore >= maxScore) {
+        if (score.getScore() >= maxScore) {
             game.endGame();
         }
     }

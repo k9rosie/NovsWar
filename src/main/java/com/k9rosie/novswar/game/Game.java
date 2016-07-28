@@ -68,6 +68,7 @@ public class Game {
             player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
         }
 
+
         scoreboard.initialize();
 
         waitForPlayers();
@@ -160,6 +161,7 @@ public class Game {
             gameState = GameState.POST_GAME;
 
             ArrayList<NovsTeam> winners = getWinners();
+            System.out.println(winners.size());
             if (winners.size() == 1) {
                 NovsTeam winner = winners.get(0);
                 Bukkit.broadcastMessage(winner.getColor()+winner.getTeamName()+" wins!");
@@ -203,24 +205,11 @@ public class Game {
 
     public ArrayList<NovsTeam> getWinners() {
         ArrayList<NovsTeam> winningTeams = new ArrayList<NovsTeam>();
-        int winningScore = 0;
-        NovsTeam winningTeam = null;
         for (NovsTeam team : enabledTeams) {
-            if (team.getBukkitScore().getScore() > winningScore) {
-                winningScore = team.getBukkitScore().getScore();
-                winningTeam = team;
-            }
-        }
-
-        winningTeams.add(winningTeam);
-
-        // loop through again and get ties
-        for (NovsTeam team : enabledTeams) {
-            if (team.getBukkitScore().getScore() == winningScore) {
+            if (team.getNovsScore().getScore() >= gamemode.getMaxScore()) {
                 winningTeams.add(team);
             }
         }
-
         return winningTeams;
     }
 

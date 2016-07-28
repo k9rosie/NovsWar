@@ -21,7 +21,7 @@ public class NovsTeam {
     private boolean canBeDamaged;
     private boolean canAttack;
     private boolean friendlyFire;
-    private Score score;
+    private NovsScore score;
 
     public NovsTeam(String teamName, ChatColor color, boolean canBeDamaged, boolean canAttack, boolean friendlyFire) {
         this.teamName = teamName;
@@ -29,23 +29,7 @@ public class NovsTeam {
         this.canBeDamaged = canBeDamaged;
         this.canAttack = canAttack;
         this.friendlyFire = friendlyFire;
-        scoreboardTeam = null;
-    }
-
-    public Score getBukkitScore() {
-        return score;
-    }
-
-    public void setBukkitScore(Score score) {
-        this.score = score;
-    }
-
-    public void setScore(int score) {
-        NovsWarScoreModifyEvent event = new NovsWarScoreModifyEvent(this, score, this.score.getScore());
-        Bukkit.getPluginManager().callEvent(event);
-        if (!event.isCancelled()) {
-            this.score.setScore(score);
-        }
+        score = new NovsScore(this);
     }
     
     public String getTeamName() {
@@ -87,41 +71,17 @@ public class NovsTeam {
     public boolean getFriendlyFire() {
         return friendlyFire;
     }
-    
-    public void incrementScore() {
-        int newScore = score.getScore() + 1;
-        NovsWarScoreModifyEvent event = new NovsWarScoreModifyEvent(this, newScore, score.getScore());
-        Bukkit.getPluginManager().callEvent(event);
-        if (!event.isCancelled()) {
-            score.setScore(newScore);
-        }
+
+    public NovsScore getNovsScore() {
+        return score;
     }
 
-    public void incrementScore(int increment) {
-        int newScore = score.getScore() + increment;
-        NovsWarScoreModifyEvent event = new NovsWarScoreModifyEvent(this, newScore, score.getScore());
-        Bukkit.getPluginManager().callEvent(event);
-        if (!event.isCancelled()) {
-            score.setScore(newScore);
-        }
+    public void setScoreboardTeam(Team scoreboardTeam) {
+        this.scoreboardTeam = scoreboardTeam;
     }
 
-    public void decrementScore() {
-        int newScore = score.getScore() - 1;
-        NovsWarScoreModifyEvent event = new NovsWarScoreModifyEvent(this, newScore, score.getScore());
-        Bukkit.getPluginManager().callEvent(event);
-        if (!event.isCancelled()) {
-            score.setScore(newScore);
-        }
-    }
-
-    public void decrementScore(int increment) {
-        int newScore = score.getScore() - increment;
-        NovsWarScoreModifyEvent event = new NovsWarScoreModifyEvent(this, newScore, score.getScore());
-        Bukkit.getPluginManager().callEvent(event);
-        if (!event.isCancelled()) {
-            score.setScore(newScore);
-        }
+    public Team getScoreboardTeam() {
+        return scoreboardTeam;
     }
 
     public HashSet<NovsPlayer> getPlayers() {
@@ -133,13 +93,5 @@ public class NovsTeam {
         }
 
         return teamMembers;
-    }
-
-    public void setScoreboardTeam(Team scoreboardTeam) {
-        this.scoreboardTeam = scoreboardTeam;
-    }
-
-    public Team getScoreboardTeam() {
-        return scoreboardTeam;
     }
 }

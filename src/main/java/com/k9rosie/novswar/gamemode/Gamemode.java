@@ -8,6 +8,5 @@ public interface Gamemode {
     public int getDeathTime();
     public int getMaxScore();
     public String getGamemodeName();
-    public void initialize();
 
 }
