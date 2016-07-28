@@ -16,12 +16,12 @@ public class BallotBox {
 	
 	private static Inventory ballotBox = Bukkit.createInventory(null, 9, "Vote for the next map");
 	private NovsWar novswar;
-	private int mapWinner[]; //each spot in the array matches to a world in voteWorldList
+	private int[] mapWinner; //each spot in the array matches to a world in voteWorldList
 	private List<NovsWorld> ballotList;
 	
 	public BallotBox(NovsWar novswar) {
 		this.novswar = novswar;
-		mapWinner = new int[9];
+		mapWinner = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};//new int[9];
 		ballotList = new ArrayList<NovsWorld>();
 	}
 	
@@ -55,6 +55,7 @@ public class BallotBox {
     	}
 
     	//Generate the voting options
+    	ballotBox.clear(); //ensure the ballotbox is empty
     	for (int i = 0; i < worldCount && i < ballotList.size(); i++) {
     		String name = ballotList.get(i).getName();
     		String bukkitWorldName = ballotList.get(i).getBukkitWorld().getName();

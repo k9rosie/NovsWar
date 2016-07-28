@@ -5,5 +5,6 @@ public enum GameState {
     PRE_GAME,
     DURING_GAME,
     PAUSED,
+    END_GAME,
     POST_GAME
 }
