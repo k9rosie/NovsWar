@@ -288,7 +288,7 @@ public class Game {
         bukkitPlayer.setHealth(player.getBukkitPlayer().getMaxHealth());
         bukkitPlayer.setFoodLevel(20);
         bukkitPlayer.getWorld().playEffect(player.getBukkitPlayer().getLocation(), Effect.SMOKE, 31);
-        bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_PLAYER_DEATH, 10, 1);
+        bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.BLOCK_LAVA_POP, 10, 1);
 
         if (bukkitPlayer.getKiller() != null) {
             bukkitPlayer.setSpectatorTarget(bukkitPlayer.getKiller());

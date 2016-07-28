@@ -5,6 +5,7 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.event.NovsWarPlayerKillEvent;
 import com.k9rosie.novswar.game.Game;
+import com.k9rosie.novswar.game.GameState;
 import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsRegion;
@@ -36,18 +37,19 @@ public class PlayerListener implements Listener {
 
     private NovsWarPlugin plugin;
     private NovsWar novswar;
-    private Game game;
+    //private Game game;
     private PlayerManager playerManager;
 
     public PlayerListener(NovsWarPlugin plugin) {
         this.plugin = plugin;
         novswar = plugin.getNovswarInstance();
-        game = novswar.getGameHandler().getGame();
+        //game = novswar.getGameHandler().getGame();
         playerManager = novswar.getPlayerManager();
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
+    	Game game = novswar.getGameHandler().getGame();
         Player bukkitPlayer = event.getPlayer();
         NovsPlayer player = playerManager.createNovsPlayer(bukkitPlayer); //handles assignment to default team
         NovsTeam defaultTeam = novswar.getTeamManager().getDefaultTeam();
@@ -83,9 +85,17 @@ public class PlayerListener implements Listener {
         Player victimBukkitPlayer;
         Player attackerBukkitPlayer = null;
         boolean arrowDeath = false;
+        Game game = novswar.getGameHandler().getGame();
 
         if (event.getEntity() instanceof Player) {
         	victimBukkitPlayer = (Player) event.getEntity();
+        	
+        	//Check for player damage DURING_GAME
+            if(game.getGameState().equals(GameState.DURING_GAME)==false) {
+            	victimBukkitPlayer.sendMessage("You can only attack players during the game.");
+            	event.setCancelled(true);
+                return;
+            }
 
             if (event.getDamager() instanceof Arrow) {
                 Arrow arrow = (Arrow) event.getDamager();
@@ -161,6 +171,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDamage(EntityDamageEvent event) {
+    	Game game = novswar.getGameHandler().getGame();
         if (event.getEntity() instanceof Player) {
             Player bukkitPlayer = (Player) event.getEntity();
             NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
@@ -243,6 +254,7 @@ public class PlayerListener implements Listener {
     
     @EventHandler(priority = EventPriority.NORMAL)
 	public void onInventoryClick(InventoryClickEvent event) {
+    	Game game = novswar.getGameHandler().getGame();
 		Inventory ballotBox = game.getBallotBox().getBallots();
 		Inventory inventory = event.getInventory();
 		//check to make sure click occurs inside voting Inventory screen
