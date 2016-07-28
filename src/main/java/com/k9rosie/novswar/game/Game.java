@@ -86,6 +86,9 @@ public class Game {
     	case DURING_GAME :
     		endGame();
     		break;
+    	case END_GAME :
+    		postGame();
+    		break;
     	case POST_GAME :
     		NovsWorld nextMap;
     		if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
@@ -151,21 +154,21 @@ public class Game {
 
     /**
      * endGame()
-     * Controls what happens during the post-game
+     * Controls the team victory message and end-game stats
      */
     public void endGame() {
         NovsWarEndGameEvent event = new NovsWarEndGameEvent(this);
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         if (!event.isCancelled()) {
-            gameState = GameState.POST_GAME;
+            gameState = GameState.END_GAME;
 
             ArrayList<NovsTeam> winners = getWinners();
             System.out.println(winners.size());
             if (winners.size() == 1) {
                 NovsTeam winner = winners.get(0);
                 Bukkit.broadcastMessage(winner.getColor()+winner.getTeamName()+" wins!");
-            } else if (winners.size() < 1) {
+            } else if (winners.size() > 1) {
                 StringBuilder teamList = new StringBuilder();
                 for (int i = 0; i < winners.toArray().length; i++) {
                     NovsTeam team = (NovsTeam) winners.toArray()[i];
@@ -192,15 +195,28 @@ public class Game {
 
             world.closeIntermissionGates();
             world.respawnBattlefields();
-            int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
+            int gameTime = 4;//novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
             gameTimer.setTime(gameTime);
             gameTimer.startTimer();
             
-            //Check if voting is enabled
-            if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
-            	ballotBox.castVotes();
-            }
         }
+    }
+    
+    /**
+     * Controls the voting screen
+     */
+    public void postGame() {
+    	gameState = GameState.POST_GAME;
+    	
+    	int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
+        gameTimer.setTime(gameTime);
+        gameTimer.startTimer();
+        
+        //Check if voting is enabled
+        if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
+        	ballotBox.castVotes();
+        }
+    	
     }
 
     public ArrayList<NovsTeam> getWinners() {
@@ -217,13 +233,23 @@ public class Game {
         String secondsString = Integer.toString(gameTimer.getSeconds());
         String minutesString = Integer.toString(gameTimer.getMinutes());
         String gameStateString = "";
-
-        if (gameState == GameState.PRE_GAME) {
-            gameStateString = ChatColor.GRAY + "Setting up: ";
-        } else if (gameState == GameState.DURING_GAME) {
-            gameStateString = "";
-        } else if (gameState == GameState.POST_GAME) {
-            gameStateString = ChatColor.GRAY + "Post game: ";
+        
+        switch (gameState) {
+        case PRE_GAME :
+        	gameStateString = ChatColor.GRAY + "Setting up: ";
+        	break;
+        case DURING_GAME :
+        	gameStateString = "";
+        	break;
+        case END_GAME :
+        	gameStateString = "";
+        	break;
+        case POST_GAME :
+        	gameStateString = ChatColor.GRAY + "Post game: ";
+        	break;
+    	default :
+    		gameStateString = "";
+    		break;
         }
 
         if (gameTimer.getSeconds() < 10) {
@@ -259,7 +285,7 @@ public class Game {
         bukkitPlayer.setHealth(player.getBukkitPlayer().getMaxHealth());
         bukkitPlayer.setFoodLevel(20);
         bukkitPlayer.getWorld().playEffect(player.getBukkitPlayer().getLocation(), Effect.SMOKE, 31);
-        bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 1);
+        bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_PLAYER_DEATH, 10, 1);
 
         if (bukkitPlayer.getKiller() != null) {
             bukkitPlayer.setSpectatorTarget(bukkitPlayer.getKiller());
@@ -289,7 +315,7 @@ public class Game {
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
             //DEBUG
             Location respawnPoint = world.getTeamSpawns().get(team);
-            System.out.println("Respawn tp to: "+respawnPoint.toString());
+            System.out.println("Respawn tp for NovsTeam "+team.getTeamName()+" to: "+respawnPoint.toString());
             //DEBUG
             player.getBukkitPlayer().teleport(respawnPoint);
         }
@@ -323,17 +349,19 @@ public class Game {
 
                 Location teamSpawn = world.getTeamSpawns().get(smallestTeam);
                 //DEBUG
-                System.out.println("JoinGame tp to: "+teamSpawn.toString());
+                System.out.println("JoinGame tp for NovsTeam "+smallestTeam.getTeamName()+"  to: "+teamSpawn.toString());
                 //DEBUG
                 player.getBukkitPlayer().teleport(teamSpawn);
-
                 String message = Messages.JOIN_TEAM.toString().replace("%team_color%", smallestTeam.getColor().toString()).replace("%team%", smallestTeam.getTeamName());
                 player.getBukkitPlayer().sendMessage(message);
+            }
 
-                if (gameState.equals(GameState.WAITING_FOR_PLAYERS)) {
-                    if (checkPlayerCount()) {
-                        preGame();
-                    }
+            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+            player.getBukkitPlayer().setFoodLevel(20);
+
+            if (gameState.equals(GameState.WAITING_FOR_PLAYERS)) {
+                if (checkPlayerCount()) {
+                    preGame();
                 }
             }
         }
