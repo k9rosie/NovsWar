@@ -63,6 +63,10 @@ public class Game {
             }
         }
 
+        for (NovsTeam team : enabledTeams) {
+        	team.getNovsScore().setScore(0);	//Resets all team's scores
+        }
+        
         for (NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
         	player.setTeam(defaultTeam); // NovsPlayer now has private NovsTeam var
             player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
@@ -164,6 +168,7 @@ public class Game {
 
         if (!event.isCancelled()) {
             gameState = GameState.END_GAME;
+            gameTimer.stopTimer();
 
             ArrayList<NovsTeam> winners = getWinners();
             System.out.println(winners.size());
@@ -183,10 +188,12 @@ public class Game {
                 Bukkit.broadcastMessage(teamList.toString() + " §fwin!");
             }
             
-            //Respawns all dead players
+            //Respawns all dead players and tp's alive players to their team spawns
             for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
             	if(player.isDead()) {
             		respawn(player);
+            	} else {
+            		player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
             	}
             }
             
@@ -206,7 +213,6 @@ public class Game {
             world.closeIntermissionGates();
             world.respawnBattlefields();
             int gameTime = 4;//novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
-            gameTimer.stopTimer();
             gameTimer.setTime(gameTime);
             gameTimer.startTimer();
 
@@ -343,8 +349,8 @@ public class Game {
             // novsloadout has its own way of sorting players, only run this code if it isnt enabled
             if (!Bukkit.getPluginManager().isPluginEnabled("NovsLoadout")) {
             	//Determine which team has fewer players
-            	int smallest = 0;
-            	NovsTeam smallestTeam = null;
+            	NovsTeam smallestTeam = enabledTeams.get(0);
+            	int smallest = smallestTeam.getPlayers().size();
                 for (NovsTeam team : enabledTeams) {
                 	if(team.getPlayers().size() <= smallest) {
                 		smallest = team.getPlayers().size();
