@@ -31,7 +31,7 @@ public class GameHandler {
     public void newGame(NovsWorld world) {
         String gamemodeString = novswar.getConfigurationCache().getConfig("worlds").getString("worlds."+world.getBukkitWorld().getName()+".gamemode");
         Gamemode gamemode = novswar.getGamemodes().get(gamemodeString);
-        System.out.println(gamemode);
+
         game = new Game(this, world, gamemode);
 
         NovsWarNewGameEvent event = new NovsWarNewGameEvent(game);

@@ -48,10 +48,15 @@ public class GameTimer {
     }
 
     public void startTimer() {
+        if (taskID != 0) {
+            Bukkit.getLogger().severe("Warning: Attempted to create start GameTimer when one has already been started. Cancelling...");
+            return;
+        }
+
         task = new Runnable() {
             public void run() {
-                game.clockTick();
                 time--;
+                game.clockTick();
                 if (time <= -1) {
                     stopTimer();
                     game.endTimer();

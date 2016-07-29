@@ -90,9 +90,6 @@ public class Game {
     	case DURING_GAME :
     		endGame();
     		break;
-    	case END_GAME :
-    		postGame();
-    		break;
     	case POST_GAME :
     		NovsWorld nextMap;
     		if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
@@ -212,30 +209,23 @@ public class Game {
 
             world.closeIntermissionGates();
             world.respawnBattlefields();
-            int gameTime = 4;//novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
+
+            int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
             gameTimer.stopTimer();
             gameTimer.setTime(gameTime);
             gameTimer.startTimer();
 
+            // start voting if enabled
+            // delay voting screen for 4 seconds
+            Bukkit.getScheduler().scheduleSyncDelayedTask(novsWar.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
+                        ballotBox.castVotes();
+                    }
+                }
+            }, 20*4);
         }
-    }
-
-    /**
-     * Controls the voting screen
-     */
-    public void postGame() {
-    	gameState = GameState.POST_GAME;
-
-    	int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
-        gameTimer.stopTimer();
-        gameTimer.setTime(gameTime);
-        gameTimer.startTimer();
-
-        //Check if voting is enabled
-        if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
-        	ballotBox.castVotes();
-        }
-
     }
 
     public ArrayList<NovsTeam> getWinners() {
