@@ -85,9 +85,11 @@ public class WorldManager {
         }
         Set<String> teamNames = regionsConfig.getConfigurationSection("regions."+world.getBukkitWorld().getName()+".spawns").getKeys(false);
         for (String teamName : teamNames) {
-            int x = novswar.getConfigurationCache().getConfig("regions").getInt("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".x");
-            int y = novswar.getConfigurationCache().getConfig("regions").getInt("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".y");
-            int z = novswar.getConfigurationCache().getConfig("regions").getInt("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".z");
+            double x = novswar.getConfigurationCache().getConfig("regions").getDouble("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".x");
+            double y = novswar.getConfigurationCache().getConfig("regions").getDouble("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".y");
+            double z = novswar.getConfigurationCache().getConfig("regions").getDouble("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".z");
+            float pitch = (float) novswar.getConfigurationCache().getConfig("regions").getDouble("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".pitch");
+            float yaw = (float) novswar.getConfigurationCache().getConfig("regions").getDouble("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".yaw");
             NovsTeam team = novswar.getTeamManager().getTeam(teamName);
 
             world.getTeamSpawns().put(team, new Location(world.getBukkitWorld(), x, y, z));
@@ -135,9 +137,11 @@ public class WorldManager {
 
             for (Map.Entry<NovsTeam, Location> entry : world.getTeamSpawns().entrySet()) {
                 ConfigurationSection teamSection = spawnsSection.createSection(entry.getKey().getTeamName());
-                teamSection.set("x", (int) entry.getValue().getBlockX());
-                teamSection.set("y", (int) entry.getValue().getBlockY());
-                teamSection.set("z", (int) entry.getValue().getBlockZ());
+                teamSection.set("x", entry.getValue().getBlockX());
+                teamSection.set("y", entry.getValue().getBlockY());
+                teamSection.set("z", entry.getValue().getBlockZ());
+                teamSection.set("pitch", entry.getValue().getPitch());
+                teamSection.set("yaw", entry.getValue().getYaw());
             }
 
             ConfigurationSection regionsSection = worldSection.createSection("regions");
