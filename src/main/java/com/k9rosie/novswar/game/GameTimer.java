@@ -69,13 +69,13 @@ public class GameTimer {
     }
 
     public void pauseTimer() {
-        taskID = 0;
         scheduler.cancelTask(taskID);
+        taskID = 0;
     }
 
     public void stopTimer() {
         time = -1;
-        taskID = 0;
         scheduler.cancelTask(taskID);
+        taskID = 0;
     }
 }

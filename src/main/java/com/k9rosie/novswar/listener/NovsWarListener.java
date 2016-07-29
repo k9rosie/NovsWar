@@ -13,18 +13,17 @@ import org.bukkit.event.Listener;
 public class NovsWarListener implements Listener {
     private NovsWarPlugin plugin;
     private NovsWar novswar;
-    private Game game;
 
     public NovsWarListener(NovsWarPlugin plugin) {
         this.plugin = plugin;
         novswar = plugin.getNovswarInstance();
-        game = novswar.getGameHandler().getGame();
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onNovsWarScoreModify(NovsWarScoreModifyEvent event) {
         NovsTeam team = event.getTeam();
         NovsScore score = event.getNovsScore();
+        Game game = novswar.getGameHandler().getGame();
         int maxScore = game.getGamemode().getMaxScore();
         if (score.getScore() >= maxScore) {
             game.endGame();

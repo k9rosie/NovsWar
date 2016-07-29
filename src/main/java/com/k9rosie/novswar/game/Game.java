@@ -164,8 +164,7 @@ public class Game {
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         if (!event.isCancelled()) {
-            gameState = GameState.END_GAME;
-            gameTimer.stopTimer();
+            gameState = GameState.POST_GAME;
 
             ArrayList<NovsTeam> winners = getWinners();
             System.out.println(winners.size());
@@ -248,9 +247,6 @@ public class Game {
         	gameStateString = ChatColor.GRAY + "Setting up: ";
         	break;
         case DURING_GAME :
-        	gameStateString = "";
-        	break;
-        case END_GAME :
         	gameStateString = "";
         	break;
         case POST_GAME :
