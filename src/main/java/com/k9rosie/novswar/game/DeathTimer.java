@@ -46,6 +46,11 @@ public class DeathTimer {
     }
 
     public void startTimer() {
+        if (taskID != 0 && time > -1) {
+            Bukkit.getLogger().severe("Warning: Attempted to start DeathTimer when one has already been started. Cancelling...");
+            return;
+        }
+
         task = new Runnable() {
             public void run() {
                 game.deathTick(player);
@@ -61,10 +66,12 @@ public class DeathTimer {
 
     public void pauseTimer() {
         scheduler.cancelTask(taskID);
+        taskID = 0;
     }
 
     public void stopTimer() {
-        time = 0;
+        time = -1;
         scheduler.cancelTask(taskID);
+        taskID = 0;
     }
 }

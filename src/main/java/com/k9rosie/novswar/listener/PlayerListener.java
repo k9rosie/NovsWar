@@ -80,6 +80,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDamageByPlayer(EntityDamageByEntityEvent event) {
+        System.out.println("EntityDamageByEntityEvent: " + event.getFinalDamage());
         Player victimBukkitPlayer;
         Player attackerBukkitPlayer = null;
         boolean arrowDeath = false;
@@ -147,7 +148,6 @@ public class PlayerListener implements Listener {
                         .replace("%killer_tcolor%", attackerTeam.getColor().toString())
                         .replace("%killer%", attackerBukkitPlayer.getDisplayName());
                 
-                System.out.println("Death Message: "+deathMessage);
                 for (NovsPlayer p : playerManager.getPlayers().values()) {
                     if (p.canSeeDeathMessages()) {
                         p.getBukkitPlayer().sendMessage(deathMessage);
@@ -169,6 +169,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDamage(EntityDamageEvent event) {
+        System.out.println("EntityDamageEvent: " + event.getFinalDamage());
     	Game game = novswar.getGameHandler().getGame();
         if (event.getEntity() instanceof Player) {
             Player bukkitPlayer = (Player) event.getEntity();
