@@ -137,9 +137,9 @@ public class WorldManager {
 
             for (Map.Entry<NovsTeam, Location> entry : world.getTeamSpawns().entrySet()) {
                 ConfigurationSection teamSection = spawnsSection.createSection(entry.getKey().getTeamName());
-                teamSection.set("x", entry.getValue().getBlockX());
-                teamSection.set("y", entry.getValue().getBlockY());
-                teamSection.set("z", entry.getValue().getBlockZ());
+                teamSection.set("x", entry.getValue().getX());
+                teamSection.set("y", entry.getValue().getY());
+                teamSection.set("z", entry.getValue().getZ());
                 teamSection.set("pitch", entry.getValue().getPitch());
                 teamSection.set("yaw", entry.getValue().getYaw());
             }

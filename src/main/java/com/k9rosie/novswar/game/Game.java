@@ -174,7 +174,7 @@ public class Game {
             System.out.println(winners.size());
             if (winners.size() == 1) {
                 NovsTeam winner = winners.get(0);
-                Bukkit.broadcastMessage(winner.getColor()+winner.getTeamName()+" wins!");
+                Bukkit.broadcastMessage(winner.getColor()+winner.getTeamName()+" §fwins!");
             } else if (winners.size() > 1) {
                 StringBuilder teamList = new StringBuilder();
                 for (int i = 0; i < winners.toArray().length; i++) {
@@ -213,6 +213,7 @@ public class Game {
             world.closeIntermissionGates();
             world.respawnBattlefields();
             int gameTime = 4;//novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
+            gameTimer.stopTimer();
             gameTimer.setTime(gameTime);
             gameTimer.startTimer();
 
@@ -226,6 +227,7 @@ public class Game {
     	gameState = GameState.POST_GAME;
 
     	int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
+        gameTimer.stopTimer();
         gameTimer.setTime(gameTime);
         gameTimer.startTimer();
 

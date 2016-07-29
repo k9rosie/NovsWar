@@ -43,9 +43,9 @@ public class SetSpawnCommand extends NovsCommand {
             }
 
             Location location = bukkitPlayer.getLocation();
-            double x = location.getBlockX();
-            double y = location.getBlockY();
-            double z = location.getBlockZ();
+            double x = location.getX();
+            double y = location.getY();
+            double z = location.getZ();
             float pitch = location.getPitch();
             float yaw = location.getYaw();
             world.getTeamSpawns().put(team, new Location(location.getWorld(), x, y, z, pitch, yaw));
