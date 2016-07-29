@@ -20,6 +20,7 @@ public class GameTimer {
     public GameTimer(Game game) {
         this.game = game;
         time = -1;
+        taskID = 0;
         scheduler = Bukkit.getScheduler();
     }
 
@@ -48,7 +49,7 @@ public class GameTimer {
     }
 
     public void startTimer() {
-        if (taskID != 0) {
+        if (taskID != 0 && time > -1) {
             Bukkit.getLogger().severe("Warning: Attempted to create start GameTimer when one has already been started. Cancelling...");
             return;
         }
@@ -68,11 +69,13 @@ public class GameTimer {
     }
 
     public void pauseTimer() {
+        taskID = 0;
         scheduler.cancelTask(taskID);
     }
 
     public void stopTimer() {
-        time = 0;
+        time = -1;
+        taskID = 0;
         scheduler.cancelTask(taskID);
     }
 }
