@@ -3,6 +3,7 @@ package com.k9rosie.novswar.listener;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
+import com.k9rosie.novswar.event.NovsWarPlayerAssistEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerKillEvent;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
@@ -108,19 +109,17 @@ public class PlayerListener implements Listener {
             	event.setCancelled(true);
                 return;
             }
-
+            //Check for non-violence conditions
             NovsPlayer victim = playerManager.getPlayers().get(victimBukkitPlayer);
             NovsPlayer attacker = playerManager.getPlayers().get(attackerBukkitPlayer);
             NovsTeam victimTeam = victim.getTeam();
             NovsTeam attackerTeam = attacker.getTeam();
-
             if (attackerTeam.equals(victimTeam)) {
                 if (!attackerTeam.getFriendlyFire()) {
                     event.setCancelled(true);
                     return;
                 }
             }
-
             if (!victim.getTeam().canBeDamaged()) {
                 event.setCancelled(true);
                 return;
@@ -129,11 +128,12 @@ public class PlayerListener implements Listener {
             double damage = event.getFinalDamage();
             victim.getStats().incrementDamageTaken(damage);
             attacker.getStats().incrementDamageGiven(damage);
+            victim.addAttacker(attacker, damage);
 
             // if damage is fatal
             if (victimBukkitPlayer.getHealth() - damage <= 0) {
                 event.setCancelled(true);
-
+                //Send death message
                 String deathMessage;
                 if (arrowDeath) {
                     deathMessage = Messages.SHOT_MESSAGE.toString();
@@ -144,13 +144,12 @@ public class PlayerListener implements Listener {
                         .replace("%killed%", victimBukkitPlayer.getDisplayName())
                         .replace("%killer_tcolor%", attackerTeam.getColor().toString())
                         .replace("%killer%", attackerBukkitPlayer.getDisplayName());
-                
                 for (NovsPlayer p : playerManager.getPlayers().values()) {
                     if (p.canSeeDeathMessages()) {
                         p.getBukkitPlayer().sendMessage(deathMessage);
                     }
                 }
-
+                //Evaluate statistics
                 if (arrowDeath) {
                 	attacker.getStats().incrementArrowKills();
                     victim.getStats().incrementArrowDeaths();
@@ -158,11 +157,16 @@ public class PlayerListener implements Listener {
                 	attacker.getStats().incrementKills();
                     victim.getStats().incrementDeaths();
                 }
-
+                //Evaluate assists
+                NovsPlayer assistAttacker = victim.getAssistAttacker(attacker);
+                victim.clearAttackers();
                 game.scheduleDeath(victim, game.getGamemode().getDeathTime());
+                //Event calls
                 NovsWarPlayerKillEvent invokeEvent = new NovsWarPlayerKillEvent(attacker, victim, attackerTeam, victimTeam, game);
                 Bukkit.getPluginManager().callEvent(invokeEvent);
-            }
+                NovsWarPlayerAssistEvent invokeEvent_1 = new NovsWarPlayerAssistEvent(assistAttacker, victim, assistAttacker.getTeam(), victimTeam, game);
+                Bukkit.getPluginManager().callEvent(invokeEvent_1);
+            } 
         }
     }
 

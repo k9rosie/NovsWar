@@ -1,6 +1,12 @@
 package com.k9rosie.novswar.model;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import com.k9rosie.novswar.util.RegionType;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -10,6 +16,7 @@ public class NovsPlayer {
     private Player bukkitPlayer;
     private NovsStats stats;
     private NovsTeam team;
+    private HashMap<NovsPlayer, Double> attackerMap;
     private boolean deathMessages;
     private boolean isDead;
     private boolean isSpectating;
@@ -23,12 +30,54 @@ public class NovsPlayer {
     public NovsPlayer (Player bukkitPlayer, NovsTeam team) {
         this.bukkitPlayer = bukkitPlayer;
         this.team = team;
+        attackerMap = new HashMap<NovsPlayer, Double>();
         stats = new NovsStats(this);
         deathMessages = true;
         isDead = false;
         isSpectating = false;
         isSettingRegion = false;
         hasVoted = false;
+    }
+    
+    public void addAttacker(NovsPlayer player, Double damage) {
+    	if(attackerMap.containsKey(player)) {
+    		attackerMap.put(player, attackerMap.get(player) + damage);
+    	} else {
+    		attackerMap.put(player, damage);
+    	}
+    	//DEBUG
+    	System.out.println(player.getBukkitPlayer().getName()+" attacked "+bukkitPlayer.getName()+" with "+attackerMap.get(player)+" cumulitive damage.");
+    }
+    
+    public void clearAttackers() {
+    	attackerMap.clear();
+    }
+    
+    /**
+     * Determines which NovsPlayer dealt the most assist damage
+     * 
+     * @param killer - The NovsPlayer that killed this player
+     * @return the NovsPlayer that dealt the most assist damage. If there are no
+     *   	   assists, returns null.
+     */
+    public NovsPlayer getAssistAttacker(NovsPlayer killer) {
+    	attackerMap.remove(killer);
+    	NovsPlayer assistAttacker = null;
+    	System.out.println(bukkitPlayer.getName()+" is evaluating assist attackers...");
+    	if(attackerMap.size() > 0) {
+    		Iterator<Entry<NovsPlayer, Double>> it = attackerMap.entrySet().iterator();
+        	double assistAttackerDamage = 0;
+        	while (it.hasNext()) {
+        		Map.Entry<NovsPlayer, Double> pair = (Map.Entry<NovsPlayer, Double>)it.next();
+        		System.out.println(pair.getKey().getBukkitPlayer().getName()+" has dealt "+pair.getValue()+" damage.");
+        		if(pair.getValue() > assistAttackerDamage) {
+        			assistAttackerDamage = pair.getValue();
+        			assistAttacker = pair.getKey();
+        		}
+        	}
+    	}
+    	System.out.println("assistAttacker is: "+assistAttacker);
+    	return assistAttacker;
     }
 
     public Player getBukkitPlayer() {
