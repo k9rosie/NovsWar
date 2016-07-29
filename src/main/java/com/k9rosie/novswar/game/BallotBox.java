@@ -15,6 +15,7 @@ import com.k9rosie.novswar.model.NovsWorld;
 public class BallotBox {
 	
 	private static Inventory ballotBox = Bukkit.createInventory(null, 9, "Vote for the next map");
+	private static Material voteItem = Material.MAP;
 	private NovsWar novswar;
 	private int[] mapWinner; //each spot in the array matches to a world in voteWorldList
 	private List<NovsWorld> ballotList;
@@ -60,7 +61,7 @@ public class BallotBox {
     		String name = ballotList.get(i).getName();
     		String bukkitWorldName = ballotList.get(i).getBukkitWorld().getName();
     		String gamemode = novswar.getConfigurationCache().getConfig("worlds").getString("worlds."+bukkitWorldName+".gamemode");
-    		createVoteOption(Material.MAP, ballotBox, i, name, gamemode);
+    		createVoteOption(voteItem, ballotBox, i, name, gamemode);
     	}
     	
     	//Open the voting screen for each player
@@ -130,6 +131,10 @@ public class BallotBox {
 	
 	public Inventory getBallots() {
 		return ballotBox;
+	}
+	
+	public Material getVoteItem() {
+		return voteItem;
 	}
 
 }
