@@ -252,11 +252,11 @@ public class PlayerListener implements Listener {
     
     @EventHandler(priority = EventPriority.NORMAL)
 	public void onInventoryClick(InventoryClickEvent event) {
+    	Inventory inventory = event.getInventory();
     	Game game = novswar.getGameHandler().getGame();
 		Inventory ballotBox = game.getBallotBox().getBallots();
-		Inventory inventory = event.getInventory();
 		//check to make sure click occurs inside voting Inventory screen
-		if(inventory.getName().equals(ballotBox.getName())) {
+		if(inventory != null && inventory.getName().equals(ballotBox.getName())) {
 			System.out.println("InventoryClickEvent! "+event.toString());
 			Player player = (Player) event.getWhoClicked();
 			int slot = event.getSlot();
