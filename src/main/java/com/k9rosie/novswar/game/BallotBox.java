@@ -60,7 +60,7 @@ public class BallotBox {
     		String name = ballotList.get(i).getName();
     		String bukkitWorldName = ballotList.get(i).getBukkitWorld().getName();
     		String gamemode = novswar.getConfigurationCache().getConfig("worlds").getString("worlds."+bukkitWorldName+".gamemode");
-    		createVoteOption(Material.BEDROCK, ballotBox, i, name, gamemode);
+    		createVoteOption(Material.MAP, ballotBox, i, name, gamemode);
     	}
     	
     	//Open the voting screen for each player

@@ -133,9 +133,6 @@ public class PlayerListener implements Listener {
             if (victimBukkitPlayer.getHealth() - damage <= 0) {
                 event.setCancelled(true);
 
-                NovsWarPlayerKillEvent invokeEvent = new NovsWarPlayerKillEvent(attacker, victim, attackerTeam, victimTeam, game);
-                Bukkit.getPluginManager().callEvent(invokeEvent);
-
                 String deathMessage;
                 if (arrowDeath) {
                     deathMessage = Messages.SHOT_MESSAGE.toString();
@@ -163,6 +160,8 @@ public class PlayerListener implements Listener {
                 }
 
                 game.scheduleDeath(victim, game.getGamemode().getDeathTime());
+                NovsWarPlayerKillEvent invokeEvent = new NovsWarPlayerKillEvent(attacker, victim, attackerTeam, victimTeam, game);
+                Bukkit.getPluginManager().callEvent(invokeEvent);
             }
         }
     }

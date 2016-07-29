@@ -56,8 +56,8 @@ public class GameTimer {
 
         task = new Runnable() {
             public void run() {
-                time--;
                 game.clockTick();
+                time--;
                 if (time <= -1) {
                     stopTimer();
                     game.endTimer();

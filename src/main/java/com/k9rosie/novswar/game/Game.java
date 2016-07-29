@@ -317,8 +317,8 @@ public class Game {
             NovsTeam team = player.getTeam();
 
             player.setDeath(false);
-            player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
             player.getBukkitPlayer().teleport(world.getTeamSpawns().get(team));
+            player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
         }
     }
 
