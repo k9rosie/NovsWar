@@ -164,8 +164,10 @@ public class PlayerListener implements Listener {
                 //Event calls
                 NovsWarPlayerKillEvent invokeEvent = new NovsWarPlayerKillEvent(attacker, victim, attackerTeam, victimTeam, game);
                 Bukkit.getPluginManager().callEvent(invokeEvent);
-                NovsWarPlayerAssistEvent invokeEvent_1 = new NovsWarPlayerAssistEvent(assistAttacker, victim, assistAttacker.getTeam(), victimTeam, game);
-                Bukkit.getPluginManager().callEvent(invokeEvent_1);
+                if(assistAttacker != null) {
+                	NovsWarPlayerAssistEvent invokeEvent_1 = new NovsWarPlayerAssistEvent(assistAttacker, victim, assistAttacker.getTeam(), victimTeam, game);
+                    Bukkit.getPluginManager().callEvent(invokeEvent_1);
+                }
             } 
         }
     }
@@ -268,7 +270,7 @@ public class PlayerListener implements Listener {
 			int slot = event.getSlot();
 			ItemStack clicked = event.getCurrentItem();
 			//check that the click was on a BEDROCK voting item
-			if(clicked.getType().equals(game.getBallotBox().getVoteItem()) && player != null){
+			if(clicked != null && clicked.getType().equals(game.getBallotBox().getVoteItem()) && player != null){
 				game.getBallotBox().recordResult(slot);
 				player.closeInventory();
 				player.sendMessage("You voted for "+clicked.getItemMeta().getDisplayName());

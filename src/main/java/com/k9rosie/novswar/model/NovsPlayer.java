@@ -76,7 +76,7 @@ public class NovsPlayer {
         		}
         	}
     	}
-    	System.out.println("assistAttacker is: "+assistAttacker);
+    	System.out.println("assistAttacker is: "+assistAttacker.getBukkitPlayer().getName());
     	return assistAttacker;
     }
 
