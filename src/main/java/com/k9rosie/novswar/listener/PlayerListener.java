@@ -181,7 +181,9 @@ public class PlayerListener implements Listener {
 
             if (bukkitPlayer.getKiller() != null) {
                 if (bukkitPlayer.getKiller() instanceof Player) {
-                    return;
+                    if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                        return;
+                    }
                 }
             }
 
