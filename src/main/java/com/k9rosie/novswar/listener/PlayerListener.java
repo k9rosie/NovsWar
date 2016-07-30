@@ -21,6 +21,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -111,63 +112,8 @@ public class PlayerListener implements Listener {
             //Check for non-violence conditions
             NovsPlayer victim = playerManager.getPlayers().get(victimBukkitPlayer);
             NovsPlayer attacker = playerManager.getPlayers().get(attackerBukkitPlayer);
-            NovsTeam victimTeam = victim.getTeam();
-            NovsTeam attackerTeam = attacker.getTeam();
-            if (attackerTeam.equals(victimTeam)) {
-                if (!attackerTeam.getFriendlyFire()) {
-                    event.setCancelled(true);
-                    return;
-                }
-            }
-            if (!victim.getTeam().canBeDamaged()) {
-                event.setCancelled(true);
-                return;
-            }
 
-            double damage = event.getFinalDamage();
-            victim.getStats().incrementDamageTaken(damage);
-            attacker.getStats().incrementDamageGiven(damage);
-            victim.addAttacker(attacker, damage);
-
-            // if damage is fatal
-            if (victimBukkitPlayer.getHealth() - damage <= 0) {
-                event.setCancelled(true);
-                //Send death message
-                String deathMessage;
-                if (arrowDeath) {
-                    deathMessage = Messages.SHOT_MESSAGE.toString();
-                } else {
-                    deathMessage = Messages.KILL_MESSAGE.toString();
-                }
-                deathMessage = deathMessage.replace("%killed_tcolor%", victimTeam.getColor().toString())
-                        .replace("%killed%", victimBukkitPlayer.getDisplayName())
-                        .replace("%killer_tcolor%", attackerTeam.getColor().toString())
-                        .replace("%killer%", attackerBukkitPlayer.getDisplayName());
-                for (NovsPlayer p : playerManager.getPlayers().values()) {
-                    if (p.canSeeDeathMessages()) {
-                        p.getBukkitPlayer().sendMessage(deathMessage);
-                    }
-                }
-                //Evaluate statistics
-                if (arrowDeath) {
-                	attacker.getStats().incrementArrowKills();
-                    victim.getStats().incrementArrowDeaths();
-                } else {
-                	attacker.getStats().incrementKills();
-                    victim.getStats().incrementDeaths();
-                }
-                //Evaluate assists
-                NovsPlayer assistAttacker = victim.getAssistAttacker(attacker);
-                victim.clearAttackers();
-                game.scheduleDeath(victim, game.getGamemode().getDeathTime());
-                //Event calls
-                NovsWarPlayerKillEvent invokeEvent = new NovsWarPlayerKillEvent(attacker, victim, attackerTeam, victimTeam, game);
-                Bukkit.getPluginManager().callEvent(invokeEvent);
-                if(assistAttacker != null) {
-                	NovsWarPlayerAssistEvent invokeEvent_1 = new NovsWarPlayerAssistEvent(assistAttacker, victim, assistAttacker.getTeam(), victimTeam, game);
-                    Bukkit.getPluginManager().callEvent(invokeEvent_1);
-                }
-            } 
+            playerKill(event, victim, attacker, arrowDeath);
         }
     }
 
@@ -187,6 +133,10 @@ public class PlayerListener implements Listener {
                 if (bukkitPlayer.getKiller() instanceof Player) {
                     if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                         return;
+                    } else {
+                        NovsPlayer killer = playerManager.getPlayers().get(bukkitPlayer.getKiller());
+                        NovsPlayer victim = playerManager.getPlayers().get(bukkitPlayer);
+                        playerKill(event, killer, victim, false);
                     }
                 }
             }
@@ -297,6 +247,67 @@ public class PlayerListener implements Listener {
 
         if (player.isDead()) {
             event.setCancelled(true);
+        }
+    }
+
+    public void playerKill(EntityDamageEvent event, NovsPlayer attacker, NovsPlayer victim, boolean arrowDeath) {
+        Game game = novswar.getGameHandler().getGame();
+        NovsTeam victimTeam = victim.getTeam();
+        NovsTeam attackerTeam = attacker.getTeam();
+        if (attackerTeam.equals(victimTeam)) {
+            if (!attackerTeam.getFriendlyFire()) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+        if (!victim.getTeam().canBeDamaged()) {
+            event.setCancelled(true);
+            return;
+        }
+
+        double damage = event.getFinalDamage();
+        victim.getStats().incrementDamageTaken(damage);
+        attacker.getStats().incrementDamageGiven(damage);
+        victim.addAttacker(attacker, damage);
+
+        // if damage is fatal
+        if (victim.getBukkitPlayer().getHealth() - damage <= 0) {
+            event.setCancelled(true);
+            //Send death message
+            String deathMessage;
+            if (arrowDeath) {
+                deathMessage = Messages.SHOT_MESSAGE.toString();
+            } else {
+                deathMessage = Messages.KILL_MESSAGE.toString();
+            }
+            deathMessage = deathMessage.replace("%killed_tcolor%", victimTeam.getColor().toString())
+                    .replace("%killed%", victim.getBukkitPlayer().getDisplayName())
+                    .replace("%killer_tcolor%", attackerTeam.getColor().toString())
+                    .replace("%killer%", attacker.getBukkitPlayer().getDisplayName());
+            for (NovsPlayer p : playerManager.getPlayers().values()) {
+                if (p.canSeeDeathMessages()) {
+                    p.getBukkitPlayer().sendMessage(deathMessage);
+                }
+            }
+            //Evaluate statistics
+            if (arrowDeath) {
+                attacker.getStats().incrementArrowKills();
+                victim.getStats().incrementArrowDeaths();
+            } else {
+                attacker.getStats().incrementKills();
+                victim.getStats().incrementDeaths();
+            }
+            //Evaluate assists
+            NovsPlayer assistAttacker = victim.getAssistAttacker(attacker);
+            victim.clearAttackers();
+            game.scheduleDeath(victim, game.getGamemode().getDeathTime());
+            //Event calls
+            NovsWarPlayerKillEvent invokeEvent = new NovsWarPlayerKillEvent(attacker, victim, attackerTeam, victimTeam, game);
+            Bukkit.getPluginManager().callEvent(invokeEvent);
+            if(assistAttacker != null) {
+                NovsWarPlayerAssistEvent invokeEvent_1 = new NovsWarPlayerAssistEvent(assistAttacker, victim, assistAttacker.getTeam(), victimTeam, game);
+                Bukkit.getPluginManager().callEvent(invokeEvent_1);
+            }
         }
     }
 }

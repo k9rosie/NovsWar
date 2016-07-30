@@ -68,7 +68,7 @@ public class PlayerCommand extends NovsCommand {
                 "§7Arrow Kills: §f" + stats.getArrowKills(),
                 "§7Arrow Deaths: §f" + stats.getArrowDeaths(),
                 "§7Wins: §f" + stats.getWins(),
-                "§Games Played: §f" + stats.getGamesPlayed(),
+                "§7Games Played: §f" + stats.getGamesPlayed(),
                 "§7Damage Given: §f" + stats.getDamageGiven(),
                 "§7Damage Taken: §f" + stats.getDamageTaken(),
                 "§7Connects: §f" + stats.getConnects()
