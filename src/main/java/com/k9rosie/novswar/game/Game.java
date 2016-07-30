@@ -399,7 +399,9 @@ public class Game {
     		}
     		gameHandler.newGame(world); //waitForPlayers();
     	} else {
+    		System.out.println("A player left the server");
     		if(checkPlayerCount()==false) { //if there are not enough players
+    			System.out.println("There are not enough players");
     			switch (gameState) {
             	case PRE_GAME :
             		waitForPlayers();
