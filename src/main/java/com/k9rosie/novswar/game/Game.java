@@ -145,7 +145,9 @@ public class Game {
         world.closeIntermissionGates();
         
         for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
-        	player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
+            if (!player.getTeam().equals(novsWar.getTeamManager().getDefaultTeam())) {
+                player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
+            }
         }
         
         gameTimer.pauseTimer();
