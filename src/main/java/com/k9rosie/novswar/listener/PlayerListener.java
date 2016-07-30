@@ -273,6 +273,7 @@ public class PlayerListener implements Listener {
 			if(clicked != null && clicked.getType().equals(game.getBallotBox().getVoteItem()) && player != null){
 				game.getBallotBox().recordResult(slot);
 				player.closeInventory();
+				System.out.println(player.getName()+" voted for slot "+slot+", map "+clicked.getItemMeta().getDisplayName());
 				player.sendMessage("You voted for "+clicked.getItemMeta().getDisplayName());
 				NovsPlayer nplayer = novswar.getPlayerManager().getPlayers().get(player);
 				nplayer.setVoted(true);
