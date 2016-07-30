@@ -60,6 +60,7 @@ public class PlayerListener implements Listener {
         bukkitPlayer.teleport(novswar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
 
         player.getStats().incrementConnects();
+        System.out.println("Player count: " + novswar.getPlayerManager().getPlayers().values().size());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -78,8 +79,9 @@ public class PlayerListener implements Listener {
         NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
 
         novswar.getDatabase().flushPlayerData(player);
-        playerManager.getPlayers().remove(player);
+        playerManager.getPlayers().remove(bukkitPlayer);
         game.quitGame();
+        System.out.println("Player count: " + novswar.getPlayerManager().getPlayers().values().size());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
