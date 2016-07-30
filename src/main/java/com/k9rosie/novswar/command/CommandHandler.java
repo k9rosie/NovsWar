@@ -23,7 +23,7 @@ public class CommandHandler implements CommandExecutor {
         }
 
         if (args.length >= 1) {
-            switch (args[0]) {
+            switch (args[0].toLowerCase()) {
                 case "admin":
                     if (sender.hasPermission("novswar.command.admin")) {
                         new AdminCommand(novsWar, sender, args).execute();
