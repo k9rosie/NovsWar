@@ -72,11 +72,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event) {
+    	Game game = novswar.getGameHandler().getGame();
         Player bukkitPlayer = event.getPlayer();
         NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
 
         novswar.getDatabase().flushPlayerData(player);
         playerManager.getPlayers().remove(player);
+        game.quitGame();
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
