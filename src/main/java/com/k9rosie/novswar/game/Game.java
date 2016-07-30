@@ -111,6 +111,7 @@ public class Game {
 
     public void waitForPlayers() {
         gameState = GameState.WAITING_FOR_PLAYERS;
+        gameTimer.stopTimer();
         scoreboard.setSidebarTitle("Waiting for players");
 
     }
@@ -140,8 +141,14 @@ public class Game {
 
     public void pauseGame() {
         gameState = GameState.PAUSED;
-
+        Bukkit.broadcastMessage("Pausing Round");
         world.closeIntermissionGates();
+        
+        for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+        	player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
+        }
+        
+        gameTimer.pauseTimer();
         // TODO: teleport all players to their spawn points
         // TODO: stop timer
         // TODO: stop schedulers for the world's regions
@@ -151,7 +158,10 @@ public class Game {
         if (!gameState.equals(GameState.PAUSED)) {
             return;
         }
-
+        gameTimer.startTimer();
+        gameState = GameState.DURING_GAME;
+        Bukkit.broadcastMessage("Resuming Round");
+        world.openIntermissionGates();
 
     }
 
@@ -252,6 +262,9 @@ public class Game {
         case POST_GAME :
         	gameStateString = ChatColor.GRAY + "Post game: ";
         	break;
+        case PAUSED :
+        	gameStateString = ChatColor.GRAY + "Game Paused ";
+        	break;
     	default :
     		gameStateString = "";
     		break;
@@ -270,6 +283,10 @@ public class Game {
         scoreboard.setSidebarTitle(gameStateString + ChatColor.GREEN + minutesString + ":" + secondsString);
     }
 
+    /**
+     * Checks player count on teams
+     * @return True if there are the minimum required players in-game, else false
+     */
     public boolean checkPlayerCount() {
         int numPlayers = 0;
         int required = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.minimum_players");
@@ -357,12 +374,44 @@ public class Game {
             player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
             player.getBukkitPlayer().setFoodLevel(20);
 
-            if (gameState.equals(GameState.WAITING_FOR_PLAYERS)) {
-                if (checkPlayerCount()) {
-                    preGame();
-                }
+            if (checkPlayerCount()) {
+            	switch (gameState) {
+            	case WAITING_FOR_PLAYERS :
+            		preGame();
+            		break;
+            	case PAUSED :
+            		unpauseGame();
+            		break;
+        		default :
+        			break;
+            	}
             }
         }
+    }
+    
+    public void quitGame() {
+    	if(novsWar.getPlayerManager().getPlayers().size() == 0) {
+    		//There are no players in the server, start new game
+    		System.out.println("There are no players in the server");
+    		if(gameTimer.getTaskID() != 0) { //if there is a running timer
+    			System.out.println("Stopped timer");
+    			gameTimer.stopTimer();
+    		}
+    		gameHandler.newGame(world); //waitForPlayers();
+    	} else {
+    		if(checkPlayerCount()==false) { //if there are not enough players
+    			switch (gameState) {
+            	case PRE_GAME :
+            		waitForPlayers();
+            		break;
+            	case DURING_GAME :
+            		pauseGame();
+            		break;
+        		default :
+        			break;
+            	}
+    		}
+    	}
     }
 
     public GameScoreboard getScoreboard() {

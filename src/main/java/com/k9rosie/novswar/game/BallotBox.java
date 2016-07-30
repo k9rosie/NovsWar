@@ -75,8 +75,10 @@ public class BallotBox {
 	
 	public void recordResult(int result) {
 		mapWinner[result]++;
-		System.out.println("Vote Tally is: "+mapWinner.toString());
-		System.out.println(ballotList.toString());
+		for (int i : mapWinner) {
+			System.out.print(i+", ");
+		}
+		System.out.println();
 	}
 	
 	public NovsWorld tallyResults() {
