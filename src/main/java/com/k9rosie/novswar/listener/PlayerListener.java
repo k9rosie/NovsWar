@@ -86,6 +86,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDamageByPlayer(EntityDamageByEntityEvent event) {
+        System.out.println("EntityDamageByEntityEvent: " + event.getFinalDamage() + " / " + event.getCause());
         Player victimBukkitPlayer;
         Player attackerBukkitPlayer = null;
         boolean arrowDeath = false;
@@ -117,12 +118,13 @@ public class PlayerListener implements Listener {
             NovsPlayer victim = playerManager.getPlayers().get(victimBukkitPlayer);
             NovsPlayer attacker = playerManager.getPlayers().get(attackerBukkitPlayer);
 
-            playerKill(event, victim, attacker, arrowDeath);
+            playerKill(event, attacker, victim, arrowDeath);
         }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDamage(EntityDamageEvent event) {
+        System.out.println("EntityDamageEvent: " + event.getFinalDamage() + " / " + event.getCause());
     	Game game = novswar.getGameHandler().getGame();
         if (event.getEntity() instanceof Player) {
             Player bukkitPlayer = (Player) event.getEntity();
