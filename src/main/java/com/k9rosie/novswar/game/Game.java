@@ -67,12 +67,11 @@ public class Game {
         }
         
         for (NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
-        	player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
-        	player.getBukkitPlayer().setFoodLevel(20);
         	player.setTeam(defaultTeam); // NovsPlayer now has private NovsTeam var
             player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+        	player.getBukkitPlayer().setFoodLevel(20);
         }
-
 
         scoreboard.initialize(); //maybe try putting this before line 69?
 
