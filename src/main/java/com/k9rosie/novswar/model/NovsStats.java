@@ -2,6 +2,9 @@ package com.k9rosie.novswar.model;
 
 import com.k9rosie.novswar.NovsWar;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 public class NovsStats {
 
     private NovsPlayer player;
@@ -16,6 +19,9 @@ public class NovsStats {
     private int connects;
     private double damageGiven;
     private double damageTaken;
+    private Date lastPlayed;
+    private Timestamp loggedIn;
+    private long totalTime;
 
     public NovsStats(NovsPlayer player) {
         this.player = player;
@@ -155,5 +161,33 @@ public class NovsStats {
 
     public void incrementDamageTaken(double damage) {
         damageTaken += damage;
+    }
+
+    public Date getLastPlayed() {
+        return lastPlayed;
+    }
+
+    public void setLastPlayed(Date lastPlayed) {
+        this.lastPlayed = lastPlayed;
+    }
+
+    public Timestamp getLoggedIn() {
+        return loggedIn;
+    }
+
+    public void setLoggedIn(Timestamp loggedIn) {
+        this.loggedIn = loggedIn;
+    }
+
+    public long getTotalTime() {
+        return totalTime;
+    }
+
+    public void setTotalTime(long totalTime) {
+        this.totalTime = totalTime;
+    }
+
+    public void incrementTotalTime(long totalTime) {
+        this.totalTime += totalTime;
     }
 }

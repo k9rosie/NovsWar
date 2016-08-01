@@ -12,6 +12,9 @@ import org.bukkit.entity.Player;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 public class PlayerCommand extends NovsCommand {
@@ -58,6 +61,10 @@ public class PlayerCommand extends NovsCommand {
         } else {
             kd = (stats.getKills()+stats.getArrowKills())/(stats.getDeaths()+stats.getArrowDeaths());
         }
+
+        Date lastPlayed = stats.getLastPlayed();
+        SimpleDateFormat format = new SimpleDateFormat("M/d/yyyy h:mm a");
+        String date = format.format(lastPlayed);
         String[] statsString = {
                 "§a§o§lONLINE",
                 "§7Team: §f" + team.getColor() + team.getTeamName(),
@@ -71,7 +78,9 @@ public class PlayerCommand extends NovsCommand {
                 "§7Games Played: §f" + stats.getGamesPlayed(),
                 "§7Damage Given: §f" + stats.getDamageGiven(),
                 "§7Damage Taken: §f" + stats.getDamageTaken(),
-                "§7Connects: §f" + stats.getConnects()
+                "§7Connects: §f" + stats.getConnects(),
+                "§7Last Played: §f" + date,
+                "§7Logged In Since: §f" + loggedIn(stats.getLoggedIn())
         };
         getSender().sendMessage("§aPlayer data for "+team.getColor()+bukkitPlayer.getDisplayName()+"§a:");
         getSender().sendMessage(statsString);
@@ -91,6 +100,10 @@ public class PlayerCommand extends NovsCommand {
             } else {
                 kd = (results.getInt("kills")+results.getInt("arrow_kills"))/(results.getInt("deaths")+results.getInt("arrow_deaths"));
             }
+
+            Date lastPlayed = results.getDate("last_played");
+            SimpleDateFormat format = new SimpleDateFormat("M/d/yyyy h:mm a");
+            String date = format.format(lastPlayed);
             statsString = new String[] {
                     "§7§o§lOFFLINE",
                     "§7Kills: §f" + results.getInt("kills"),
@@ -103,7 +116,8 @@ public class PlayerCommand extends NovsCommand {
                     "§7Games Played: §f" + results.getInt("games_played"),
                     "§7Damage Given: §f" + results.getDouble("damage_given"),
                     "§7Damage Taken: §f" + results.getInt("damage_taken"),
-                    "§7Connects: §f" + results.getInt("connects")
+                    "§7Connects: §f" + results.getInt("connects"),
+                    "§7Last Played: §f" + date
             };
         } catch (SQLException e) {
             e.printStackTrace();
@@ -112,5 +126,52 @@ public class PlayerCommand extends NovsCommand {
         getSender().sendMessage("§aPlayer data for §7"+offlinePlayer.getName()+"§a:");
         getSender().sendMessage(statsString);
 
+    }
+
+    public String totalTimePlayed(long time) {
+        return "";
+    }
+
+    public String loggedIn(Timestamp timestamp) {
+        long currentTime = System.currentTimeMillis();
+        long time = currentTime - timestamp.getTime();
+        long seconds = time/1000;
+        long minutes = seconds/60;
+        long hours = minutes/60;
+        long days = hours/24;
+        long years = days/360;
+
+        StringBuilder builder = new StringBuilder();
+        if (years == 1) {
+            builder.append(Long.toString(years) + " year ");
+        } else if (years != 0) {
+            builder.append(Long.toString(years) + " years ");
+        }
+
+        if (days == 1) {
+            builder.append(Long.toString(days % 360) + " day ");
+        } else if (days != 0) {
+            builder.append(Long.toString(days % 360) + " days ");
+        }
+
+        if (hours == 1) {
+            builder.append(Long.toString(hours % 24) + " hour ");
+        } else if (hours != 0) {
+            builder.append(Long.toString(hours % 24) + " hours ");
+        }
+
+        if (minutes == 1) {
+            builder.append(Long.toString(minutes % 60) + " minute ");
+        } else if (minutes != 0) {
+            builder.append(Long.toString(minutes % 60) + " minutes ");
+        }
+
+        if (seconds == 1) {
+            builder.append(Long.toString(seconds % 60) + " second ");
+        } else if (seconds != 0) {
+            builder.append(Long.toString(seconds % 60) + " seconds ");
+        }
+
+        return builder.toString();
     }
 }

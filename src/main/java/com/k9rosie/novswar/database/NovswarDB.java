@@ -6,6 +6,9 @@ import org.bukkit.entity.Player;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 public class NovswarDB extends Database {
@@ -113,6 +116,15 @@ public class NovswarDB extends Database {
             column.setType("DOUBLE");
             column.setDefaultValue("0");
             stats.add(column);
+
+            column = new Column("last_played");
+            column.setType("TIMESTAMP");
+            stats.add(column);
+
+            column = new Column("total_time");
+            column.setType("BIGINT");
+            column.setDefaultValue("0");
+            stats.add(column);
         }
         stats.execute();
     }
@@ -128,6 +140,8 @@ public class NovswarDB extends Database {
 
         NovsStats playerStats = player.getStats();
         ResultSet stats = select("stats", "player_uuid", bukkitPlayer.getUniqueId().toString());
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        playerStats.setLoggedIn(timestamp);
 
         try {
             while (data.next()) {
@@ -144,6 +158,8 @@ public class NovswarDB extends Database {
                 playerStats.setConnects(stats.getInt("connects"));
                 playerStats.setDamageGiven(stats.getDouble("damage_given"));
                 playerStats.setDamageTaken(stats.getDouble("damage_taken"));
+                playerStats.setLastPlayed(stats.getTimestamp("last_played"));
+                playerStats.setTotalTime(stats.getLong("total_time"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -160,6 +176,11 @@ public class NovswarDB extends Database {
         String playerUUIDString = player.getBukkitPlayer().getUniqueId().toString();
         NovsStats stats = player.getStats();
         String deathMessages = player.canSeeDeathMessages() ? "1" : "0";
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentDate = dateFormat.format(date);
+        Timestamp loggedIn = stats.getLoggedIn();
+        long totalTime = stats.getTotalTime() + loggedIn.getTime();
         set("players", "name", "'"+player.getBukkitPlayer().getDisplayName()+"'", "uuid", playerUUIDString);
         set("players", "death_messages", deathMessages, "uuid", playerUUIDString);
         set("stats", "kills", Integer.toString(stats.getKills()), "player_uuid", playerUUIDString);
@@ -172,5 +193,7 @@ public class NovswarDB extends Database {
         set("stats", "connects", Integer.toString(stats.getConnects()), "player_uuid", playerUUIDString);
         set("stats", "damage_given", Double.toString(stats.getDamageGiven()), "player_uuid", playerUUIDString);
         set("stats", "damage_taken", Double.toString(stats.getDamageTaken()), "player_uuid", playerUUIDString);
+        set("stats", "last_played", "'"+currentDate+"'", "player_uuid", playerUUIDString);
+        set("stats", "total_time", Long.toString(totalTime), "player_uuid", playerUUIDString);
     }
 }
