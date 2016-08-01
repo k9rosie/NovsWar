@@ -33,7 +33,6 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashSet;
 
 public class PlayerListener implements Listener {
 
@@ -126,6 +125,12 @@ public class PlayerListener implements Listener {
     public void onPlayerDamage(EntityDamageEvent event) {
         System.out.println("EntityDamageEvent: " + event.getFinalDamage() + " / " + event.getCause());
     	Game game = novswar.getGameHandler().getGame();
+    	//Prevent damage outside of DURING_GAME
+    	if(game.getGameState().equals(GameState.DURING_GAME)) {
+    		event.setCancelled(true);
+            return;
+    	}
+    	
         if (event.getEntity() instanceof Player) {
             Player bukkitPlayer = (Player) event.getEntity();
             NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
