@@ -4,18 +4,17 @@ package com.k9rosie.novswar.game;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.event.NovsWarEndGameEvent;
 import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
+import com.k9rosie.novswar.event.NovsWarPlayerKillEvent;
+import com.k9rosie.novswar.event.NovsWarTeamVictoryEvent;
 import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
 import com.k9rosie.novswar.util.Messages;
-
 import com.k9rosie.novswar.util.SendTitle;
+
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Team;
 
@@ -113,13 +112,11 @@ public class Game {
         gameState = GameState.WAITING_FOR_PLAYERS;
         gameTimer.stopTimer();
         scoreboard.setSidebarTitle("Waiting for players");
-
     }
 
     public void preGame() {
         gameState = GameState.PRE_GAME;
         world.respawnBattlefields();
-
         int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.pre_game_timer");
         gameTimer.stopTimer();
         gameTimer.setTime(gameTime);
@@ -128,32 +125,24 @@ public class Game {
 
     public void startGame() {
         gameState = GameState.DURING_GAME;
-
         world.openIntermissionGates();
-
         int gameTime = gamemode.getGameTime();
         gameTimer.stopTimer();
         gameTimer.setTime(gameTime);
         gameTimer.startTimer();
         Bukkit.broadcastMessage("Starting Round");
-        
     }
 
     public void pauseGame() {
         gameState = GameState.PAUSED;
         Bukkit.broadcastMessage("Pausing Round");
         world.closeIntermissionGates();
-        
         for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
             if (!player.getTeam().equals(novsWar.getTeamManager().getDefaultTeam())) {
                 player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
             }
         }
-        
         gameTimer.pauseTimer();
-        // TODO: teleport all players to their spawn points
-        // TODO: stop timer
-        // TODO: stop schedulers for the world's regions
     }
 
     public void unpauseGame() {
@@ -164,7 +153,6 @@ public class Game {
         gameState = GameState.DURING_GAME;
         Bukkit.broadcastMessage("Resuming Round");
         world.openIntermissionGates();
-
     }
 
     /**
@@ -177,12 +165,17 @@ public class Game {
 
         if (!event.isCancelled()) {
             gameState = GameState.POST_GAME;
-
+            
+            //Determine winning teams and invoke events
             ArrayList<NovsTeam> winners = getWinners();
             System.out.println(winners.size());
             if (winners.size() == 1) {
                 NovsTeam winner = winners.get(0);
-                Bukkit.broadcastMessage(winner.getColor()+winner.getTeamName()+" §fwins!");
+                //Display victory message for all players, given single victor
+                for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+                	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 2000, 0, " ", winner.getColor()+winner.getTeamName()+" §fwins!");
+                }
+                //Bukkit.broadcastMessage(winner.getColor()+winner.getTeamName()+" §fwins!");
             } else if (winners.size() > 1) {
                 StringBuilder teamList = new StringBuilder();
                 for (int i = 0; i < winners.toArray().length; i++) {
@@ -192,8 +185,15 @@ public class Game {
                         teamList.append(ChatColor.GRAY+", ");
                     }
                 }
-
-                Bukkit.broadcastMessage(teamList.toString() + " §fwin!");
+              //Display victory message for all players, given multiple victors
+                for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+                	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 2000, 0, " ", teamList.toString() + " §fwin!");
+                }
+                //Bukkit.broadcastMessage(teamList.toString() + " §fwin!");
+            }
+            for(NovsTeam winner : winners) {
+            	NovsWarTeamVictoryEvent invokeEvent = new NovsWarTeamVictoryEvent(winner, this);
+                Bukkit.getPluginManager().callEvent(invokeEvent);
             }
             
             //Respawns all dead players and tp's alive players to their team spawns
@@ -211,7 +211,6 @@ public class Game {
                     player.getStats().incrementWins();
                 }
             }
-
             for (NovsTeam team : enabledTeams) {
                 for (NovsPlayer player : team.getPlayers()) {
                     player.getStats().incrementGamesPlayed();
@@ -231,6 +230,10 @@ public class Game {
             Bukkit.getScheduler().scheduleSyncDelayedTask(novsWar.getPlugin(), new Runnable() {
                 @Override
                 public void run() {
+                	//Remove victory message
+                	for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+                		SendTitle.sendTitle(player.getBukkitPlayer(), 0, 0, 0, " ", "");
+                	}
                     if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
                         ballotBox.castVotes();
                     }
@@ -239,12 +242,27 @@ public class Game {
         }
     }
 
+    /**
+     * Determines the team(s) with the highest score
+     * @return ArrayList of NovsTeams with highest score
+     */
     public ArrayList<NovsTeam> getWinners() {
         ArrayList<NovsTeam> winningTeams = new ArrayList<NovsTeam>();
+        int topScore = 0;
+        NovsTeam topTeam = enabledTeams.get(0); //arbitrarily initialize topTeam as team 0
+        //Find the team with the highest score
         for (NovsTeam team : enabledTeams) {
-            if (team.getNovsScore().getScore() >= gamemode.getMaxScore()) {
-                winningTeams.add(team);
+            if (team.getNovsScore().getScore() > topScore) {
+            	topScore = team.getNovsScore().getScore();
+            	topTeam = team;
             }
+        }
+        winningTeams.add(topTeam);
+        //Find other teams that are tied with the top team
+        for (NovsTeam team : enabledTeams) {
+        	if(team.equals(topTeam) == false && team.getNovsScore().getScore() == topScore) {
+        		winningTeams.add(team);
+        	}
         }
         return winningTeams;
     }
