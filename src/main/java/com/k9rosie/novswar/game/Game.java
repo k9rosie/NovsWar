@@ -65,7 +65,9 @@ public class Game {
         for (NovsTeam team : enabledTeams) {
         	team.getNovsScore().setScore(0);	//Resets all team's scores
         }
-        
+
+        scoreboard.initialize(); //maybe try putting this before line 69?
+
         for (NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
         	player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
         	player.getBukkitPlayer().setFoodLevel(20);
@@ -74,7 +76,7 @@ public class Game {
         }
 
 
-        scoreboard.initialize(); //maybe try putting this before line 69?
+
 
         waitForPlayers();
     }
