@@ -126,7 +126,7 @@ public class PlayerListener implements Listener {
         System.out.println("EntityDamageEvent: " + event.getFinalDamage() + " / " + event.getCause());
     	Game game = novswar.getGameHandler().getGame();
     	//Prevent damage outside of DURING_GAME
-    	if(game.getGameState().equals(GameState.DURING_GAME)) {
+    	if(game.getGameState().equals(GameState.DURING_GAME) == false) {
     		event.setCancelled(true);
             return;
     	}
