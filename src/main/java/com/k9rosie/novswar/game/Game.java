@@ -31,6 +31,9 @@ public class Game {
     private GameTimer gameTimer;
     private GameScoreboard scoreboard;
     private BallotBox ballotBox;
+    
+    private int messageTime = 5;
+    private int messageTask = 0;
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
@@ -140,7 +143,11 @@ public class Game {
         world.closeIntermissionGates();
         for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
             if (!player.getTeam().equals(novsWar.getTeamManager().getDefaultTeam())) {
-                player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
+            	if(player.isDead()) {
+            		respawn(player);
+            	} else {
+            		player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
+            	}
             }
         }
         gameTimer.pauseTimer();
@@ -220,7 +227,6 @@ public class Game {
 
             world.closeIntermissionGates();
             world.respawnBattlefields();
-
             int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
             gameTimer.stopTimer();
             gameTimer.setTime(gameTime);
@@ -353,7 +359,6 @@ public class Game {
 
         if (player.isDead()) {
             NovsTeam team = player.getTeam();
-
             player.setDeath(false);
             player.getBukkitPlayer().teleport(world.getTeamSpawns().get(team));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
@@ -372,25 +377,7 @@ public class Game {
                 return;
             }
 
-            // novsloadout has its own way of sorting players, only run this code if it isnt enabled
-            if (!Bukkit.getPluginManager().isPluginEnabled("NovsLoadout")) {
-            	//Determine which team has fewer players
-            	NovsTeam smallestTeam = enabledTeams.get(0);
-            	int smallest = smallestTeam.getPlayers().size();
-                for (NovsTeam team : enabledTeams) {
-                	if(team.getPlayers().size() <= smallest) {
-                		smallest = team.getPlayers().size();
-                		smallestTeam = team;
-                	}
-                }
-
-                player.setTeam(smallestTeam);
-
-                Location teamSpawn = world.getTeamSpawns().get(smallestTeam);
-                player.getBukkitPlayer().teleport(teamSpawn);
-                String message = Messages.JOIN_TEAM.toString().replace("%team_color%", smallestTeam.getColor().toString()).replace("%team%", smallestTeam.getTeamName());
-                player.getBukkitPlayer().sendMessage(message);
-            }
+            assignPlayerTeam(player);
 
             player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
             player.getBukkitPlayer().setFoodLevel(20);
@@ -410,31 +397,64 @@ public class Game {
         }
     }
     
-    public void quitGame() {
-    	if(novsWar.getPlayerManager().getPlayers().size() == 0) {
-    		//There are no players in the server, start new game
-    		System.out.println("There are no players in the server");
-    		if(gameTimer.getTaskID() != 0) { //if there is a running timer
-    			System.out.println("Stopped timer");
-    			gameTimer.stopTimer();
-    		}
-    		gameHandler.newGame(world); //waitForPlayers();
-    	} else {
-    		System.out.println("A player left the server");
-    		if(checkPlayerCount()==false) { //if there are not enough players
-    			System.out.println("There are not enough players");
-    			switch (gameState) {
-            	case PRE_GAME :
-            		waitForPlayers();
-            		break;
-            	case DURING_GAME :
-            		pauseGame();
-            		break;
-        		default :
-        			break;
+    public void balanceTeams() {
+    	pauseGame();
+    	messageTime = 5;
+    	messageTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(novsWar.getPlugin(), new Runnable() {
+    		public void run() {
+    			for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+    				SendTitle.sendTitle(player.getBukkitPlayer(), 0, 2000, 0, " ", "Team Auto-Balance in "+messageTime+"...");
             	}
+    			messageTime--;
+    			if(messageTime <= 0) {
+    				Bukkit.getScheduler().cancelTask(messageTask);
+    				//Set every player's team to default
+    		    	for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+    		    		SendTitle.sendTitle(player.getBukkitPlayer(), 0, 0, 0, " ", "");
+    		    		player.setTeam(novsWar.getTeamManager().getDefaultTeam());
+    		        }
+    		    	//re-do the team sorting algorithm
+    		    	for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+    		    		assignPlayerTeam(player);
+    		        }
+    		    	unpauseGame();
+    			}
     		}
-    	}
+    	}, 0, 20);
+    }
+    
+    private void assignPlayerTeam(NovsPlayer player) {
+    	// novsloadout has its own way of sorting players, only run this code if it isnt enabled
+        if (!Bukkit.getPluginManager().isPluginEnabled("NovsLoadout")) {
+        	//Determine which team has fewer players
+        	NovsTeam smallestTeam = enabledTeams.get(0);
+        	int smallest = smallestTeam.getPlayers().size();
+            for (NovsTeam team : enabledTeams) {
+            	if(team.getPlayers().size() <= smallest) {
+            		smallest = team.getPlayers().size();
+            		smallestTeam = team;
+            	}
+            }
+
+            player.setTeam(smallestTeam);
+
+            Location teamSpawn = world.getTeamSpawns().get(smallestTeam);
+            player.getBukkitPlayer().teleport(teamSpawn);
+            String message = Messages.JOIN_TEAM.toString().replace("%team_color%", smallestTeam.getColor().toString()).replace("%team%", smallestTeam.getTeamName());
+            player.getBukkitPlayer().sendMessage(message);
+        } else {
+        	
+        	//TODO Call NovsLoadout's sorting algorithm
+        	
+        }
+    }
+    
+    public void restartGame() {
+    	if(gameTimer.getTaskID() != 0) { //if there is a running timer
+			System.out.println("Stopped timer");
+			gameTimer.stopTimer();
+		}
+		gameHandler.newGame(world);
     }
 
     public GameScoreboard getScoreboard() {

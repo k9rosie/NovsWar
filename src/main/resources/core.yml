@@ -62,6 +62,9 @@ core:
     # the minimum amount of players in the game needed to start the game
     minimum_players: 3
 
+    # the difference in team sizes necessary to trigger a re-balance. Set to 0 to turn off team re-balancing
+    largest_team_imbalance: 4
+
     # can players join a game after it has started?
     join_in_progress: false
 

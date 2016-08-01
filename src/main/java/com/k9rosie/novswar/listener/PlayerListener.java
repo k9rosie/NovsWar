@@ -3,8 +3,10 @@ package com.k9rosie.novswar.listener;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
+import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerAssistEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerKillEvent;
+import com.k9rosie.novswar.event.NovsWarTeamVictoryEvent;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
 import com.k9rosie.novswar.manager.PlayerManager;
@@ -79,7 +81,9 @@ public class PlayerListener implements Listener {
 
         novswar.getDatabase().flushPlayerData(player);
         playerManager.getPlayers().remove(bukkitPlayer);
-        game.quitGame();
+        NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(player, game);
+        Bukkit.getPluginManager().callEvent(invokeEvent);
+        //game.quitGame();
         System.out.println("Player count: " + novswar.getPlayerManager().getPlayers().values().size());
     }
 
