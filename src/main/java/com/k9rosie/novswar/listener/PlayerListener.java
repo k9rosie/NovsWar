@@ -223,6 +223,7 @@ public class PlayerListener implements Listener {
             
         } else if(player.isSpectating()) {
         	if(event.isCancelled()==false) {
+        		System.out.println("PlayerInteractEvent while spectating");
         		int index = 0;
         		int nextIndex = 0;
         		int watchdog = 0;

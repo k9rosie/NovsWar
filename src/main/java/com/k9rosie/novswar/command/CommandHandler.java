@@ -56,8 +56,12 @@ public class CommandHandler implements CommandExecutor {
                     }
                 case "spectate":
                     if (sender.hasPermission("novswar.command.spectate")) {
-                        new SpectateCommand(novsWar, sender, args).execute();
-                        return true;
+                    	if(sender.hasPermission("mv.bypass.gamemode.*")) {
+	                        new SpectateCommand(novsWar, sender, args).execute();
+	                        return true;
+                    	} else {
+                    		sender.sendMessage("You lack the mv.bypass.gamemode.* permission");
+                    	}
                     }
                 case "leave":
                     if (sender.hasPermission("novswar.command.leave")) {
