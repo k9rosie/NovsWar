@@ -295,7 +295,7 @@ public class PlayerListener implements Listener {
     public void onPlayerToggleSneakEvent(PlayerToggleSneakEvent event) {
         NovsPlayer player = playerManager.getPlayers().get(event.getPlayer());
 
-        if (player.isDead()) {
+        if (player.isDead() || player.isSpectating()) {
             event.setCancelled(true);
         }
     }

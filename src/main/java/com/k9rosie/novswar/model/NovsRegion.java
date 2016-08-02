@@ -6,9 +6,13 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Chest;
+import org.bukkit.material.MaterialData;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NovsRegion {
 
@@ -16,14 +20,14 @@ public class NovsRegion {
     private Location cornerOne;
     private Location cornerTwo;
     private RegionType regionType;
-    private ArrayList<BlockState> blocks;
+    private HashMap<BlockState, MaterialData> blocks;
 
     public NovsRegion(NovsWorld world, Location cornerOne, Location cornerTwo, RegionType regionType) {
         this.world = world;
         this.cornerOne = cornerOne;
         this.cornerTwo = cornerTwo;
         this.regionType = regionType;
-        blocks = new ArrayList<BlockState>();
+        blocks = new HashMap<BlockState, MaterialData>();
     }
 
     public NovsWorld getWorld() {
@@ -54,16 +58,16 @@ public class NovsRegion {
         this.regionType = regionType;
     }
 
-    public ArrayList<BlockState> getBlocks() {
+    public HashMap<BlockState, MaterialData> getBlocks() {
         return blocks;
     }
 
-    public void setBlocks(ArrayList<BlockState> blocks) {
+    public void setBlocks(HashMap<BlockState, MaterialData> blocks) {
         this.blocks = blocks;
     }
 
-    public ArrayList<BlockState> getCuboid() {
-        ArrayList<BlockState> blocks = new ArrayList<BlockState>();
+    public HashMap<BlockState, MaterialData> getCuboid() {
+        HashMap<BlockState, MaterialData> blocks = new HashMap<BlockState, MaterialData>();
 
         int topBlockX = Math.max(cornerOne.getBlockX(), cornerTwo.getBlockX());
         int topBlockY = Math.max(cornerOne.getBlockY(), cornerTwo.getBlockY());
@@ -76,7 +80,8 @@ public class NovsRegion {
             for (int y = bottomBlockY; y <= topBlockY; y++) {
                 for (int z = bottomBlockZ; z <= topBlockZ; z++) {
                     BlockState block = cornerOne.getWorld().getBlockAt(x, y, z).getState();
-                    blocks.add(block);
+                    MaterialData data = block.getData();
+                    blocks.put(block, data);
                 }
             }
         }
@@ -104,8 +109,9 @@ public class NovsRegion {
     }
 
     public void resetBlocks() {
-        for (BlockState block : blocks) {
-            block.update(true, false);
+        for (Map.Entry<BlockState, MaterialData> entry : blocks.entrySet()) {
+            entry.getKey().setData(entry.getValue());
+            entry.getKey().update(true, false);
         }
     }
 
