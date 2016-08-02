@@ -37,4 +37,14 @@ public class PlayerManager {
         }
         return null;
     }
+    
+    public ArrayList<NovsPlayer> getInGamePlayers() {
+    	ArrayList<NovsPlayer> inGamePlayers = new ArrayList<NovsPlayer>();
+    	for(NovsPlayer aPlayer : players.values()) {
+    		if(aPlayer.getTeam().equals(novswar.getTeamManager().getDefaultTeam())==false) {
+    			inGamePlayers.add(aPlayer);
+    		}
+    	}
+    	return inGamePlayers;
+    }
 }

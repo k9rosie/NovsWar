@@ -143,14 +143,12 @@ public class Game {
         gameState = GameState.PAUSED;
         Bukkit.broadcastMessage("Pausing Round");
         world.closeIntermissionGates();
-        for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
-            if (!player.getTeam().equals(novsWar.getTeamManager().getDefaultTeam())) {
-            	if(player.isDead()) {
-            		respawn(player);
-            	} else {
-            		player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
-            	}
-            }
+        for(NovsPlayer player : novsWar.getPlayerManager().getInGamePlayers()) {
+        	if(player.isDead()) {
+        		respawn(player);
+        	} else {
+        		player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
+        	}
         }
         gameTimer.pauseTimer();
     }
@@ -176,6 +174,15 @@ public class Game {
         if (!event.isCancelled()) {
             gameState = GameState.POST_GAME;
             
+            //Respawns all dead players and tp's alive players to their team spawns
+            for(NovsPlayer player : novsWar.getPlayerManager().getInGamePlayers()) {
+            	if(player.isDead()) {
+            		respawn(player);
+            	} else {
+            		player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
+            	}
+            }
+            
             //Determine winning teams and invoke events
             ArrayList<NovsTeam> winners = getWinners();
             System.out.println(winners.size());
@@ -183,7 +190,7 @@ public class Game {
                 NovsTeam winner = winners.get(0);
                 //Display victory message for all players, given single victor
                 for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
-                	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 2000, 0, " ", winner.getColor()+winner.getTeamName()+" §fwins!");
+                	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 20*4, 20, " ", winner.getColor()+winner.getTeamName()+" §fwins!");
                 }
                 //Bukkit.broadcastMessage(winner.getColor()+winner.getTeamName()+" §fwins!");
             } else if (winners.size() > 1) {
@@ -197,22 +204,13 @@ public class Game {
                 }
               //Display victory message for all players, given multiple victors
                 for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
-                	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 2000, 0, " ", teamList.toString() + " §fwin!");
+                	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 20*4, 20, " ", teamList.toString() + " §fwin!");
                 }
                 //Bukkit.broadcastMessage(teamList.toString() + " §fwin!");
             }
             for(NovsTeam winner : winners) {
             	NovsWarTeamVictoryEvent invokeEvent = new NovsWarTeamVictoryEvent(winner, this);
                 Bukkit.getPluginManager().callEvent(invokeEvent);
-            }
-            
-            //Respawns all dead players and tp's alive players to their team spawns
-            for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
-            	if(player.isDead()) {
-            		respawn(player);
-            	} else {
-            		player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
-            	}
             }
             
             //Stats generation
@@ -404,19 +402,21 @@ public class Game {
     	messageTime = 5;
     	messageTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(novsWar.getPlugin(), new Runnable() {
     		public void run() {
-    			for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+    			ArrayList<NovsPlayer> autobalancePlayers = new ArrayList<NovsPlayer>();
+    			for(NovsPlayer player : novsWar.getPlayerManager().getInGamePlayers()) {
     				SendTitle.sendTitle(player.getBukkitPlayer(), 0, 2000, 0, " ", "Team Auto-Balance in "+messageTime+"...");
+    				autobalancePlayers.add(player);
             	}
     			messageTime--;
     			if(messageTime <= 0) {
     				Bukkit.getScheduler().cancelTask(messageTask);
     				//Set every player's team to default
-    		    	for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+    		    	for(NovsPlayer player : autobalancePlayers) {
     		    		SendTitle.sendTitle(player.getBukkitPlayer(), 0, 0, 0, " ", "");
     		    		player.setTeam(novsWar.getTeamManager().getDefaultTeam());
     		        }
     		    	//re-do the team sorting algorithm
-    		    	for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+    		    	for(NovsPlayer player : autobalancePlayers) {
     		    		assignPlayerTeam(player);
     		        }
     		    	unpauseGame();
