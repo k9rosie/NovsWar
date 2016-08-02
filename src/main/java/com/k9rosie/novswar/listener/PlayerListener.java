@@ -251,7 +251,9 @@ public class PlayerListener implements Listener {
         				nextIndex = 0;
         			}
         		}
-        		player.getBukkitPlayer().setSpectatorTarget(inGamePlayers.get(nextIndex).getBukkitPlayer());
+        		NovsPlayer target = inGamePlayers.get(nextIndex);
+        		player.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
+        		player.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
         	}
         }
     }
@@ -297,6 +299,17 @@ public class PlayerListener implements Listener {
 
         if (player.isDead() || player.isSpectating()) {
             event.setCancelled(true);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
+        NovsPlayer player = playerManager.getPlayers().get(event.getPlayer());
+
+        if (player.getBukkitPlayer().isValid()) {
+            System.out.println("PlayerTeleportEvent! Player is valid");
+        } else {
+        	System.out.println("PlayerTeleportEvent! Player is NOT valid");
         }
     }
 

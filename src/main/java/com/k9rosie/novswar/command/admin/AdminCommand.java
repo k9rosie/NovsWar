@@ -33,6 +33,9 @@ public class AdminCommand extends NovsCommand {
                 case "restart":
                     new RestartCommand(getNovsWar(), getSender(), getArgs()).execute();
                     return;
+                case "help":
+                    new HelpAdminCommand(getNovsWar(), getSender(), getArgs()).execute();
+                    return;
             }
         }
     }

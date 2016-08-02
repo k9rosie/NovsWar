@@ -69,6 +69,11 @@ public class CommandHandler implements CommandExecutor {
                         new MapCommand(novsWar, sender, args).execute();
                         return true;
                     }
+                case "help":
+                    if (sender.hasPermission("novswar.command.help")) {
+                        new HelpCommand(novsWar, sender, args).execute();
+                        return true;
+                    }
             }
         }
         return false;

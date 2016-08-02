@@ -8,15 +8,15 @@ import com.k9rosie.novswar.util.Messages;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
+//import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public class SetSpawnCommand extends NovsCommand {
-    private FileConfiguration regions;
+    //private FileConfiguration regions;
 
     public SetSpawnCommand(NovsWar novsWar, CommandSender sender, String[] args) {
         super(novsWar, sender, args);
-        regions = novsWar.getConfigurationCache().getConfig("regions");
+        //regions = novsWar.getConfigurationCache().getConfig("regions");
     }
 
     public void execute() {
