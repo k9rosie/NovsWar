@@ -25,6 +25,7 @@ public class Game {
     private NovsWorld world;
     private Gamemode gamemode;
     private GameState gameState;
+    private GameState previousGameState;
     private ArrayList<NovsTeam> enabledTeams;
     private HashMap<NovsPlayer, DeathTimer> deathTimers;
     private NovsWar novsWar;
@@ -43,6 +44,7 @@ public class Game {
         enabledTeams = new ArrayList<NovsTeam>();
         deathTimers = new HashMap<NovsPlayer, DeathTimer>();
         gameState = GameState.WAITING_FOR_PLAYERS;
+        previousGameState = GameState.WAITING_FOR_PLAYERS;
         novsWar = gameHandler.getNovsWarInstance();
         gameTimer = new GameTimer(this);
         scoreboard = new GameScoreboard(this);
@@ -142,6 +144,7 @@ public class Game {
     }
 
     public void pauseGame() {
+    	previousGameState = gameState;
         gameState = GameState.PAUSED;
         Bukkit.broadcastMessage("Pausing Round");
         world.closeIntermissionGates();
@@ -160,7 +163,7 @@ public class Game {
             return;
         }
         gameTimer.startTimer();
-        gameState = GameState.DURING_GAME;
+        gameState = previousGameState;
         Bukkit.broadcastMessage("Resuming Round");
         world.openIntermissionGates();
     }
@@ -206,6 +209,10 @@ public class Game {
               //Display victory message for all players, given multiple victors
                 for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
                 	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 20*4, 20, " ", teamList.toString() + " §fwin!");
+                }
+            } else { //no winners (all teams scored 0)
+            	for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+                	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 20*4, 20, " ", "§fNo Teams Won");
                 }
             }
             for(NovsTeam winner : winners) {
@@ -273,12 +280,14 @@ public class Game {
             	topTeam = team;
             }
         }
-        winningTeams.add(topTeam);
-        //Find other teams that are tied with the top team
-        for (NovsTeam team : enabledTeams) {
-        	if(team.equals(topTeam) == false && team.getNovsScore().getScore() == topScore) {
-        		winningTeams.add(team);
-        	}
+        if(topScore != 0) {
+        	winningTeams.add(topTeam);
+            //Find other teams that are tied with the top team
+            for (NovsTeam team : enabledTeams) {
+            	if(team.equals(topTeam) == false && team.getNovsScore().getScore() == topScore) {
+            		winningTeams.add(team);
+            	}
+            }
         }
         return winningTeams;
     }

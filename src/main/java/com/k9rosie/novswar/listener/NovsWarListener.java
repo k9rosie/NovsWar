@@ -43,14 +43,14 @@ public class NovsWarListener implements Listener {
     	Game game = event.getGame();
     	if(event.isCancelled() == false) {
     		//Count the number of players still in-game
-    		int inGamePlayerCount = 0;
-    		for(NovsPlayer player : novswar.getPlayerManager().getPlayers().values()) {
+    		int inGamePlayerCount = novswar.getPlayerManager().getInGamePlayers().size();
+    		/*for(NovsPlayer player : novswar.getPlayerManager().getPlayers().values()) {
     			if(player.getTeam().equals(novswar.getTeamManager().getDefaultTeam()) == false) {
     				inGamePlayerCount++;
     			}
-    		}
+    		}*/
     		//Assess in-game players
-    		if(inGamePlayerCount == 0 && game.getGameState().equals(GameState.DURING_GAME)) {
+    		if(inGamePlayerCount == 0) {
     			System.out.println("There are no in-game players. Starting new round.");
     			game.nextGame(game.getWorld());
     		} else {
