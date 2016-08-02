@@ -28,14 +28,18 @@ public class SpectateCommand extends NovsCommand{
         	//Return the player to the lobby
         	player.getBukkitPlayer().teleport(getNovsWar().getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
+            player.setSpectating(false);
         } else {
         	if(player.getTeam().equals(defaultTeam)) {
         		//Begin spectating
+        		player.setSpectating(true);
             	if(game.getGameState().equals(GameState.DURING_GAME)) {
             		ArrayList<NovsPlayer> inGamePlayers = getNovsWar().getPlayerManager().getInGamePlayers();
+            		NovsPlayer target = inGamePlayers.get(0);
             		player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
-            		player.getBukkitPlayer().setSpectatorTarget(inGamePlayers.get(0).getBukkitPlayer());
+            		player.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
             		player.getBukkitPlayer().sendMessage("Spectate different players using M1 and M2. F5 to change view.");
+            		player.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
             	} else {
             		player.getBukkitPlayer().sendMessage("You can only spectate during the round");
             	}
