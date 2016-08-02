@@ -54,6 +54,16 @@ public class CommandHandler implements CommandExecutor {
                         new SpectateCommand(novsWar, sender, args).execute();
                         return true;
                     }
+                case "leave":
+                    if (sender.hasPermission("novswar.command.leave")) {
+                        new LeaveCommand(novsWar, sender, args).execute();
+                        return true;
+                    }
+                case "map":
+                    if (sender.hasPermission("novswar.command.leave")) {
+                        new MapCommand(novsWar, sender, args).execute();
+                        return true;
+                    }
             }
         }
         return false;

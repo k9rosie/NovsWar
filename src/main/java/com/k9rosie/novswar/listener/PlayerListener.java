@@ -1,6 +1,8 @@
 package com.k9rosie.novswar.listener;
 
 
+import java.util.ArrayList;
+
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
@@ -27,6 +29,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -184,6 +187,7 @@ public class PlayerListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player bukkitPlayer = event.getPlayer();
         NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
+        ArrayList<NovsPlayer> inGamePlayers = novswar.getPlayerManager().getInGamePlayers();
 
         if (player.isSettingRegion()) {
             if (event.getClickedBlock() == null) {
@@ -215,10 +219,41 @@ public class PlayerListener implements Listener {
                 player.setRegionNameBuffer(null);
                 player.setSettingRegion(false);
             }
-
             event.setCancelled(true);
+            
+        } else if(player.isSpectating()) {
+        	if(event.isCancelled()==false) {
+        		int index = 0;
+        		int nextIndex = 0;
+        		int watchdog = 0;
+        		//Get current index of spectator target in player list
+        		while(player.getSpectatorTarget().equals(inGamePlayers.get(index))==false){
+    				index++;
+    				if(index >= inGamePlayers.size()){
+    					index = 0;
+    					watchdog++;
+    				}
+    				if(watchdog >= 2) {
+    					System.out.println("WARNING: onPlayerInteract could not find the next spectator target");
+    				}
+    			}
+        		//Modify player index based on type of mouse click
+        		if(event.getAction().equals(Action.LEFT_CLICK_AIR) ||
+        		  event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
+        			nextIndex = index - 1;
+        			if(nextIndex < 0) {
+        				nextIndex = inGamePlayers.size()-1;
+        			}
+        		} else if(event.getAction().equals(Action.RIGHT_CLICK_AIR) ||
+        		  event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+        			nextIndex = index + 1;
+        			if(nextIndex >= inGamePlayers.size()) {
+        				nextIndex = 0;
+        			}
+        		}
+        		player.getBukkitPlayer().setSpectatorTarget(inGamePlayers.get(nextIndex).getBukkitPlayer());
+        	}
         }
-
     }
     
     @EventHandler(priority = EventPriority.NORMAL)

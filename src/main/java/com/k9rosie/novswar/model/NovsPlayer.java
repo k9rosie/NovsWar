@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 public class NovsPlayer {
 
     private Player bukkitPlayer;
+    private Player bukkitSpectatorTarget;
     private NovsStats stats;
     private NovsTeam team;
     private HashMap<NovsPlayer, Double> attackerMap;
@@ -37,6 +38,7 @@ public class NovsPlayer {
         isSpectating = false;
         isSettingRegion = false;
         hasVoted = false;
+        bukkitSpectatorTarget = null;
     }
     
     public void addAttacker(NovsPlayer player, Double damage) {
@@ -160,5 +162,13 @@ public class NovsPlayer {
 
     public String getRegionNameBuffer() {
         return regionNameBuffer;
+    }
+    
+    public void setSpectatorTarget(Player player) {
+    	bukkitSpectatorTarget = player;
+    }
+    
+    public Player getSpectatorTarget() {
+    	return bukkitSpectatorTarget;
     }
 }
