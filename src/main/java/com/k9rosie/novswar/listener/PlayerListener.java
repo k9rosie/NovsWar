@@ -309,12 +309,29 @@ public class PlayerListener implements Listener {
      * Handles player teleportation override for spectators
      * @param event
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    /*@EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
         NovsPlayer player = playerManager.getPlayers().get(event.getPlayer());
 
         if (player.isSpectating()) {
             System.out.println("PlayerTeleportEvent! Player is spectating");
+            Player target = player.getSpectatorTarget();
+
+			player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
+    		player.getBukkitPlayer().setSpectatorTarget(target);
+        }
+    }*/
+    
+    /**
+     * Overrides player gamemode changes
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+    	NovsPlayer player = playerManager.getPlayers().get(event.getPlayer());
+
+        if (player.isSpectating()) {
+            System.out.println("PlayerChangedWorldEvent! Player is spectating");
             Player target = player.getSpectatorTarget();
 
 			player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);

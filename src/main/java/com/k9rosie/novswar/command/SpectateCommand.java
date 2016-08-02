@@ -39,9 +39,11 @@ public class SpectateCommand extends NovsCommand{
             		player.setSpectating(true);
             		player.setSpectatorTarget(target.getBukkitPlayer());
             		player.getBukkitPlayer().teleport(target.getBukkitPlayer().getLocation());
+            		//player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
+            		//player.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
             		player.getBukkitPlayer().sendMessage("Spectate different players using M1 and M2. F5 to change view.");
             		player.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
-            		//onPlayerTeleportEvent handles changing gamemode and spectator target
+
             	} else {
             		player.getBukkitPlayer().sendMessage("You can only spectate during the round");
             	}
