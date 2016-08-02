@@ -17,7 +17,8 @@ public class NextGameCommand extends NovsCommand{
     }
 
     public void execute() {
-    	Bukkit.broadcastMessage("Forcing game restart...");
-    	getNovsWar().getGameHandler().newGame(game.getWorld());
+    	Bukkit.broadcastMessage("Forcing next game...");
+    	//getNovsWar().getGameHandler().newGame(game.getWorld());
+    	game.nextGame(game.getBallotBox().nextWorld(game.getWorld()));
     }
 }

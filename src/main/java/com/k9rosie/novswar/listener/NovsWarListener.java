@@ -1,7 +1,5 @@
 package com.k9rosie.novswar.listener;
 
-import java.util.HashSet;
-
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
@@ -54,7 +52,7 @@ public class NovsWarListener implements Listener {
     		//Assess in-game players
     		if(inGamePlayerCount == 0 && game.getGameState().equals(GameState.DURING_GAME)) {
     			System.out.println("There are no in-game players. Starting new round.");
-    			game.restartGame();
+    			game.nextGame(game.getWorld());
     		} else {
     			System.out.println("A player left the game");
         		if(game.checkPlayerCount()==false) { //if there are not enough players
@@ -78,7 +76,6 @@ public class NovsWarListener implements Listener {
         			} else {
         				//Determine player counts for each team
         				boolean imbalanceFound = false;
-        				HashSet<NovsTeam> alreadyChecked = new HashSet<NovsTeam>();
         				for(NovsTeam teamA : novswar.getTeamManager().getTeams()) {
         					for(NovsTeam teamB : novswar.getTeamManager().getTeams()) {
         						if(!teamA.equals(teamB) && 
@@ -88,7 +85,7 @@ public class NovsWarListener implements Listener {
         					}
         				}
         				if(imbalanceFound) {
-        					game.balanceTeams();
+        					novswar.getTeamManager().balanceTeams();
         				}
         			}
         		}

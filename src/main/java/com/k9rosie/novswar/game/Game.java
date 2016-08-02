@@ -34,6 +34,7 @@ public class Game {
     
     private int messageTime = 5;
     private int messageTask = 0;
+    private int numRoundsRemaining;
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
@@ -46,6 +47,7 @@ public class Game {
         gameTimer = new GameTimer(this);
         scoreboard = new GameScoreboard(this);
         ballotBox = new BallotBox(novsWar);
+        numRoundsRemaining = gamemode.getRounds();
     }
 
     public void initialize() {
@@ -78,7 +80,7 @@ public class Game {
         }
 
 
-        scoreboard.initialize(); //maybe try putting this before line 69?
+        scoreboard.initialize();
 
         waitForPlayers();
     }
@@ -192,7 +194,6 @@ public class Game {
                 for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
                 	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 20*4, 20, " ", winner.getColor()+winner.getTeamName()+" §fwins!");
                 }
-                //Bukkit.broadcastMessage(winner.getColor()+winner.getTeamName()+" §fwins!");
             } else if (winners.size() > 1) {
                 StringBuilder teamList = new StringBuilder();
                 for (int i = 0; i < winners.toArray().length; i++) {
@@ -206,7 +207,6 @@ public class Game {
                 for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
                 	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 20*4, 20, " ", teamList.toString() + " §fwin!");
                 }
-                //Bukkit.broadcastMessage(teamList.toString() + " §fwin!");
             }
             for(NovsTeam winner : winners) {
             	NovsWarTeamVictoryEvent invokeEvent = new NovsWarTeamVictoryEvent(winner, this);
@@ -226,24 +226,33 @@ public class Game {
             }
 
             world.closeIntermissionGates();
-            world.respawnBattlefields();
+            //world.respawnBattlefields();
             int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
             gameTimer.stopTimer();
             gameTimer.setTime(gameTime);
             gameTimer.startTimer();
 
-            // start voting if enabled
-            // delay voting screen for 4 seconds
-            Bukkit.getScheduler().scheduleSyncDelayedTask(novsWar.getPlugin(), new Runnable() {
+        	Bukkit.getScheduler().scheduleSyncDelayedTask(novsWar.getPlugin(), new Runnable() {
                 @Override
                 public void run() {
                 	//Remove victory message
                 	for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
                 		SendTitle.sendTitle(player.getBukkitPlayer(), 0, 0, 0, " ", "");
                 	}
-                    if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
-                        ballotBox.castVotes();
-                    }
+                	if(numRoundsRemaining <= 1) {
+                		//This was the final round. Prompt voting.
+                		if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
+                            ballotBox.castVotes();
+                        }
+                	} else {
+                		//Start a new round
+                    	numRoundsRemaining--;
+                    	for (NovsTeam team : enabledTeams) {
+                        	team.getNovsScore().setScore(0);	//Resets all team's scores
+                        }
+                    	novsWar.getTeamManager().rotateTeams();
+                    	preGame();
+                    } 
                 }
             }, 20*4);
         }
@@ -392,35 +401,7 @@ public class Game {
         }
     }
     
-    public void balanceTeams() {
-    	pauseGame();
-    	messageTime = 5;
-    	messageTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(novsWar.getPlugin(), new Runnable() {
-    		public void run() {
-    			ArrayList<NovsPlayer> autobalancePlayers = new ArrayList<NovsPlayer>();
-    			for(NovsPlayer player : novsWar.getPlayerManager().getInGamePlayers()) {
-    				SendTitle.sendTitle(player.getBukkitPlayer(), 0, 2000, 0, " ", "Team Auto-Balance in "+messageTime+"...");
-    				autobalancePlayers.add(player);
-            	}
-    			messageTime--;
-    			if(messageTime <= 0) {
-    				Bukkit.getScheduler().cancelTask(messageTask);
-    				//Set every player's team to default
-    		    	for(NovsPlayer player : autobalancePlayers) {
-    		    		SendTitle.sendTitle(player.getBukkitPlayer(), 0, 0, 0, " ", "");
-    		    		player.setTeam(novsWar.getTeamManager().getDefaultTeam());
-    		        }
-    		    	//re-do the team sorting algorithm
-    		    	for(NovsPlayer player : autobalancePlayers) {
-    		    		assignPlayerTeam(player);
-    		        }
-    		    	unpauseGame();
-    			}
-    		}
-    	}, 0, 20);
-    }
-    
-    private void assignPlayerTeam(NovsPlayer player) {
+    public void assignPlayerTeam(NovsPlayer player) {
     	// novsloadout has its own way of sorting players, only run this code if it isnt enabled
         if (!Bukkit.getPluginManager().isPluginEnabled("NovsLoadout")) {
         	//Determine which team has fewer players
@@ -441,14 +422,6 @@ public class Game {
         }
     }
     
-    public void restartGame() {
-    	if(gameTimer.getTaskID() != 0) { //if there is a running timer
-			System.out.println("Stopped timer");
-			gameTimer.stopTimer();
-		}
-		gameHandler.newGame(world);
-    }
-    
     /**
      * Sets a players team, health, hunger and teleports them to their team's spawn
      * @param player
@@ -456,12 +429,19 @@ public class Game {
      */
     public void forcePlayerTeam(NovsPlayer player, NovsTeam team) {
     	player.setTeam(team);
-        Location teamSpawn = world.getTeamSpawns().get(team);
-        player.getBukkitPlayer().teleport(teamSpawn);
+        player.getBukkitPlayer().teleport(world.getTeamSpawns().get(team));
         player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
         player.getBukkitPlayer().setFoodLevel(20);
         String message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
         player.getBukkitPlayer().sendMessage(message);
+    }
+    
+    public void nextGame(NovsWorld world) {
+    	if(gameTimer.getTaskID() != 0) { //if there is a running timer
+			System.out.println("Stopped timer");
+			gameTimer.stopTimer();
+		}
+		gameHandler.newGame(world);
     }
 
     public GameScoreboard getScoreboard() {
