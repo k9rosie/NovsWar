@@ -2,6 +2,7 @@ package com.k9rosie.novswar.manager;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.model.NovsPlayer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -46,5 +47,34 @@ public class PlayerManager {
     		}
     	}
     	return inGamePlayers;
+    }
+    
+    public void nextSpectatorTarget(NovsPlayer observer) {
+    	ArrayList<NovsPlayer> inGamePlayers = getInGamePlayers();
+		int index = 0;
+		int nextIndex = 0;
+		int watchdog = 0;
+		//Get current index of spectator target in player list
+		while(observer.getSpectatorTarget().equals(inGamePlayers.get(index).getBukkitPlayer())==false){
+			index++;
+			if(index >= inGamePlayers.size()){
+				index = 0;
+				watchdog++;
+			}
+			if(watchdog >= 2) {
+				System.out.println("WARNING: onPlayerInteract could not find the next spectator target");
+				break;
+			}
+		}
+		//Modify player index
+		nextIndex = index + 1;
+		if(nextIndex >= inGamePlayers.size()) {
+			nextIndex = 0;
+		}
+		NovsPlayer target = inGamePlayers.get(nextIndex);
+		target.removeSpectatorObserver(observer);
+		observer.setSpectatorTargetObserver(target);
+		observer.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
+		observer.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
     }
 }

@@ -37,7 +37,7 @@ public class SpectateCommand extends NovsCommand{
             	if(game.getGameState().equals(GameState.DURING_GAME) || game.getGameState().equals(GameState.PRE_GAME)) {
             		ArrayList<NovsPlayer> inGamePlayers = getNovsWar().getPlayerManager().getInGamePlayers();
             		NovsPlayer target = inGamePlayers.get(0);
-            		player.setSpectatorTarget(target.getBukkitPlayer());
+            		player.setSpectatorTargetObserver(target);
             		player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
             		player.setSpectating(true); //must occur AFTER gamemode change
             		player.getBukkitPlayer().teleport(target.getBukkitPlayer().getLocation());

@@ -1,6 +1,8 @@
 package com.k9rosie.novswar.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,7 +16,8 @@ import org.bukkit.entity.Player;
 public class NovsPlayer {
 
     private Player bukkitPlayer;
-    private Player bukkitSpectatorTarget;
+    private NovsPlayer spectatorTarget;
+    private ArrayList<NovsPlayer> spectatorObservers;
     private NovsStats stats;
     private NovsTeam team;
     private HashMap<NovsPlayer, Double> attackerMap;
@@ -38,7 +41,8 @@ public class NovsPlayer {
         isSpectating = false;
         isSettingRegion = false;
         hasVoted = false;
-        bukkitSpectatorTarget = null;
+        spectatorTarget = null;
+        spectatorObservers = new ArrayList<NovsPlayer>();
     }
     
     public void addAttacker(NovsPlayer player, Double damage) {
@@ -164,11 +168,25 @@ public class NovsPlayer {
         return regionNameBuffer;
     }
     
-    public void setSpectatorTarget(Player player) {
-    	bukkitSpectatorTarget = player;
+    public void setSpectatorTargetObserver(NovsPlayer player) {
+    	spectatorTarget = player;
+    	player.addSpectatorObserver(this);
     }
     
-    public Player getSpectatorTarget() {
-    	return bukkitSpectatorTarget;
+    public void addSpectatorObserver(NovsPlayer player) {
+    	spectatorObservers.add(player);
     }
+    
+    public void removeSpectatorObserver(NovsPlayer player) {
+    	spectatorObservers.remove(player);
+    }
+    
+    public ArrayList<NovsPlayer> getSpectatorObservers() {
+    	return spectatorObservers;
+    }
+    
+    public NovsPlayer getSpectatorTarget() {
+    	return spectatorTarget;
+    }
+    
 }

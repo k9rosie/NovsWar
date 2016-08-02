@@ -222,42 +222,6 @@ public class PlayerListener implements Listener {
             }
             event.setCancelled(true);
             
-        } else if(player.isSpectating()) {
-        	if(event.isCancelled()==false) {
-        		System.out.println("PlayerInteractEvent while spectating");
-        		int index = 0;
-        		int nextIndex = 0;
-        		int watchdog = 0;
-        		//Get current index of spectator target in player list
-        		while(player.getSpectatorTarget().equals(inGamePlayers.get(index))==false){
-    				index++;
-    				if(index >= inGamePlayers.size()){
-    					index = 0;
-    					watchdog++;
-    				}
-    				if(watchdog >= 2) {
-    					System.out.println("WARNING: onPlayerInteract could not find the next spectator target");
-    				}
-    			}
-        		//Modify player index based on type of mouse click
-        		if(event.getAction().equals(Action.LEFT_CLICK_AIR) ||
-        		  event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-        			nextIndex = index - 1;
-        			if(nextIndex < 0) {
-        				nextIndex = inGamePlayers.size()-1;
-        			}
-        		} else if(event.getAction().equals(Action.RIGHT_CLICK_AIR) ||
-        		  event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-        			nextIndex = index + 1;
-        			if(nextIndex >= inGamePlayers.size()) {
-        				nextIndex = 0;
-        			}
-        		}
-        		NovsPlayer target = inGamePlayers.get(nextIndex);
-        		player.setSpectatorTarget(target.getBukkitPlayer());
-        		player.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
-        		player.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
-        	}
         }
     }
     
@@ -304,31 +268,7 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
         }
         if(player.isSpectating()) {
-        	ArrayList<NovsPlayer> inGamePlayers = novswar.getPlayerManager().getInGamePlayers();
-        	System.out.println("PlayerToggleSneakEvent while spectating");
-    		int index = 0;
-    		int nextIndex = 0;
-    		int watchdog = 0;
-    		//Get current index of spectator target in player list
-    		while(player.getSpectatorTarget().equals(inGamePlayers.get(index))==false){
-				index++;
-				if(index >= inGamePlayers.size()){
-					index = 0;
-					watchdog++;
-				}
-				if(watchdog >= 2) {
-					System.out.println("WARNING: onPlayerInteract could not find the next spectator target");
-				}
-			}
-    		//Modify player index based on type of mouse click
-			nextIndex = index + 1;
-			if(nextIndex >= inGamePlayers.size()) {
-				nextIndex = 0;
-			}
-    		NovsPlayer target = inGamePlayers.get(nextIndex);
-    		player.setSpectatorTarget(target.getBukkitPlayer());
-    		player.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
-    		player.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
+        	novswar.getPlayerManager().nextSpectatorTarget(player);
         }
     }
     
@@ -399,6 +339,10 @@ public class PlayerListener implements Listener {
             if(assistAttacker != null) {
                 NovsWarPlayerAssistEvent invokeEvent_1 = new NovsWarPlayerAssistEvent(assistAttacker, victim, assistAttacker.getTeam(), victimTeam, game);
                 Bukkit.getPluginManager().callEvent(invokeEvent_1);
+            }
+            //Switch spectator targets
+            for(NovsPlayer observer : victim.getSpectatorObservers()) {
+            	novswar.getPlayerManager().nextSpectatorTarget(observer);
             }
         }
     }
