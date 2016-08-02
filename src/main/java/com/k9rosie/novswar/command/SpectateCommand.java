@@ -26,7 +26,7 @@ public class SpectateCommand extends NovsCommand{
         
         if(player.isSpectating()) {
         	//Return the player to the lobby
-        	player.setSpectating(false);
+        	player.setSpectating(false); //must occur BEFORE gamemode change
         	player.getBukkitPlayer().teleport(getNovsWar().getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
             
@@ -36,11 +36,11 @@ public class SpectateCommand extends NovsCommand{
             	if(game.getGameState().equals(GameState.DURING_GAME) || game.getGameState().equals(GameState.PRE_GAME)) {
             		ArrayList<NovsPlayer> inGamePlayers = getNovsWar().getPlayerManager().getInGamePlayers();
             		NovsPlayer target = inGamePlayers.get(0);
-            		player.setSpectating(true);
             		player.setSpectatorTarget(target.getBukkitPlayer());
+            		player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
+            		player.setSpectating(true); //must occur AFTER gamemode change
             		player.getBukkitPlayer().teleport(target.getBukkitPlayer().getLocation());
-            		//player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
-            		//player.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
+            		player.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
             		player.getBukkitPlayer().sendMessage("Spectate different players using M1 and M2. F5 to change view.");
             		player.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
 

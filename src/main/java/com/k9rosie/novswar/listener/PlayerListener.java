@@ -322,20 +322,13 @@ public class PlayerListener implements Listener {
         }
     }*/
     
-    /**
-     * Overrides player gamemode changes
-     * @param event
-     */
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+    public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
     	NovsPlayer player = playerManager.getPlayers().get(event.getPlayer());
 
         if (player.isSpectating()) {
-            System.out.println("PlayerChangedWorldEvent! Player is spectating");
-            Player target = player.getSpectatorTarget();
-
-			player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
-    		player.getBukkitPlayer().setSpectatorTarget(target);
+            System.out.println("PlayerGameModeChange! Player is spectating... cancelling");
+            event.setCancelled(true);
         }
     }
 
