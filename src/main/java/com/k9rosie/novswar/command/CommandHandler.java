@@ -39,6 +39,11 @@ public class CommandHandler implements CommandExecutor {
                         new PlayerCommand(novsWar, sender, args).execute();
                         return true;
                     }
+                case "stats":
+                    if (sender.hasPermission("novswar.command.player")) {
+                        new PlayerCommand(novsWar, sender, args).execute();
+                        return true;
+                    }
                 case "join":
                     if (sender.hasPermission("novswar.command.join")) {
                         new JoinCommand(novsWar, sender, args).execute();
@@ -60,7 +65,7 @@ public class CommandHandler implements CommandExecutor {
                         return true;
                     }
                 case "map":
-                    if (sender.hasPermission("novswar.command.leave")) {
+                    if (sender.hasPermission("novswar.command.map")) {
                         new MapCommand(novsWar, sender, args).execute();
                         return true;
                     }

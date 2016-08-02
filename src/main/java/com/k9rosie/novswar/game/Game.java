@@ -376,12 +376,7 @@ public class Game {
                 player.getBukkitPlayer().sendMessage(Messages.CANNOT_JOIN_GAME.toString());
                 return;
             }
-
             assignPlayerTeam(player);
-
-            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
-            player.getBukkitPlayer().setFoodLevel(20);
-
             if (checkPlayerCount()) {
             	switch (gameState) {
             	case WAITING_FOR_PLAYERS :
@@ -437,13 +432,8 @@ public class Game {
             		smallestTeam = team;
             	}
             }
-
-            player.setTeam(smallestTeam);
-
-            Location teamSpawn = world.getTeamSpawns().get(smallestTeam);
-            player.getBukkitPlayer().teleport(teamSpawn);
-            String message = Messages.JOIN_TEAM.toString().replace("%team_color%", smallestTeam.getColor().toString()).replace("%team%", smallestTeam.getTeamName());
-            player.getBukkitPlayer().sendMessage(message);
+            forcePlayerTeam(player, smallestTeam);
+            
         } else {
         	
         	//TODO Call NovsLoadout's sorting algorithm
@@ -457,6 +447,21 @@ public class Game {
 			gameTimer.stopTimer();
 		}
 		gameHandler.newGame(world);
+    }
+    
+    /**
+     * Sets a players team, health, hunger and teleports them to their team's spawn
+     * @param player
+     * @param team
+     */
+    public void forcePlayerTeam(NovsPlayer player, NovsTeam team) {
+    	player.setTeam(team);
+        Location teamSpawn = world.getTeamSpawns().get(team);
+        player.getBukkitPlayer().teleport(teamSpawn);
+        player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+        player.getBukkitPlayer().setFoodLevel(20);
+        String message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
+        player.getBukkitPlayer().sendMessage(message);
     }
 
     public GameScoreboard getScoreboard() {

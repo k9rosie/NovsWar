@@ -18,13 +18,20 @@ public class AdminCommand extends NovsCommand {
                 case "setspawn":
                     new SetSpawnCommand(getNovsWar(), getSender(), getArgs()).execute();
                     return;
-
                 case "setregion":
                     new SetRegionCommand(getNovsWar(), getSender(), getArgs()).execute();
                     return;
-
                 case "setteam":
                     new SetTeamCommand(getNovsWar(), getSender(), getArgs()).execute();
+                    return;
+                case "kick":
+                    new KickCommand(getNovsWar(), getSender(), getArgs()).execute();
+                    return;
+                case "nextgame":
+                    new NextGameCommand(getNovsWar(), getSender(), getArgs()).execute();
+                    return;
+                case "restart":
+                    new RestartCommand(getNovsWar(), getSender(), getArgs()).execute();
                     return;
             }
         }
