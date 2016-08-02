@@ -21,6 +21,7 @@ import com.k9rosie.novswar.util.RegionType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
@@ -253,6 +254,7 @@ public class PlayerListener implements Listener {
         			}
         		}
         		NovsPlayer target = inGamePlayers.get(nextIndex);
+        		player.setSpectatorTarget(target.getBukkitPlayer());
         		player.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
         		player.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
         	}
@@ -303,14 +305,21 @@ public class PlayerListener implements Listener {
         }
     }
     
-    @EventHandler(priority = EventPriority.NORMAL)
+    /**
+     * Handles player teleportation override for spectators
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
         NovsPlayer player = playerManager.getPlayers().get(event.getPlayer());
 
-        if (player.getBukkitPlayer().isValid()) {
-            System.out.println("PlayerTeleportEvent! Player is valid");
-        } else {
-        	System.out.println("PlayerTeleportEvent! Player is NOT valid");
+        if (player.isSpectating()) {
+            System.out.println("PlayerTeleportEvent! Player is spectating");
+            Player target = player.getSpectatorTarget();
+            
+            player.getBukkitPlayer().teleport(target.getLocation());
+			player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
+    		player.getBukkitPlayer().setSpectatorTarget(target);
         }
     }
 
