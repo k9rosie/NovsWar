@@ -29,28 +29,29 @@ public class CommandHandler implements CommandExecutor {
                         new AdminCommand(novsWar, sender, args).execute();
                         return true;
                     }
-
                 case "team":
                     if (sender.hasPermission("novswar.command.team")) {
                         new TeamCommand(novsWar, sender, args).execute();
                         return true;
                     }
-
                 case "player":
                     if (sender.hasPermission("novswar.command.player")) {
                         new PlayerCommand(novsWar, sender, args).execute();
                         return true;
                     }
-
                 case "join":
                     if (sender.hasPermission("novswar.command.join")) {
                         new JoinCommand(novsWar, sender, args).execute();
                         return true;
-                    }
-                    
+                    } 
                 case "vote":
                     if (sender.hasPermission("novswar.command.vote")) {
                         new VoteCommand(novsWar, sender, args).execute();
+                        return true;
+                    }
+                case "spectate":
+                    if (sender.hasPermission("novswar.command.spectate")) {
+                        new SpectateCommand(novsWar, sender, args).execute();
                         return true;
                     }
             }

@@ -482,4 +482,8 @@ public class Game {
     public GameState getGameState() {
     	return gameState;
     }
+    
+    public NovsWorld getWorld() {
+    	return world;
+    }
 }
