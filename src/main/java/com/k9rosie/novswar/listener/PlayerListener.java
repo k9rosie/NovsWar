@@ -303,24 +303,34 @@ public class PlayerListener implements Listener {
         if (player.isDead() || player.isSpectating()) {
             event.setCancelled(true);
         }
-    }
-    
-    /**
-     * Handles player teleportation override for spectators
-     * @param event
-     */
-    /*@EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
-        NovsPlayer player = playerManager.getPlayers().get(event.getPlayer());
-
-        if (player.isSpectating()) {
-            System.out.println("PlayerTeleportEvent! Player is spectating");
-            Player target = player.getSpectatorTarget();
-
-			player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
-    		player.getBukkitPlayer().setSpectatorTarget(target);
+        if(player.isSpectating()) {
+        	ArrayList<NovsPlayer> inGamePlayers = novswar.getPlayerManager().getInGamePlayers();
+        	System.out.println("PlayerToggleSneakEvent while spectating");
+    		int index = 0;
+    		int nextIndex = 0;
+    		int watchdog = 0;
+    		//Get current index of spectator target in player list
+    		while(player.getSpectatorTarget().equals(inGamePlayers.get(index))==false){
+				index++;
+				if(index >= inGamePlayers.size()){
+					index = 0;
+					watchdog++;
+				}
+				if(watchdog >= 2) {
+					System.out.println("WARNING: onPlayerInteract could not find the next spectator target");
+				}
+			}
+    		//Modify player index based on type of mouse click
+			nextIndex = index + 1;
+			if(nextIndex >= inGamePlayers.size()) {
+				nextIndex = 0;
+			}
+    		NovsPlayer target = inGamePlayers.get(nextIndex);
+    		player.setSpectatorTarget(target.getBukkitPlayer());
+    		player.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
+    		player.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
         }
-    }*/
+    }
     
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {

@@ -2,6 +2,7 @@ package com.k9rosie.novswar.command;
 
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -41,8 +42,9 @@ public class SpectateCommand extends NovsCommand{
             		player.setSpectating(true); //must occur AFTER gamemode change
             		player.getBukkitPlayer().teleport(target.getBukkitPlayer().getLocation());
             		player.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
-            		player.getBukkitPlayer().sendMessage("Spectate different players using M1 and M2. F5 to change view.");
+            		player.getBukkitPlayer().sendMessage("Spectate next player with LSHIFT. F5 to change view.");
             		player.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
+            		Bukkit.broadcastMessage(player.getBukkitPlayer().getName()+" is spectating the round!");
 
             	} else {
             		player.getBukkitPlayer().sendMessage("You can only spectate during the round");
