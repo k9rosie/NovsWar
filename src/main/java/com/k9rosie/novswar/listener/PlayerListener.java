@@ -316,8 +316,7 @@ public class PlayerListener implements Listener {
         if (player.isSpectating()) {
             System.out.println("PlayerTeleportEvent! Player is spectating");
             Player target = player.getSpectatorTarget();
-            
-            player.getBukkitPlayer().teleport(target.getLocation());
+
 			player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
     		player.getBukkitPlayer().setSpectatorTarget(target);
         }
