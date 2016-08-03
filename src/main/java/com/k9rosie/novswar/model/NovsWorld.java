@@ -45,6 +45,17 @@ public class NovsWorld {
         return regions;
     }
 
+    public HashSet<NovsRegion> getEnterableRegions() {
+    	HashSet<NovsRegion> enterableRegions = new HashSet<NovsRegion>();
+        for (NovsRegion region : regions.values()) {
+            if (region.getRegionType().equals(RegionType.DEATH_REGION) ||
+              region.getRegionType().equals(RegionType.TEAM_SPAWN)) {
+            	enterableRegions.add(region);
+            }
+        }
+        return enterableRegions;
+    }
+    
     public HashSet<NovsRegion> getBattlefields() {
         HashSet<NovsRegion> battlefields = new HashSet<NovsRegion>();
         for (NovsRegion region : regions.values()) {
@@ -55,6 +66,7 @@ public class NovsWorld {
 
         return battlefields;
     }
+    
     public HashSet<NovsRegion> getDeathRegions() {
         HashSet<NovsRegion> battlefields = new HashSet<NovsRegion>();
         for (NovsRegion region : regions.values()) {
@@ -65,7 +77,18 @@ public class NovsWorld {
 
         return battlefields;
     }
+    
+    public HashSet<NovsRegion> getTeamSpawnRegions() {
+        HashSet<NovsRegion> teamspawns = new HashSet<NovsRegion>();
+        for (NovsRegion region : regions.values()) {
+            if (region.getRegionType().equals(RegionType.TEAM_SPAWN)) {
+            	teamspawns.add(region);
+            }
+        }
 
+        return teamspawns;
+    }
+    
     public HashSet<NovsRegion> getIntermissionGates() {
         HashSet<NovsRegion> battlefields = new HashSet<NovsRegion>();
         for (NovsRegion region : regions.values()) {

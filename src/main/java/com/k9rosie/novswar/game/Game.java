@@ -4,6 +4,7 @@ package com.k9rosie.novswar.game;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.event.NovsWarEndGameEvent;
 import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
+import com.k9rosie.novswar.event.NovsWarPlayerAssistEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerKillEvent;
 import com.k9rosie.novswar.event.NovsWarTeamVictoryEvent;
 import com.k9rosie.novswar.gamemode.Gamemode;
@@ -348,7 +349,25 @@ public class Game {
         }
     }
 
-    public void scheduleDeath(NovsPlayer player, int seconds) {
+    public void killPlayer(NovsPlayer victim, NovsPlayer attacker) {
+    	//Evaluate assists
+        NovsPlayer assistAttacker = victim.getAssistAttacker(attacker);
+        victim.clearAttackers();
+        scheduleDeath(victim, gamemode.getDeathTime());
+        //Event calls
+        if(attacker != null) { //if there is an attacker, invoke kill event
+	        NovsWarPlayerKillEvent invokeEvent = new NovsWarPlayerKillEvent(attacker, victim, attacker.getTeam(), victim.getTeam(), this);
+	        Bukkit.getPluginManager().callEvent(invokeEvent);
+        } else { //if there isn't an attacker, increment suicides
+        	victim.getStats().incrementSuicides();
+        }
+        if(assistAttacker != null) {
+            NovsWarPlayerAssistEvent invokeEvent_1 = new NovsWarPlayerAssistEvent(assistAttacker, victim, assistAttacker.getTeam(), victim.getTeam(), this);
+            Bukkit.getPluginManager().callEvent(invokeEvent_1);
+        }
+    }
+    
+    private void scheduleDeath(NovsPlayer player, int seconds) {
         Player bukkitPlayer = player.getBukkitPlayer();
         player.setDeath(true);
         bukkitPlayer.setHealth(player.getBukkitPlayer().getMaxHealth());

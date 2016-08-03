@@ -40,6 +40,21 @@ public class WorldManager {
     public NovsWorld getLobbyWorld() {
         return lobbyWorld;
     }
+    
+    /**
+     * Searches for world based on BukkitWorld name
+     * @param worldName
+     * @return
+     */
+    public NovsWorld getWorldByName(String worldName) {
+    	NovsWorld result = null;
+    	for(NovsWorld world : worlds.values()) {
+    		if(world.getBukkitWorld().getName().equals(worldName)) {
+    			result = world;
+    		}
+    	}
+    	return result;
+    }
 
     public void loadLobbyWorld() {
         FileConfiguration coreConfig = novswar.getConfigurationCache().getConfig("core");

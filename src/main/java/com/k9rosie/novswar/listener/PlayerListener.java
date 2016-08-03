@@ -1,6 +1,8 @@
 package com.k9rosie.novswar.listener;
 
 
+import java.util.HashSet;
+
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
@@ -90,6 +92,10 @@ public class PlayerListener implements Listener {
         //System.out.println("Player count: " + novswar.getPlayerManager().getPlayers().values().size());
     }
 
+    /**
+     * This event fires only when a player takes damage from another entity (player or arrow)
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDamageByPlayer(EntityDamageByEntityEvent event) {
         System.out.println("EntityDamageByEntityEvent: " + event.getFinalDamage() + " / " + event.getCause());
@@ -120,14 +126,16 @@ public class PlayerListener implements Listener {
             	event.setCancelled(true);
                 return;
             }
-            //Check for non-violence conditions
             NovsPlayer victim = playerManager.getPlayers().get(victimBukkitPlayer);
             NovsPlayer attacker = playerManager.getPlayers().get(attackerBukkitPlayer);
-
-            playerKill(event, attacker, victim, arrowDeath);
+            onPlayerAttacked(event, attacker, victim, arrowDeath);
         }
     }
 
+    /**
+     * This event fires any time a player takes damage (even from environment)
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDamage(EntityDamageEvent event) {
         System.out.println("EntityDamageEvent: " + event.getFinalDamage() + " / " + event.getCause());
@@ -137,48 +145,47 @@ public class PlayerListener implements Listener {
     		event.setCancelled(true);
             return;
     	}
-    	
+    	//If the entity being damaged is a player
         if (event.getEntity() instanceof Player) {
             Player bukkitPlayer = (Player) event.getEntity();
             NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
-
+            //Cancel the event if the player can't be damaged
             if (!player.getTeam().canBeDamaged()) {
                 event.setCancelled(true);
                 return;
             }
-
-            if (bukkitPlayer.getKiller() != null) {
-                if (bukkitPlayer.getKiller() instanceof Player) {
-                    if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-                        return;
-                    } else {
-                        NovsPlayer killer = playerManager.getPlayers().get(bukkitPlayer.getKiller());
-                        NovsPlayer victim = playerManager.getPlayers().get(bukkitPlayer);
-                        playerKill(event, killer, victim, false);
-                    }
+            //If there is a killer player
+            if (bukkitPlayer.getKiller() != null && bukkitPlayer.getKiller() instanceof Player) {
+                if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                	//The player was killed by another entity. onPlayerDamageByPlayer handles the rest.
+                    return;
+                } else {
+                	//The player was killed by the environment, but still has a valid killer
+                    NovsPlayer killer = playerManager.getPlayers().get(bukkitPlayer.getKiller());
+                    NovsPlayer victim = playerManager.getPlayers().get(bukkitPlayer);
+                    onPlayerAttacked(event, killer, victim, false);
                 }
-            }
+            } else { //The player got hurt purely by environment
+            	double damage = event.getFinalDamage();
+                player.getStats().incrementDamageTaken(damage);
 
-            double damage = event.getFinalDamage();
-            player.getStats().incrementDamageTaken(damage);
+                // if damage is fatal
+                if (bukkitPlayer.getHealth() - damage <= 0) {
+                    event.setCancelled(true);
 
-            // if damage is fatal
-            if (bukkitPlayer.getHealth() - damage <= 0) {
-                event.setCancelled(true);
+                    String deathMessage = Messages.DEATH_MESSAGE.toString();
+                    deathMessage = deathMessage.replace("%player_tcolor%", player.getTeam().getColor().toString())
+                    .replace("%player%", bukkitPlayer.getDisplayName());
 
-                String deathMessage = Messages.DEATH_MESSAGE.toString();
-                deathMessage = deathMessage.replace("%player_tcolor%", player.getTeam().getColor().toString())
-                .replace("%player%", bukkitPlayer.getDisplayName());
-
-                for (NovsPlayer p : playerManager.getPlayers().values()) {
-                    if (p.canSeeDeathMessages()) {
-                        p.getBukkitPlayer().sendMessage(deathMessage);
+                    for (NovsPlayer p : playerManager.getPlayers().values()) {
+                        if (p.canSeeDeathMessages()) {
+                            p.getBukkitPlayer().sendMessage(deathMessage);
+                        }
                     }
+                    //player.getStats().incrementSuicides();
+                    game.killPlayer(player, null);
+                    //game.scheduleDeath(player, game.getGamemode().getDeathTime());
                 }
-
-                player.getStats().incrementSuicides();
-
-                game.scheduleDeath(player, game.getGamemode().getDeathTime());
             }
         }
     }
@@ -252,14 +259,28 @@ public class PlayerListener implements Listener {
         Player bukkitPlayer = event.getPlayer();
         NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
         NovsWorld currentGameWorld = novswar.getGameHandler().getGame().getWorld();
+        Game game = novswar.getGameHandler().getGame();
 
         if (player.isDead() && (bukkitPlayer.getSpectatorTarget() == null)) {
             event.setCancelled(true);
             return;
         }
-        for (NovsRegion deathRegion : currentGameWorld.getDeathRegions()) {
-            if (deathRegion.inRegion(bukkitPlayer.getLocation())) {
-                bukkitPlayer.setHealth(0.0d);
+        
+        for (NovsRegion region : currentGameWorld.getEnterableRegions()) {
+            if (region.inRegion(bukkitPlayer.getLocation())) {
+                switch(region.getRegionType()) {
+                case TEAM_SPAWN :
+                	//TODO stuff
+                	break;
+                case DEATH_REGION :
+                	//Determine the player that has done the most damage
+                	NovsPlayer attacker = player.getAssistAttacker(null);
+                	//if attacker is null, there are no damagers
+                	game.killPlayer(player, attacker);
+                	break;
+                default :
+                	break;
+                }
             }
         }
     }
@@ -294,7 +315,7 @@ public class PlayerListener implements Listener {
         }
     }
 
-    public void playerKill(EntityDamageEvent event, NovsPlayer attacker, NovsPlayer victim, boolean arrowDeath) {
+    private void onPlayerAttacked(EntityDamageEvent event, NovsPlayer attacker, NovsPlayer victim, boolean arrowDeath) {
         Game game = novswar.getGameHandler().getGame();
         NovsTeam victimTeam = victim.getTeam();
         NovsTeam attackerTeam = attacker.getTeam();
@@ -341,17 +362,7 @@ public class PlayerListener implements Listener {
                 attacker.getStats().incrementKills();
                 victim.getStats().incrementDeaths();
             }
-            //Evaluate assists
-            NovsPlayer assistAttacker = victim.getAssistAttacker(attacker);
-            victim.clearAttackers();
-            game.scheduleDeath(victim, game.getGamemode().getDeathTime());
-            //Event calls
-            NovsWarPlayerKillEvent invokeEvent = new NovsWarPlayerKillEvent(attacker, victim, attackerTeam, victimTeam, game);
-            Bukkit.getPluginManager().callEvent(invokeEvent);
-            if(assistAttacker != null) {
-                NovsWarPlayerAssistEvent invokeEvent_1 = new NovsWarPlayerAssistEvent(assistAttacker, victim, assistAttacker.getTeam(), victimTeam, game);
-                Bukkit.getPluginManager().callEvent(invokeEvent_1);
-            }
+            game.killPlayer(victim, attacker);
         }
     }
 }
