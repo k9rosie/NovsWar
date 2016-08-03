@@ -82,10 +82,12 @@ public class PlayerListener implements Listener {
 
         novswar.getDatabase().flushPlayerData(player);
         playerManager.getPlayers().remove(bukkitPlayer);
-        NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(player, game);
-        Bukkit.getPluginManager().callEvent(invokeEvent);
-        //game.quitGame();
-        System.out.println("Player count: " + novswar.getPlayerManager().getPlayers().values().size());
+        if(player.getTeam().equals(novswar.getTeamManager().getDefaultTeam())==false) {
+        	//If player is on a team, invoke event
+        	NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(player, game);
+            Bukkit.getPluginManager().callEvent(invokeEvent);
+        }
+        //System.out.println("Player count: " + novswar.getPlayerManager().getPlayers().values().size());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
