@@ -19,7 +19,7 @@ public class HelpAdminCommand extends NovsCommand {
         player.getBukkitPlayer().sendMessage("/nw admin setteam <player> <team>: Force player onto a team");
         player.getBukkitPlayer().sendMessage("/nw admin restart: Forces round to restart");
         player.getBukkitPlayer().sendMessage("/nw admin nextgame: Forces next map to start");
-        player.getBukkitPlayer().sendMessage("/nw admin setregion");
-        player.getBukkitPlayer().sendMessage("/nw admin setspawn");
+        player.getBukkitPlayer().sendMessage("/nw admin setregion <name> <battlefield | intermission_gate | death_region | objective>");
+        player.getBukkitPlayer().sendMessage("/nw admin setspawn <team>");
     }
 }

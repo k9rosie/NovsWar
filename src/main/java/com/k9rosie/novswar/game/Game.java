@@ -15,6 +15,7 @@ import com.k9rosie.novswar.util.SendTitle;
 
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Team;
 
@@ -352,8 +353,11 @@ public class Game {
         player.setDeath(true);
         bukkitPlayer.setHealth(player.getBukkitPlayer().getMaxHealth());
         bukkitPlayer.setFoodLevel(20);
-        bukkitPlayer.getWorld().playEffect(player.getBukkitPlayer().getLocation(), Effect.SMOKE, 31);
-        bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.BLOCK_LAVA_POP, 10, 1);
+        for(PotionEffect effect : bukkitPlayer.getActivePotionEffects()) {
+        	bukkitPlayer.removePotionEffect(effect.getType());
+        }
+        bukkitPlayer.playEffect(EntityEffect.DEATH);
+        bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_PLAYER_DEATH, 20, 1);
         
         System.out.print(bukkitPlayer.getName()+" died and has observers: ");
         for(NovsPlayer observer : player.getSpectatorObservers()) {
