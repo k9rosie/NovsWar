@@ -50,29 +50,21 @@ public class PlayerManager {
     }
     
     public void nextSpectatorTarget(NovsPlayer observer) {
+    	System.out.println(observer.getBukkitPlayer().getName()+" is switching spectator targets");
     	ArrayList<NovsPlayer> inGamePlayers = getInGamePlayers();
-		int index = 0;
-		int nextIndex = 0;
-		int watchdog = 0;
-		//Get current index of spectator target in player list
-		while(observer.getSpectatorTarget().equals(inGamePlayers.get(index))==false){
-			index++;
-			if(index >= inGamePlayers.size()){
-				index = 0;
-				watchdog++;
-			}
-			if(watchdog >= 2) {
-				System.out.println("WARNING: nextSpectatorTarget could not find the next spectator target");
-				break;
-			}
+		int index = inGamePlayers.indexOf(observer.getSpectatorTarget());
+		int nextIndex = index + 1;
+		if(nextIndex == 0) {
+			System.out.println("WARNING: Could not find target in nextSpectatorTarget");
 		}
+		System.out.println("...Old target was "+observer.getSpectatorTarget().getBukkitPlayer().getName());
 		//Modify player index
-		nextIndex = index + 1;
 		if(nextIndex >= inGamePlayers.size()) {
 			nextIndex = 0;
 		}
 		NovsPlayer target = inGamePlayers.get(nextIndex);
-		observer.setSpectatorTargetObserver(target);
+		System.out.println("...New target is "+target.getBukkitPlayer().getName());
+		observer.setSpectatorTarget(target);
 		observer.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
 		observer.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
     }

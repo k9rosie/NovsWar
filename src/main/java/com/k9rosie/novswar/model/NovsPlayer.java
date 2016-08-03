@@ -170,12 +170,17 @@ public class NovsPlayer {
         return regionNameBuffer;
     }
     
-    public void setSpectatorTargetObserver(NovsPlayer player) {
+    public void setSpectatorTarget(NovsPlayer player) {
+    	System.out.println("Setting "+this.getBukkitPlayer().getName()+"'s target to "+player.getBukkitPlayer().getName());
     	spectatorTarget = player;
-    	player.getSpectatorObservers().add(this);
     }
     
     public ArrayList<NovsPlayer> getSpectatorObservers() {
+    	System.out.print(bukkitPlayer.getName()+" has observers: ");
+    	for(NovsPlayer p : spectatorObservers) {
+    		System.out.print(p.getBukkitPlayer().getName()+" ");
+    	}
+    	System.out.println();
     	return spectatorObservers;
     }
     
