@@ -151,10 +151,16 @@ public class PlayerListener implements Listener {
                 if (bukkitPlayer.getKiller() instanceof Player) {
                     if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                         return;
+                    } else if (event.getCause() == EntityDamageEvent.DamageCause.PROJECTILE) {
+                        NovsPlayer killer = playerManager.getPlayers().get(bukkitPlayer.getKiller());
+                        NovsPlayer victim = playerManager.getPlayers().get(bukkitPlayer);
+                        playerKill(event, killer, victim, true);
+                        return;
                     } else {
                         NovsPlayer killer = playerManager.getPlayers().get(bukkitPlayer.getKiller());
                         NovsPlayer victim = playerManager.getPlayers().get(bukkitPlayer);
                         playerKill(event, killer, victim, false);
+                        return;
                     }
                 }
             }
@@ -257,6 +263,7 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
+
         for (NovsRegion deathRegion : currentGameWorld.getDeathRegions()) {
             if (deathRegion.inRegion(bukkitPlayer.getLocation())) {
                 bukkitPlayer.setHealth(0.0d);

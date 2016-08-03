@@ -20,14 +20,14 @@ public class NovsRegion {
     private Location cornerOne;
     private Location cornerTwo;
     private RegionType regionType;
-    private HashMap<BlockState, MaterialData> blocks;
+    private ArrayList<NovsBlock> blocks;
 
     public NovsRegion(NovsWorld world, Location cornerOne, Location cornerTwo, RegionType regionType) {
         this.world = world;
         this.cornerOne = cornerOne;
         this.cornerTwo = cornerTwo;
         this.regionType = regionType;
-        blocks = new HashMap<BlockState, MaterialData>();
+        blocks = new ArrayList<NovsBlock>();
     }
 
     public NovsWorld getWorld() {
@@ -58,16 +58,16 @@ public class NovsRegion {
         this.regionType = regionType;
     }
 
-    public HashMap<BlockState, MaterialData> getBlocks() {
+    public ArrayList<NovsBlock> getBlocks() {
         return blocks;
     }
 
-    public void setBlocks(HashMap<BlockState, MaterialData> blocks) {
+    public void setBlocks(ArrayList<NovsBlock> blocks) {
         this.blocks = blocks;
     }
 
-    public HashMap<BlockState, MaterialData> getCuboid() {
-        HashMap<BlockState, MaterialData> blocks = new HashMap<BlockState, MaterialData>();
+    public ArrayList<NovsBlock> getCuboid() {
+        ArrayList<NovsBlock> blocks = new ArrayList<NovsBlock>();
 
         int topBlockX = Math.max(cornerOne.getBlockX(), cornerTwo.getBlockX());
         int topBlockY = Math.max(cornerOne.getBlockY(), cornerTwo.getBlockY());
@@ -81,7 +81,7 @@ public class NovsRegion {
                 for (int z = bottomBlockZ; z <= topBlockZ; z++) {
                     BlockState block = cornerOne.getWorld().getBlockAt(x, y, z).getState();
                     MaterialData data = block.getData();
-                    blocks.put(block, data);
+
                 }
             }
         }
