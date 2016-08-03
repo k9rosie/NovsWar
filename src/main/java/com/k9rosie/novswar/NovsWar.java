@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public class NovsWar {
-	//Rosie gay
+
 	private NovsWarPlugin plugin;
 	private static NovsWar instance;
 	
