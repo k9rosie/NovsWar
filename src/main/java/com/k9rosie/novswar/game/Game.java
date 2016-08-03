@@ -350,19 +350,24 @@ public class Game {
     public void scheduleDeath(NovsPlayer player, int seconds) {
         Player bukkitPlayer = player.getBukkitPlayer();
         player.setDeath(true);
-        bukkitPlayer.setGameMode(GameMode.SPECTATOR);
         bukkitPlayer.setHealth(player.getBukkitPlayer().getMaxHealth());
         bukkitPlayer.setFoodLevel(20);
         bukkitPlayer.getWorld().playEffect(player.getBukkitPlayer().getLocation(), Effect.SMOKE, 31);
         bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.BLOCK_LAVA_POP, 10, 1);
-
+        
+        System.out.print(bukkitPlayer.getName()+" died and has observers: ");
+        for(NovsPlayer observer : player.getSpectatorObservers()) {
+        	System.out.print(observer.getBukkitPlayer().getName()+" ");
+        	NovsPlayer newTarget = novsWar.getPlayerManager().nextSpectatorTarget(observer);
+        	newTarget.getSpectatorObservers().add(observer);
+        }
+        System.out.println();
+        player.getSpectatorObservers().clear();
+        
+        bukkitPlayer.setGameMode(GameMode.SPECTATOR);
         if (bukkitPlayer.getKiller() != null) {
             bukkitPlayer.setSpectatorTarget(bukkitPlayer.getKiller());
         }
-        for(NovsPlayer observer : player.getSpectatorObservers()) {
-        	novsWar.getPlayerManager().nextSpectatorTarget(observer);
-        }
-        player.getSpectatorObservers().clear();
 
         DeathTimer timer = new DeathTimer(this, seconds, player);
         timer.startTimer();

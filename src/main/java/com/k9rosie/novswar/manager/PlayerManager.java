@@ -49,7 +49,13 @@ public class PlayerManager {
     	return inGamePlayers;
     }
     
-    public void nextSpectatorTarget(NovsPlayer observer) {
+    /**
+     * Selects the next in-game player to spectate
+     * THIS METHOD DOES NOT CALL getSpectatorObservers()
+     * @param observer
+     * @return NovsPlayer - new spectate target
+     */
+    public NovsPlayer nextSpectatorTarget(NovsPlayer observer) {
     	System.out.println(observer.getBukkitPlayer().getName()+" is switching spectator targets");
     	ArrayList<NovsPlayer> inGamePlayers = getInGamePlayers();
 		int index = inGamePlayers.indexOf(observer.getSpectatorTarget());
@@ -65,7 +71,9 @@ public class PlayerManager {
 		NovsPlayer target = inGamePlayers.get(nextIndex);
 		System.out.println("...New target is "+target.getBukkitPlayer().getName());
 		observer.setSpectatorTarget(target);
+		//target.getSpectatorObservers().add(observer);
 		observer.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
 		observer.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
+		return target;
     }
 }

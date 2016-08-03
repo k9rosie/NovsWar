@@ -176,11 +176,6 @@ public class NovsPlayer {
     }
     
     public ArrayList<NovsPlayer> getSpectatorObservers() {
-    	System.out.print(bukkitPlayer.getName()+" has observers: ");
-    	for(NovsPlayer p : spectatorObservers) {
-    		System.out.print(p.getBukkitPlayer().getName()+" ");
-    	}
-    	System.out.println();
     	return spectatorObservers;
     }
     

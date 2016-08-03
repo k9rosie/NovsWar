@@ -265,9 +265,11 @@ public class PlayerListener implements Listener {
         }
         if(player.isSpectating()) {
         	if(player.isShiftToggled()) {
+        		//Switch spectator targets
         		player.setShiftToggled(false);
-        		novswar.getPlayerManager().nextSpectatorTarget(player);
-        		player.getSpectatorObservers().remove(player);
+        		player.getSpectatorTarget().getSpectatorObservers().remove(player);
+        		NovsPlayer newTarget = novswar.getPlayerManager().nextSpectatorTarget(player);
+        		newTarget.getSpectatorObservers().add(player);
         	} else {
         		player.setShiftToggled(true);
         	}
