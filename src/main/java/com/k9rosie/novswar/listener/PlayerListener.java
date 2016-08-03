@@ -277,7 +277,7 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        
+
         for (NovsRegion region : currentGameWorld.getEnterableRegions()) {
             if (region.inRegion(bukkitPlayer.getLocation())) {
                 switch(region.getRegionType()) {
