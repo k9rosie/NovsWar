@@ -23,6 +23,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -219,14 +220,18 @@ public class PlayerListener implements Listener {
 
                 world.getRegions().put(player.getRegionNameBuffer(), region);
 
-                bukkitPlayer.sendMessage("Region set");
+                bukkitPlayer.sendMessage("Region set: "+player.getRegionTypeBuffer().toString());
                 player.setCornerOneBuffer(null);
                 player.setRegionTypeBuffer(null);
                 player.setRegionNameBuffer(null);
                 player.setSettingRegion(false);
             }
             event.setCancelled(true);
-            
+        } else {
+        	//Check for sign click
+        	if(event.getClickedBlock().getType().equals(Material.SIGN)) {
+        		bukkitPlayer.sendMessage("Ouch");
+        	}
         }
     }
     

@@ -35,8 +35,6 @@ public class Game {
     private GameScoreboard scoreboard;
     private BallotBox ballotBox;
     
-    private int messageTime = 5;
-    private int messageTask = 0;
     private int numRoundsRemaining;
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
