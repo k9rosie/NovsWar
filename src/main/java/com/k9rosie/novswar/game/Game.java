@@ -359,6 +359,10 @@ public class Game {
         if (bukkitPlayer.getKiller() != null) {
             bukkitPlayer.setSpectatorTarget(bukkitPlayer.getKiller());
         }
+        for(NovsPlayer observer : player.getSpectatorObservers()) {
+        	novsWar.getPlayerManager().nextSpectatorTarget(observer);
+        }
+        player.getSpectatorObservers().clear();
 
         DeathTimer timer = new DeathTimer(this, seconds, player);
         timer.startTimer();

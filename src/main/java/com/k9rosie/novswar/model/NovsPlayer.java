@@ -172,15 +172,7 @@ public class NovsPlayer {
     
     public void setSpectatorTargetObserver(NovsPlayer player) {
     	spectatorTarget = player;
-    	player.addSpectatorObserver(this);
-    }
-    
-    public void addSpectatorObserver(NovsPlayer player) {
-    	spectatorObservers.add(player);
-    }
-    
-    public void removeSpectatorObserver(NovsPlayer player) {
-    	spectatorObservers.remove(player);
+    	player.getSpectatorObservers().add(this);
     }
     
     public ArrayList<NovsPlayer> getSpectatorObservers() {

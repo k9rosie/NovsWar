@@ -177,10 +177,6 @@ public class PlayerListener implements Listener {
                 player.getStats().incrementSuicides();
 
                 game.scheduleDeath(player, game.getGamemode().getDeathTime());
-                //Switch spectator targets
-                for(NovsPlayer observer : player.getSpectatorObservers()) {
-                	novswar.getPlayerManager().nextSpectatorTarget(observer);
-                }
             }
         }
     }
@@ -344,10 +340,6 @@ public class PlayerListener implements Listener {
             if(assistAttacker != null) {
                 NovsWarPlayerAssistEvent invokeEvent_1 = new NovsWarPlayerAssistEvent(assistAttacker, victim, assistAttacker.getTeam(), victimTeam, game);
                 Bukkit.getPluginManager().callEvent(invokeEvent_1);
-            }
-            //Switch spectator targets
-            for(NovsPlayer observer : victim.getSpectatorObservers()) {
-            	novswar.getPlayerManager().nextSpectatorTarget(observer);
             }
         }
     }
