@@ -76,11 +76,13 @@ public class Game {
 
         for (NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
         	player.setTeam(defaultTeam); // NovsPlayer now has private NovsTeam var
+        	player.setSpectating(false); //remove from spectator mode
+        	player.getSpectatorObservers().clear(); //clear spectators
             player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+            player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
             player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
             player.getBukkitPlayer().setFoodLevel(20);
         }
-
 
         scoreboard.initialize();
 

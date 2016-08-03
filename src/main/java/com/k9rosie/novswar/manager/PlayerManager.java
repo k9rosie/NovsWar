@@ -72,7 +72,7 @@ public class PlayerManager {
 			nextIndex = 0;
 		}
 		NovsPlayer target = inGamePlayers.get(nextIndex);
-		target.removeSpectatorObserver(observer);
+		observer.getSpectatorTarget().removeSpectatorObserver(observer);
 		observer.setSpectatorTargetObserver(target);
 		observer.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
 		observer.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
