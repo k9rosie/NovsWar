@@ -69,11 +69,16 @@ public class PlayerManager {
 			nextIndex = 0;
 		}
 		NovsPlayer target = inGamePlayers.get(nextIndex);
-		System.out.println("...New target is "+target.getBukkitPlayer().getName());
-		observer.setSpectatorTarget(target);
-		//target.getSpectatorObservers().add(observer);
-		observer.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
-		observer.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
+		if(target != null) {
+			System.out.println("...New target is "+target.getBukkitPlayer().getName());
+			observer.setSpectatorTarget(target);
+			//target.getSpectatorObservers().add(observer);
+			observer.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
+			observer.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
+		} else {
+			System.out.println("WARNING: nextSpectatorTarget used a null target");
+		}
+		
 		return target;
     }
 }

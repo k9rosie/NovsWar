@@ -64,12 +64,15 @@ public class NovsPlayer {
     /**
      * Determines which NovsPlayer dealt the most assist damage
      * 
-     * @param killer - The NovsPlayer that killed this player
+     * @param killer - The NovsPlayer that killed this player. If this is null, then the highest attacker
+     * 				overall will be selected
      * @return the NovsPlayer that dealt the most assist damage. If there are no
      *   	   assists, returns null.
      */
     public NovsPlayer getAssistAttacker(NovsPlayer killer) {
-    	attackerMap.remove(killer);
+    	if(killer != null) {
+    		attackerMap.remove(killer);
+    	}
     	NovsPlayer assistAttacker = null;
     	System.out.println(bukkitPlayer.getName()+" is evaluating assist attackers...");
     	if(attackerMap.size() > 0) {

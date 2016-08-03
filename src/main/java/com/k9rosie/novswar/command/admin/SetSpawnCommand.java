@@ -37,8 +37,8 @@ public class SetSpawnCommand extends NovsCommand {
             String teamName = getArgs()[2];
             NovsTeam team = getNovsWar().getTeamManager().getTeam(teamName);
 
-            if (team == null) {
-                bukkitPlayer.sendMessage("That team doesn't exist.");
+            if (team == null || getNovsWar().getGameHandler().getGame().getTeams().contains(team)==false) {
+                bukkitPlayer.sendMessage("That team doesn't exist or is not enabled for this world.");
                 return;
             }
 

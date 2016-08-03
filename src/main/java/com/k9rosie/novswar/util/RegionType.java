@@ -4,7 +4,8 @@ public enum RegionType {
     BATTLEFIELD,
     INTERMISSION_GATE,
     DEATH_REGION,
-    OBJECTIVE;
+    OBJECTIVE,
+    TEAM_SPAWN;
 
     public static RegionType parseString(String regionType) {
         switch (regionType.toLowerCase()) {
@@ -12,6 +13,7 @@ public enum RegionType {
             case "intermission_gate": return RegionType.INTERMISSION_GATE;
             case "death_region": return RegionType.DEATH_REGION;
             case "objective": return RegionType.OBJECTIVE;
+            case "team_spawn": return RegionType.TEAM_SPAWN;
         }
         return null;
     }

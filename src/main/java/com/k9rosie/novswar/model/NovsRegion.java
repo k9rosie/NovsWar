@@ -7,6 +7,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Sign;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.MaterialData;
 
 import java.lang.reflect.Array;
@@ -79,9 +81,21 @@ public class NovsRegion {
         for (int x = bottomBlockX; x <= topBlockX; x++) {
             for (int y = bottomBlockY; y <= topBlockY; y++) {
                 for (int z = bottomBlockZ; z <= topBlockZ; z++) {
-                    BlockState block = cornerOne.getWorld().getBlockAt(x, y, z).getState();
-                    MaterialData data = block.getData();
+                    Block bukkitBlock = getWorld().getBukkitWorld().getBlockAt(x, y, z);
 
+                    NovsBlock block = new NovsBlock(bukkitBlock.getState());
+
+                    if (bukkitBlock instanceof InventoryHolder) {
+                        InventoryHolder container = (InventoryHolder) bukkitBlock;
+                        block.setInventoryContents(container.getInventory().getContents());
+                    }
+
+                    if (bukkitBlock instanceof Sign) {
+                        Sign sign = (Sign) bukkitBlock;
+                        block.setSignData(sign.getLines());
+                    }
+
+                    blocks.add(block);
                 }
             }
         }
@@ -109,9 +123,8 @@ public class NovsRegion {
     }
 
     public void resetBlocks() {
-        for (Map.Entry<BlockState, MaterialData> entry : blocks.entrySet()) {
-            entry.getKey().setData(entry.getValue());
-            entry.getKey().update(true, false);
+        for (NovsBlock block : blocks) {
+            block.respawn();
         }
     }
 
