@@ -24,6 +24,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -231,6 +232,12 @@ public class PlayerListener implements Listener {
         	//Check for sign click
         	if(event.getClickedBlock().getType().equals(Material.SIGN)) {
         		bukkitPlayer.sendMessage("Ouch");
+        		Sign clicked = (Sign) event.getClickedBlock().getState();
+        		System.out.println("Sign content is...");
+            	String[] lines = clicked.getLines();
+            	for(int i = 0; i < lines.length; i++) {
+            		System.out.println(lines[i]);
+            	}
         	}
         }
     }
