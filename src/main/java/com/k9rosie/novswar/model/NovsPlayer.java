@@ -26,6 +26,7 @@ public class NovsPlayer {
     private boolean isSpectating;
     private boolean isSettingRegion;
     private boolean hasVoted;
+    private boolean isShiftToggled;
 
     private Location cornerOneBuffer;
     private RegionType regionTypeBuffer;
@@ -41,6 +42,7 @@ public class NovsPlayer {
         isSpectating = false;
         isSettingRegion = false;
         hasVoted = false;
+        isShiftToggled = true;
         spectatorTarget = null;
         spectatorObservers = new ArrayList<NovsPlayer>();
     }
@@ -187,6 +189,14 @@ public class NovsPlayer {
     
     public NovsPlayer getSpectatorTarget() {
     	return spectatorTarget;
+    }
+    
+    public boolean isShiftToggled() {
+    	return isShiftToggled;
+    }
+    
+    public void setShiftToggled(boolean toggle) {
+    	isShiftToggled = toggle;
     }
     
 }

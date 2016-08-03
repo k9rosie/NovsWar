@@ -1,8 +1,6 @@
 package com.k9rosie.novswar.listener;
 
 
-import java.util.ArrayList;
-
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
@@ -23,7 +21,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -180,6 +177,10 @@ public class PlayerListener implements Listener {
                 player.getStats().incrementSuicides();
 
                 game.scheduleDeath(player, game.getGamemode().getDeathTime());
+                //Switch spectator targets
+                for(NovsPlayer observer : player.getSpectatorObservers()) {
+                	novswar.getPlayerManager().nextSpectatorTarget(observer);
+                }
             }
         }
     }
@@ -188,7 +189,6 @@ public class PlayerListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player bukkitPlayer = event.getPlayer();
         NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
-        ArrayList<NovsPlayer> inGamePlayers = novswar.getPlayerManager().getInGamePlayers();
 
         if (player.isSettingRegion()) {
             if (event.getClickedBlock() == null) {
@@ -267,8 +267,13 @@ public class PlayerListener implements Listener {
         if (player.isDead() || player.isSpectating()) {
             event.setCancelled(true);
         }
-        if(player.isSpectating() && player.getBukkitPlayer().isSneaking()) {
-        	novswar.getPlayerManager().nextSpectatorTarget(player);
+        if(player.isSpectating()) {
+        	if(player.isShiftToggled()) {
+        		player.setShiftToggled(false);
+        		novswar.getPlayerManager().nextSpectatorTarget(player);
+        	} else {
+        		player.setShiftToggled(true);
+        	}
         }
     }
     
