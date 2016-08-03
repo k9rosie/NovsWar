@@ -230,7 +230,7 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
         } else {
         	//Check for sign click
-        	if(event.getClickedBlock().getType().equals(Material.SIGN)) {
+        	if(event.getClickedBlock() != null && event.getClickedBlock().getType().equals(Material.WALL_SIGN)) {
         		bukkitPlayer.sendMessage("Ouch");
         		Sign clicked = (Sign) event.getClickedBlock().getState();
         		System.out.println("Sign content is...");
@@ -238,6 +238,11 @@ public class PlayerListener implements Listener {
             	for(int i = 0; i < lines.length; i++) {
             		System.out.println(lines[i]);
             	}
+            	if(clicked.getLine(0).toLowerCase().contains("novswar")) {
+            		System.out.println("Sign is a NovsWar sign!");
+            		bukkitPlayer.performCommand(clicked.getLine(1));
+            	}
+            	event.setCancelled(true);
         	}
         }
     }
@@ -282,13 +287,47 @@ public class PlayerListener implements Listener {
             if (region.inRegion(bukkitPlayer.getLocation())) {
                 switch(region.getRegionType()) {
                 case TEAM_SPAWN :
-                	//TODO stuff
+                	if(event instanceof PlayerTeleportEvent) {
+                		System.out.println("onPlayerMove: A player teleported into a Team Spawn");
+                	}
+                	else {
+                		System.out.println("onPlayerMove: A player moved into a Team Spawn");
+                	}
                 	break;
                 case DEATH_REGION :
                 	//Determine the player that has done the most damage
                 	NovsPlayer attacker = player.getAssistAttacker(null);
                 	//if attacker is null, there are no damagers
                 	game.killPlayer(player, attacker);
+                	break;
+                default :
+                	break;
+                }
+            }
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+    	Player bukkitPlayer = event.getPlayer();
+        NovsWorld currentGameWorld = novswar.getGameHandler().getGame().getWorld();
+        
+    	for (NovsRegion region : currentGameWorld.getEnterableRegions()) {
+            if (region.inRegion(bukkitPlayer.getLocation())) {
+                switch(region.getRegionType()) {
+                case TEAM_SPAWN :
+                	if(event instanceof PlayerTeleportEvent) {
+                		System.out.println("onPlayerTeleport: A player teleported into a Team Spawn");
+                	}
+                	else {
+                		System.out.println("onPlayerTeleport: A player moved into a Team Spawn");
+                	}
+                	break;
+                case DEATH_REGION :
+                	//Determine the player that has done the most damage
+                	//NovsPlayer attacker = player.getAssistAttacker(null);
+                	//if attacker is null, there are no damagers
+                	//game.killPlayer(player, attacker);
                 	break;
                 default :
                 	break;

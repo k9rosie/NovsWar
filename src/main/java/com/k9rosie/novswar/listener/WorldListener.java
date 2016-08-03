@@ -30,6 +30,10 @@ public class WorldListener implements Listener {
     	for(int i = 0; i < lines.length; i++) {
     		System.out.println(lines[i]);
     	}
+    	if(event.getLine(0).toLowerCase() == "novswar") {
+    		System.out.println("Created NovsWar sign!");
+    		event.setLine(0, "§2NovsWar");
+    	}
     }
 
 }
