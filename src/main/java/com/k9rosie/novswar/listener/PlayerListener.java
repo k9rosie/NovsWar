@@ -267,7 +267,7 @@ public class PlayerListener implements Listener {
         if (player.isDead() || player.isSpectating()) {
             event.setCancelled(true);
         }
-        if(player.isSpectating()) {
+        if(player.isSpectating() && player.getBukkitPlayer().isSneaking()) {
         	novswar.getPlayerManager().nextSpectatorTarget(player);
         }
     }

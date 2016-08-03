@@ -55,14 +55,14 @@ public class PlayerManager {
 		int nextIndex = 0;
 		int watchdog = 0;
 		//Get current index of spectator target in player list
-		while(observer.getSpectatorTarget().equals(inGamePlayers.get(index).getBukkitPlayer())==false){
+		while(observer.getSpectatorTarget().equals(inGamePlayers.get(index))==false){
 			index++;
 			if(index >= inGamePlayers.size()){
 				index = 0;
 				watchdog++;
 			}
 			if(watchdog >= 2) {
-				System.out.println("WARNING: onPlayerInteract could not find the next spectator target");
+				System.out.println("WARNING: nextSpectatorTarget could not find the next spectator target");
 				break;
 			}
 		}
