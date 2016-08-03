@@ -85,14 +85,19 @@ public class NovsRegion {
 
                     NovsBlock block = new NovsBlock(bukkitBlock.getState());
 
-                    if (bukkitBlock instanceof InventoryHolder) {
-                        InventoryHolder container = (InventoryHolder) bukkitBlock;
+                    if (bukkitBlock.getState() instanceof InventoryHolder) {
+                        InventoryHolder container = (InventoryHolder) bukkitBlock.getState();
                         block.setInventoryContents(container.getInventory().getContents());
+                        System.out.println("This block holds items! " + block.getInventoryContents().length + " items stored");
                     }
 
-                    if (bukkitBlock instanceof Sign) {
-                        Sign sign = (Sign) bukkitBlock;
+                    if (bukkitBlock.getState() instanceof Sign) {
+                        Sign sign = (Sign) bukkitBlock.getState();
                         block.setSignData(sign.getLines());
+                        System.out.println("This block is a sign! Here's the text: ");
+                        for (String text : sign.getLines()) {
+                            System.out.println(text);
+                        }
                     }
 
                     blocks.add(block);

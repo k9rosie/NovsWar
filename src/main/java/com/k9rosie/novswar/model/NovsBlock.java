@@ -45,16 +45,22 @@ public class NovsBlock {
     public void respawn() {
         blockState.update(true, false);
 
-        if (blockState instanceof InventoryHolder) {
+        Block block = blockState.getBlock().getWorld().getBlockAt(blockState.getLocation());
+        System.out.println(block.getState().getClass().getName());
+        if (block.getState() instanceof InventoryHolder) {
             InventoryHolder container = (InventoryHolder) blockState;
             container.getInventory().setContents(inventoryContents);
+            System.out.println("This block being restored holds items! " + inventoryContents.length + " items restored");
         }
 
-        if (blockState instanceof Sign) {
+        if (block.getState() instanceof Sign) {
             Sign sign = (Sign) blockState;
-            for (int i = 0; i >= signData.length; i++) {
+            System.out.println("This block being restored is a sign! Here's the text: ");
+            for (int i = 0; i < signData.length; i++) {
                 sign.setLine(i, signData[i]);
+                System.out.println(signData[i]);
             }
+
         }
     }
 }

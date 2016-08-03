@@ -470,6 +470,7 @@ public class Game {
      */
     public void forcePlayerTeam(NovsPlayer player, NovsTeam team) {
     	player.setTeam(team);
+        System.out.println(world.getTeamSpawns().get(team));
         player.getBukkitPlayer().teleport(world.getTeamSpawns().get(team));
         player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
         player.getBukkitPlayer().setFoodLevel(20);

@@ -67,11 +67,12 @@ public class WorldManager {
         lobbyWorld = new NovsWorld(worldName, bukkitWorld);
 
         NovsTeam defaultTeam = novswar.getTeamManager().getDefaultTeam();
-        int spawnX = coreConfig.getInt("core.lobby.spawn.x");
-        int spawnY = coreConfig.getInt("core.lobby.spawn.y");
-        int spawnZ = coreConfig.getInt("core.lobby.spawn.z");
-
-        lobbyWorld.getTeamSpawns().put(defaultTeam, new Location(bukkitWorld, spawnX, spawnY, spawnZ));
+        double spawnX = coreConfig.getDouble("core.lobby.spawn.x");
+        double spawnY = coreConfig.getDouble("core.lobby.spawn.y");
+        double spawnZ = coreConfig.getDouble("core.lobby.spawn.z");
+        float spawnPitch = (float) coreConfig.getDouble("core.lobby.spawn.pitch");
+        float spawnYaw = (float) coreConfig.getDouble("core.lobby.spawn.yaw");
+        lobbyWorld.getTeamSpawns().put(defaultTeam, new Location(bukkitWorld, spawnX, spawnY, spawnZ, spawnPitch, spawnYaw));
     }
 
     public void loadWorlds() {
