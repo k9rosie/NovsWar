@@ -287,47 +287,16 @@ public class PlayerListener implements Listener {
             if (region.inRegion(bukkitPlayer.getLocation())) {
                 switch(region.getRegionType()) {
                 case TEAM_SPAWN :
-                	if(event instanceof PlayerTeleportEvent) {
-                		System.out.println("onPlayerMove: A player teleported into a Team Spawn");
-                	}
-                	else {
-                		System.out.println("onPlayerMove: A player moved into a Team Spawn");
-                	}
+                	//Assume that players teleporting into the teamspawn do not trigger this code...
+                	bukkitPlayer.teleport(event.getFrom());
+                	bukkitPlayer.sendMessage("You cannot go there!");
+                	event.setCancelled(true);
                 	break;
                 case DEATH_REGION :
                 	//Determine the player that has done the most damage
                 	NovsPlayer attacker = player.getAssistAttacker(null);
                 	//if attacker is null, there are no damagers
                 	game.killPlayer(player, attacker);
-                	break;
-                default :
-                	break;
-                }
-            }
-        }
-    }
-    
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerTeleport(PlayerTeleportEvent event) {
-    	Player bukkitPlayer = event.getPlayer();
-        NovsWorld currentGameWorld = novswar.getGameHandler().getGame().getWorld();
-        
-    	for (NovsRegion region : currentGameWorld.getEnterableRegions()) {
-            if (region.inRegion(bukkitPlayer.getLocation())) {
-                switch(region.getRegionType()) {
-                case TEAM_SPAWN :
-                	if(event instanceof PlayerTeleportEvent) {
-                		System.out.println("onPlayerTeleport: A player teleported into a Team Spawn");
-                	}
-                	else {
-                		System.out.println("onPlayerTeleport: A player moved into a Team Spawn");
-                	}
-                	break;
-                case DEATH_REGION :
-                	//Determine the player that has done the most damage
-                	//NovsPlayer attacker = player.getAssistAttacker(null);
-                	//if attacker is null, there are no damagers
-                	//game.killPlayer(player, attacker);
                 	break;
                 default :
                 	break;
