@@ -251,10 +251,16 @@ public class PlayerListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         Player bukkitPlayer = event.getPlayer();
         NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
+        NovsWorld currentGameWorld = novswar.getGameHandler().getGame().getWorld();
 
         if (player.isDead() && (bukkitPlayer.getSpectatorTarget() == null)) {
             event.setCancelled(true);
             return;
+        }
+        for (NovsRegion deathRegion : currentGameWorld.getDeathRegions()) {
+            if (deathRegion.inRegion(bukkitPlayer.getLocation())) {
+                bukkitPlayer.setHealth(0.0d);
+            }
         }
     }
 
