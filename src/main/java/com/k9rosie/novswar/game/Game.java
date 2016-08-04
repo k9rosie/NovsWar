@@ -354,6 +354,7 @@ public class Game {
         victim.clearAttackers();
         scheduleDeath(victim, gamemode.getDeathTime());
         //Event calls
+        System.out.println("Calling events");
         if(attacker != null) { //if there is an attacker, invoke kill event
 	        NovsWarPlayerKillEvent invokeEvent = new NovsWarPlayerKillEvent(attacker, victim, attacker.getTeam(), victim.getTeam(), this);
 	        Bukkit.getPluginManager().callEvent(invokeEvent);
@@ -364,16 +365,19 @@ public class Game {
             NovsWarPlayerAssistEvent invokeEvent_1 = new NovsWarPlayerAssistEvent(assistAttacker, victim, assistAttacker.getTeam(), victim.getTeam(), this);
             Bukkit.getPluginManager().callEvent(invokeEvent_1);
         }
+        System.out.println("Finished killing player");
     }
     
     private void scheduleDeath(NovsPlayer player, int seconds) {
         Player bukkitPlayer = player.getBukkitPlayer();
         player.setDeath(true);
+        System.out.println("Scheduling death, setting max food & health");
         bukkitPlayer.setHealth(player.getBukkitPlayer().getMaxHealth());
         bukkitPlayer.setFoodLevel(20);
         for(PotionEffect effect : bukkitPlayer.getActivePotionEffects()) {
         	bukkitPlayer.removePotionEffect(effect.getType());
         }
+        System.out.println("Generating effects");
         bukkitPlayer.playEffect(EntityEffect.DEATH);
         bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_PLAYER_DEATH, 20, 1);
         
@@ -385,12 +389,12 @@ public class Game {
         }
         System.out.println();
         player.getSpectatorObservers().clear();
-        
+        System.out.println("Setting spectator mode...");
         bukkitPlayer.setGameMode(GameMode.SPECTATOR);
         if (bukkitPlayer.getKiller() != null) {
             bukkitPlayer.setSpectatorTarget(bukkitPlayer.getKiller());
         }
-
+        System.out.println("Starting death timer...");
         DeathTimer timer = new DeathTimer(this, seconds, player);
         timer.startTimer();
         deathTimers.put(player, timer);

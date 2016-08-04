@@ -242,9 +242,9 @@ public class PlayerListener implements Listener {
             	if(clicked.getLine(0).toLowerCase().contains("novswar")) {
             		System.out.println("Sign is a NovsWar sign!");
             		//Check for valid command
-            		String command = "nw "+clicked.getLine(1);
+            		String command = clicked.getLine(1);
             		if(CommandType.contains(command)) {
-            			bukkitPlayer.performCommand(command);
+            			bukkitPlayer.performCommand("nw "+command);
             		} else {
             			bukkitPlayer.sendMessage("This novswar sign is invalid!");
             		}
@@ -305,6 +305,7 @@ public class PlayerListener implements Listener {
                 	//Determine the player that has done the most damage
                 	NovsPlayer attacker = player.getAssistAttacker(null);
                 	//if attacker is null, there are no damagers
+                	System.out.println(player.getBukkitPlayer().getName()+" entered death region. Calling killPlayer");
                 	game.killPlayer(player, attacker);
                 	break;
                 default :
@@ -393,5 +394,10 @@ public class PlayerListener implements Listener {
             }
             game.killPlayer(victim, attacker);
         }
+    }
+    
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerDeath(PlayerDeathEvent event) {
+    	System.out.println(event.getEntity().getName()+" has died...");
     }
 }
