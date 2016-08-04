@@ -242,7 +242,7 @@ public class PlayerListener implements Listener {
             	if(clicked.getLine(0).toLowerCase().contains("novswar")) {
             		System.out.println("Sign is a NovsWar sign!");
             		//Check for valid command
-            		String command = clicked.getLine(1);
+            		String command = "nw "+clicked.getLine(1);
             		if(CommandType.contains(command)) {
             			bukkitPlayer.performCommand(command);
             		} else {
@@ -291,13 +291,15 @@ public class PlayerListener implements Listener {
         }
 
         for (NovsRegion region : currentGameWorld.getEnterableRegions()) {
-            if (region.inRegion(bukkitPlayer.getLocation())) {
+            if (region.inRegion(event.getTo())) {
                 switch(region.getRegionType()) {
                 case TEAM_SPAWN :
                 	//Assume that players teleporting into the teamspawn do not trigger this code...
-                	bukkitPlayer.teleport(event.getFrom());
-                	bukkitPlayer.sendMessage("You cannot go there!");
-                	event.setCancelled(true);
+                	if(region.inRegion(event.getFrom())==false) { //if the player is moving from outside the Team Spawn
+                		bukkitPlayer.teleport(event.getFrom());
+                    	bukkitPlayer.sendMessage("You cannot go there!");
+                    	event.setCancelled(true);
+                	}
                 	break;
                 case DEATH_REGION :
                 	//Determine the player that has done the most damage

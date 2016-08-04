@@ -2,6 +2,7 @@ package com.k9rosie.novswar.listener;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
+import com.k9rosie.novswar.command.CommandType;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,15 +26,13 @@ public class WorldListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onSignChangeEvent(SignChangeEvent event) {
-    	System.out.println("SignChangeEvent! Sign content is...");
-    	String[] lines = event.getLines();
-    	for(int i = 0; i < lines.length; i++) {
-    		System.out.println(lines[i]);
-    	}
     	if(event.getLine(0).toLowerCase().equals("novswar")) {
-    		System.out.println("Created NovsWar sign!");
-    		event.setLine(0, "§2NovsWar");
+    		if(CommandType.contains(event.getLine(1))) {
+    			event.getPlayer().sendMessage("Successfully created NovsWar sign!");
+        		event.setLine(0, "&2NovsWar");
+    		} else {
+    			event.getPlayer().sendMessage("Invalid command for NovsWar sign");
+    		}
     	}
     }
-
 }
