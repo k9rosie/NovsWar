@@ -10,12 +10,14 @@ import org.bukkit.material.MaterialData;
 
 public class NovsBlock {
     private BlockState blockState;
+    private Location location;
 
     private ItemStack[] inventoryContents;
     private String[] signData;
 
-    public NovsBlock(BlockState blockState) {
+    public NovsBlock(BlockState blockState, Location location) {
         this.blockState = blockState;
+        this.location = location;
     }
 
     public BlockState getBlockState() {
@@ -42,18 +44,28 @@ public class NovsBlock {
         this.signData = signData;
     }
 
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
     public void respawn() {
         blockState.update(true, false);
 
-        Block block = blockState.getBlock().getWorld().getBlockAt(blockState.getLocation());
-        System.out.println(block.getState().getClass().getName());
+        Block block = location.getBlock();
+
         if (block.getState() instanceof InventoryHolder) {
+            System.out.println("Block at ("+block.getX()+", "+block.getY()+", "+block.getZ()+") is an InventoryHolder");
             InventoryHolder container = (InventoryHolder) blockState;
             container.getInventory().setContents(inventoryContents);
             System.out.println("This block being restored holds items! " + inventoryContents.length + " items restored");
         }
 
         if (block.getState() instanceof Sign) {
+            System.out.println("Block at ("+block.getX()+", "+block.getY()+", "+block.getZ()+") is a Sign");
             Sign sign = (Sign) blockState;
             System.out.println("This block being restored is a sign! Here's the text: ");
             for (int i = 0; i < signData.length; i++) {

@@ -83,7 +83,7 @@ public class NovsRegion {
                 for (int z = bottomBlockZ; z <= topBlockZ; z++) {
                     Block bukkitBlock = getWorld().getBukkitWorld().getBlockAt(x, y, z);
 
-                    NovsBlock block = new NovsBlock(bukkitBlock.getState());
+                    NovsBlock block = new NovsBlock(bukkitBlock.getState(), bukkitBlock.getLocation());
 
                     if (bukkitBlock.getState() instanceof InventoryHolder) {
                         InventoryHolder container = (InventoryHolder) bukkitBlock.getState();
