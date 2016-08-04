@@ -131,7 +131,19 @@ public class PlayerListener implements Listener {
             }
             NovsPlayer victim = playerManager.getPlayers().get(victimBukkitPlayer);
             NovsPlayer attacker = playerManager.getPlayers().get(attackerBukkitPlayer);
-            onPlayerAttacked(event, attacker, victim, arrowDeath);
+            double damage = event.getFinalDamage();
+            victim.getStats().incrementDamageTaken(damage);
+            attacker.getStats().incrementDamageGiven(damage);
+            victim.addAttacker(attacker, damage);
+
+            // if damage is fatal
+            if (victim.getBukkitPlayer().getHealth() - damage <= 0) {
+                event.setCancelled(true);
+                game.killPlayer(victim, attacker, arrowDeath);
+            }
+            
+            
+            //onPlayerAttacked(event, attacker, victim, arrowDeath);
         }
     }
 
@@ -151,44 +163,40 @@ public class PlayerListener implements Listener {
     	//If the entity being damaged is a player
         if (event.getEntity() instanceof Player) {
             Player bukkitPlayer = (Player) event.getEntity();
-            NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
+            NovsPlayer victim = playerManager.getPlayers().get(bukkitPlayer);
+            NovsPlayer killer = null;
             //Cancel the event if the player can't be damaged
-            if (!player.getTeam().canBeDamaged()) {
+            if (!victim.getTeam().canBeDamaged()) {
                 event.setCancelled(true);
                 return;
             }
-            //If there is a killer player
+            
+            //Determine whether there is a killer
             if (bukkitPlayer.getKiller() != null && bukkitPlayer.getKiller() instanceof Player) {
+            	//The victim has a valid killer
                 if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                 	//The player was killed by another entity. onPlayerDamageByPlayer handles the rest.
+                	//event.setCancelled(true);
                     return;
                 } else {
                 	//The player was killed by the environment, but still has a valid killer
-                    NovsPlayer killer = playerManager.getPlayers().get(bukkitPlayer.getKiller());
-                    NovsPlayer victim = playerManager.getPlayers().get(bukkitPlayer);
-                    onPlayerAttacked(event, killer, victim, false);
+                    killer = playerManager.getPlayers().get(bukkitPlayer.getKiller());
+                    //onPlayerAttacked(event, killer, victim, false);
                 }
-            } else { //The player got hurt purely by environment
-            	double damage = event.getFinalDamage();
-                player.getStats().incrementDamageTaken(damage);
+            }
+            
+            //At this point, if killer is null, the victim has been hurt purely by environment.
+            //Otherwise, the victim has died from environmental damage but was attacked beforehand.
+            
+        	double damage = event.getFinalDamage();
+        	victim.getStats().incrementDamageTaken(damage);
 
-                // if damage is fatal
-                if (bukkitPlayer.getHealth() - damage <= 0) {
-                    event.setCancelled(true);
-
-                    String deathMessage = Messages.DEATH_MESSAGE.toString();
-                    deathMessage = deathMessage.replace("%player_tcolor%", player.getTeam().getColor().toString())
-                    .replace("%player%", bukkitPlayer.getDisplayName());
-
-                    for (NovsPlayer p : playerManager.getPlayers().values()) {
-                        if (p.canSeeDeathMessages()) {
-                            p.getBukkitPlayer().sendMessage(deathMessage);
-                        }
-                    }
-                    //player.getStats().incrementSuicides();
-                    game.killPlayer(player, null);
-                    //game.scheduleDeath(player, game.getGamemode().getDeathTime());
-                }
+            // if damage is fatal
+            if (bukkitPlayer.getHealth() - damage <= 0) {
+                event.setCancelled(true);
+                //player.getStats().incrementSuicides();
+                game.killPlayer(victim, killer, false);
+                //game.scheduleDeath(player, game.getGamemode().getDeathTime());
             }
         }
     }
@@ -306,7 +314,7 @@ public class PlayerListener implements Listener {
                 	NovsPlayer attacker = player.getAssistAttacker(null);
                 	//if attacker is null, there are no damagers
                 	System.out.println(player.getBukkitPlayer().getName()+" entered death region. Calling killPlayer");
-                	game.killPlayer(player, attacker);
+                	game.killPlayer(player, attacker, false);
                 	break;
                 default :
                 	break;
@@ -345,7 +353,7 @@ public class PlayerListener implements Listener {
         }
     }
 
-    private void onPlayerAttacked(EntityDamageEvent event, NovsPlayer attacker, NovsPlayer victim, boolean arrowDeath) {
+   /* private void onPlayerAttacked(EntityDamageEvent event, NovsPlayer attacker, NovsPlayer victim, boolean arrowDeath) {
         Game game = novswar.getGameHandler().getGame();
         NovsTeam victimTeam = victim.getTeam();
         NovsTeam attackerTeam = attacker.getTeam();
@@ -394,8 +402,8 @@ public class PlayerListener implements Listener {
             }
             game.killPlayer(victim, attacker);
         }
-    }
-    
+    }*/
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDeath(PlayerDeathEvent event) {
     	System.out.println(event.getEntity().getName()+" has died...");
