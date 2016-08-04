@@ -36,7 +36,11 @@ public class SetRegionCommand extends NovsCommand {
             RegionType regionType = RegionType.parseString(getArgs()[3]);
 
             if (regionType == null) {
-                bukkitPlayer.sendMessage("That isn't a valid region type");
+            	String regionTypeList = "";
+            	for(RegionType region : RegionType.values()) {
+            		regionTypeList += (region.toString().toLowerCase()+" ");
+            	}
+                bukkitPlayer.sendMessage("Invalid region type. Use "+regionTypeList);
                 return;
             }
 

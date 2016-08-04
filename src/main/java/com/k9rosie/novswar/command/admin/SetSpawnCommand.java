@@ -27,21 +27,37 @@ public class SetSpawnCommand extends NovsCommand {
         } else {
             Player bukkitPlayer = (Player) getSender();
             World bukkitWorld = bukkitPlayer.getWorld();
-            NovsWorld world = getNovsWar().getWorldManager().getWorlds().get(bukkitWorld);
-
+            NovsWorld world; 
+            //Get the NovsTeam
+            String teamName = getArgs()[2];
+            NovsTeam team;
+            if(teamName.equalsIgnoreCase("default")) {
+            	team = getNovsWar().getTeamManager().getDefaultTeam();
+            } else {
+            	team = getNovsWar().getTeamManager().getTeam(teamName);
+            }
+            
+            //Check which world the sender is in
+            if(bukkitWorld.equals(getNovsWar().getWorldManager().getLobbyWorld().getBukkitWorld())) {
+            	//The player is in the lobby world
+            	world = getNovsWar().getWorldManager().getLobbyWorld();
+            	if(team == null || team.equals(getNovsWar().getTeamManager().getDefaultTeam())==false) {
+            		bukkitPlayer.sendMessage("You can only set the default team's spawn in Lobby World");
+                    return;
+            	}
+            } else {
+            	//The player is in a game world
+            	world = getNovsWar().getWorldManager().getWorlds().get(bukkitWorld);
+            	if (team == null || getNovsWar().getGameHandler().getGame().getTeams().contains(team)==false) {
+                    bukkitPlayer.sendMessage("That team doesn't exist or is not enabled for this world.");
+                    return;
+                }
+            }
             if (world == null) {
                 bukkitPlayer.sendMessage("The world you're in isn't enabled in NovsWar.");
                 return;
             }
-
-            String teamName = getArgs()[2];
-            NovsTeam team = getNovsWar().getTeamManager().getTeam(teamName);
-
-            if (team == null || getNovsWar().getGameHandler().getGame().getTeams().contains(team)==false) {
-                bukkitPlayer.sendMessage("That team doesn't exist or is not enabled for this world.");
-                return;
-            }
-
+            
             Location location = bukkitPlayer.getLocation();
             double x = location.getX();
             double y = location.getY();
@@ -49,9 +65,7 @@ public class SetSpawnCommand extends NovsCommand {
             float pitch = location.getPitch();
             float yaw = location.getYaw();
             world.getTeamSpawns().put(team, new Location(location.getWorld(), x, y, z, pitch, yaw));
-
             bukkitPlayer.sendMessage("Spawn set for team " + team.getColor()+team.getTeamName());
-
         }
     }
 }

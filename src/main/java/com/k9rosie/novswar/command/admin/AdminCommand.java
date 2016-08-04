@@ -14,26 +14,27 @@ public class AdminCommand extends NovsCommand {
         if (getArgs().length == 1) {
             getSender().sendMessage("reserved for display stats");
         } else if (getArgs().length >= 2) {
-            switch (getArgs()[1]) {
-                case "setspawn":
+        	AdminCommandType commandArg = AdminCommandType.getCommand(getArgs()[1]);
+            switch (commandArg) {
+                case SETSPAWN:
                     new SetSpawnCommand(getNovsWar(), getSender(), getArgs()).execute();
                     return;
-                case "setregion":
+                case SETREGION:
                     new SetRegionCommand(getNovsWar(), getSender(), getArgs()).execute();
                     return;
-                case "setteam":
+                case SETTEAM:
                     new SetTeamCommand(getNovsWar(), getSender(), getArgs()).execute();
                     return;
-                case "kick":
+                case KICK:
                     new KickCommand(getNovsWar(), getSender(), getArgs()).execute();
                     return;
-                case "nextgame":
+                case NEXTGAME:
                     new NextGameCommand(getNovsWar(), getSender(), getArgs()).execute();
                     return;
-                case "restart":
+                case RESTART:
                     new RestartCommand(getNovsWar(), getSender(), getArgs()).execute();
                     return;
-                case "help":
+                case HELP:
                     new HelpAdminCommand(getNovsWar(), getSender(), getArgs()).execute();
                     return;
             }

@@ -14,12 +14,10 @@ public class HelpCommand extends NovsCommand {
 
     public void execute() {
         NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
-        player.getBukkitPlayer().sendMessage("/nw join: Join the round");
-        player.getBukkitPlayer().sendMessage("/nw leave: Leave the round");
-        player.getBukkitPlayer().sendMessage("/nw map: current map info");
-        player.getBukkitPlayer().sendMessage("/nw player [name]: Player stats");
-        player.getBukkitPlayer().sendMessage("/nw team [name]: Team info for players/teams");
-        player.getBukkitPlayer().sendMessage("/nw vote: Prompts the voting screen");
-        player.getBukkitPlayer().sendMessage("/nw spectate: Enter spectator mode");
+        String message = "";
+        for(CommandType cmd : CommandType.values()) {
+        	message = "/nw "+cmd.toString().toLowerCase()+" "+cmd.arguments()+": "+cmd.description();
+        	player.getBukkitPlayer().sendMessage(message);
+        }
     }
 }
