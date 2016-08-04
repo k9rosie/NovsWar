@@ -158,6 +158,7 @@ public class Game {
         	}
         }
         gameTimer.pauseTimer();
+        clockTick(); //Update the scoreboard with paused info
     }
 
     public void unpauseGame() {
