@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
+import com.k9rosie.novswar.command.CommandType;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerAssistEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerKillEvent;
@@ -240,9 +241,15 @@ public class PlayerListener implements Listener {
             	}
             	if(clicked.getLine(0).toLowerCase().contains("novswar")) {
             		System.out.println("Sign is a NovsWar sign!");
-            		bukkitPlayer.performCommand(clicked.getLine(1));
+            		//Check for valid command
+            		String command = clicked.getLine(1);
+            		if(CommandType.contains(command)) {
+            			bukkitPlayer.performCommand(command);
+            		} else {
+            			bukkitPlayer.sendMessage("This novswar sign is invalid!");
+            		}
+            		event.setCancelled(true);
             	}
-            	event.setCancelled(true);
         	}
         }
     }
