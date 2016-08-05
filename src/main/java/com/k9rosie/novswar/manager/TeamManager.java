@@ -43,6 +43,9 @@ public class TeamManager {
                 return team;
             }
         }
+        if(teamName.equalsIgnoreCase(defaultTeam.getTeamName())) {
+        	return defaultTeam;
+        }
 
         return null;
     }

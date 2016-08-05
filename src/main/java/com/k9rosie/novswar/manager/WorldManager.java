@@ -137,6 +137,14 @@ public class WorldManager {
 
             world.getTeamSpawns().put(team, new Location(world.getBukkitWorld(), x, y, z, pitch, yaw));
         }
+        //For the Lobby, this code runs when there is no Teamless spawn defined in the config
+        if(world.isDefault()) {
+        	if(world.getTeamSpawns().size() == 0) {
+        		NovsTeam defaultTeam = novswar.getTeamManager().getDefaultTeam();
+        		world.getTeamSpawns().put(defaultTeam, world.getBukkitWorld().getSpawnLocation());
+        		System.out.println("There was no defined spawn point for Teamless! Spawning at bukkit world spawn.");
+        	}
+        }
         
         ConfigurationSection infoSignsSection = regionsConfig.getConfigurationSection("regions."+world.getBukkitWorld().getName()+".infosigns");
         for(String locationKey : infoSignsSection.getKeys(false)) {
