@@ -222,14 +222,14 @@ public class WorldManager {
             //Remove destroyed info signs from the config file
             Set<String> sectionSet = infoSignsSection.getKeys(false); //gets a set of location strings
             for(String path : sectionSet) {
-            	if(world.getInfoSigns().keySet().contains(path)) {
+            	if(world.getInfoSigns().keySet().contains(path)==false) {
             		infoSignsSection.set(path, null);
             	}
             }
             //Update valid info sign sections
             for(Map.Entry<String, NovsInfoSign> entry : world.getInfoSigns().entrySet()) {
             	//Create key that's the block location toString
-            	ConfigurationSection signSection = infoSignsSection.createSection(entry.getKey());
+            	ConfigurationSection signSection = infoSignsSection.createSection(entry.getKey().toString());
             	signSection.set("x", (int) entry.getValue().getBlock().getX());
             	signSection.set("y", (int) entry.getValue().getBlock().getY());
             	signSection.set("z", (int) entry.getValue().getBlock().getZ());

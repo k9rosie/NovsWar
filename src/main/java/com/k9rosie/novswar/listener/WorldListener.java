@@ -58,6 +58,8 @@ public class WorldListener implements Listener {
         			world.getInfoSigns().put(block.getLocation().toString(), new NovsInfoSign(block));
         			event.getPlayer().sendMessage("Created Info Sign in world "+block.getWorld());
         			System.out.println("Created NovsInfoSign with key "+block.getLocation().toString());
+        			world.getInfoSigns().get(block.getLocation().toString()).updateMap(world.getName(), novswar.getGameHandler().getGame().getGamemode().getGamemodeName());
+        			world.getInfoSigns().get(block.getLocation().toString()).updatePlayers(novswar.getPlayerManager().getInGamePlayers().size());
         		}
         	}
     	}
