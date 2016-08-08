@@ -1,13 +1,11 @@
 package com.k9rosie.novswar.model;
 
-import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.util.RegionType;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.event.Listener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -17,12 +15,16 @@ public class NovsWorld {
     private World bukkitWorld;
     private HashMap<NovsTeam, Location> teamSpawns;
     private HashMap<String, NovsRegion> regions;
+    private HashMap<String, NovsInfoSign> infoSigns; //String must be Location.toString() of the NovsInfoSign's block
+    private boolean isDefault;
 
-    public NovsWorld(String name, World bukkitWorld) {
+    public NovsWorld(String name, World bukkitWorld, boolean isDefault) {
         this.name = name;
         this.bukkitWorld = bukkitWorld;
         teamSpawns = new HashMap<NovsTeam, Location>();
         regions = new HashMap<String, NovsRegion>();
+        infoSigns = new HashMap<String, NovsInfoSign>();
+        this.isDefault = isDefault;
     }
 
     public String getName() {
@@ -43,6 +45,18 @@ public class NovsWorld {
 
     public HashMap<String, NovsRegion> getRegions() {
         return regions;
+    }
+    
+    public HashMap<String, NovsInfoSign> getInfoSigns() {
+    	return infoSigns;
+    }
+    
+    public boolean isDefault() {
+    	return isDefault;
+    }
+    
+    public void setDefault(boolean val) {
+    	isDefault = val;
     }
 
     public HashSet<NovsRegion> getEnterableRegions() {

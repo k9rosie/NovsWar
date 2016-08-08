@@ -9,13 +9,13 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Array;
 import java.util.*;
 
-public class PlayerManager {
+public class PlayerDataCache {
 
     private NovsWar novswar;
 
     private HashMap<Player, NovsPlayer> players;
 
-    public PlayerManager(NovsWar novswar) {
+    public PlayerDataCache(NovsWar novswar) {
         this.novswar = novswar;
         players = new HashMap<Player, NovsPlayer>();
     }

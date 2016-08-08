@@ -1,14 +1,20 @@
 package com.k9rosie.novswar.listener;
 
+import java.util.ArrayList;
+
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
+import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
+import com.k9rosie.novswar.event.NovsWarNewGameEvent;
 import com.k9rosie.novswar.event.NovsWarScoreModifyEvent;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
+import com.k9rosie.novswar.model.NovsInfoSign;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsScore;
 import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.model.NovsWorld;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -35,6 +41,33 @@ public class NovsWarListener implements Listener {
     }
     
     /**
+     * New Game Event
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onNovsWarNewGame(NovsWarNewGameEvent event) {
+    	//Update all NovsInfoSigns with new round information	
+    	for(NovsInfoSign sign : novswar.getWorldManager().getActiveInfoSigns().values()) {
+    		String worldName = event.getGame().getWorld().getName();
+			String gamemode = event.getGame().getGamemode().getGamemodeName();
+    		sign.updateMap(worldName, gamemode);
+    	}
+    }
+    
+    /**
+     * Join Game Event
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onNovsWarJoinGame(NovsWarJoinGameEvent event) {
+    	//Update all NovsInfoSigns with in-game player count information	
+    	for(NovsInfoSign sign : novswar.getWorldManager().getActiveInfoSigns().values()) {
+    		int playerCount = novswar.getPlayerManager().getInGamePlayers().size();
+    		sign.updatePlayers(playerCount);
+    	}
+    }
+    
+    /**
      * Decides whether or not to rebalance the teams when a player leaves one.
      * @param event
      */
@@ -44,6 +77,11 @@ public class NovsWarListener implements Listener {
     	if(event.isCancelled() == false) {
     		//Count the number of players still in-game
     		int inGamePlayerCount = novswar.getPlayerManager().getInGamePlayers().size();
+    		
+    		//Update all NovsInfoSigns with in-game player count information	
+        	for(NovsInfoSign sign : novswar.getWorldManager().getActiveInfoSigns().values()) {
+        		sign.updatePlayers(inGamePlayerCount);
+        	}
 
     		//Assess in-game players
     		if(game.getGameState().equals(GameState.PRE_GAME) || game.getGameState().equals(GameState.DURING_GAME)) {

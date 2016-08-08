@@ -348,11 +348,52 @@ public class Game {
         }
     }
 
-    public void killPlayer(NovsPlayer victim, NovsPlayer attacker) {
+    /**
+     * Produces death messages, evaluates stats, assists, schedules death (spectating) and calls events
+     * @param victim
+     * @param attacker
+     * @param isArrowDeath
+     */
+    public void killPlayer(NovsPlayer victim, NovsPlayer attacker, boolean isArrowDeath) {
+        //Generate death message
+        String deathMessage;
+        if(attacker != null) {
+        	//There is a valid attacker
+        	//Evaluate statistics
+        	if (isArrowDeath) {
+                deathMessage = Messages.SHOT_MESSAGE.toString();
+                attacker.getStats().incrementArrowKills();
+                victim.getStats().incrementArrowDeaths();
+            } else {
+                deathMessage = Messages.KILL_MESSAGE.toString();
+                attacker.getStats().incrementKills();
+                victim.getStats().incrementDeaths();
+            }
+            deathMessage = deathMessage.replace("%killed_tcolor%", victim.getTeam().getColor().toString())
+                    .replace("%killed%", victim.getBukkitPlayer().getDisplayName())
+                    .replace("%killer_tcolor%", attacker.getTeam().getColor().toString())
+                    .replace("%killer%", attacker.getBukkitPlayer().getDisplayName());
+        } else {
+        	//There is no attacker
+        	deathMessage = Messages.DEATH_MESSAGE.toString();
+            deathMessage = deathMessage.replace("%player_tcolor%", victim.getTeam().getColor().toString())
+            		.replace("%player%", victim.getBukkitPlayer().getDisplayName());
+        }
+        
+        //Print death message to all players
+        for (NovsPlayer p : novsWar.getPlayerManager().getPlayers().values()) {
+            if (p.canSeeDeathMessages()) {
+                p.getBukkitPlayer().sendMessage(deathMessage);
+            }
+        }
+        
     	//Evaluate assists
         NovsPlayer assistAttacker = victim.getAssistAttacker(attacker);
         victim.clearAttackers();
+        
+        //Schedule death spectating
         scheduleDeath(victim, gamemode.getDeathTime());
+        
         //Event calls
         System.out.println("Calling events");
         if(attacker != null) { //if there is an attacker, invoke kill event

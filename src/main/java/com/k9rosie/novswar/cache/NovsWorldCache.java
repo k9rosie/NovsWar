@@ -6,6 +6,7 @@ import com.k9rosie.novswar.model.NovsRegion;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
 import com.k9rosie.novswar.util.RegionType;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -14,7 +15,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class WorldManager {
 
@@ -30,7 +30,6 @@ public class WorldManager {
 
     public void initialize() {
         loadWorlds();
-        loadLobbyWorld();
     }
 
     public HashMap<World, NovsWorld> getWorlds(){
@@ -41,6 +40,13 @@ public class WorldManager {
         return lobbyWorld;
     }
     
+    public ArrayList<NovsSign> getActiveSigns() {
+    	ArrayList<NovsSign> result = new ArrayList<NovsSign>();
+    	result.addAll(lobbyWorld.getSigns());
+    	result.addAll(novswar.getGameHandler().getGame().getWorld().getSigns());
+    	return result;
+    }
+
     /**
      * Searches for world based on BukkitWorld name
      * @param worldName
@@ -55,8 +61,8 @@ public class WorldManager {
     	}
     	return result;
     }
-
-    public void loadLobbyWorld() {
+    /*		DEPRECIATED
+    private void loadLobbyWorld() {
         FileConfiguration coreConfig = novswar.getConfigurationCache().getConfig("core");
         String worldName = coreConfig.getString("core.lobby.lobby_world");
         World bukkitWorld = novswar.getPlugin().getServer().getWorld(worldName);
@@ -66,16 +72,28 @@ public class WorldManager {
         }
         lobbyWorld = new NovsWorld(worldName, bukkitWorld);
 
-        NovsTeam defaultTeam = novswar.getTeamManager().getDefaultTeam();
-        double spawnX = coreConfig.getDouble("core.lobby.spawn.x");
-        double spawnY = coreConfig.getDouble("core.lobby.spawn.y");
-        double spawnZ = coreConfig.getDouble("core.lobby.spawn.z");
-        float spawnPitch = (float) coreConfig.getDouble("core.lobby.spawn.pitch");
-        float spawnYaw = (float) coreConfig.getDouble("core.lobby.spawn.yaw");
-        lobbyWorld.getTeamSpawns().put(defaultTeam, new Location(bukkitWorld, spawnX, spawnY, spawnZ, spawnPitch, spawnYaw));
-    }
 
-    public void loadWorlds() {
+
+        NovsTeam defaultTeam = novswar.getTeamManager().getDefaultTeam();
+        int spawnX = coreConfig.getInt("core.lobby.spawn.x");
+        int spawnY = coreConfig.getInt("core.lobby.spawn.y");
+        int spawnZ = coreConfig.getInt("core.lobby.spawn.z");
+        lobbyWorld.getTeamSpawns().put(defaultTeam, new Location(bukkitWorld, spawnX, spawnY, spawnZ));
+    }*/
+
+    private void loadWorlds() {
+    	//Generate lobby world
+    	FileConfiguration coreConfig = novswar.getConfigurationCache().getConfig("core");
+        String lobbyWorldName = coreConfig.getString("core.lobby.lobby_world");
+        World bukkitWorld = novswar.getPlugin().getServer().getWorld(lobbyWorldName);
+        if (bukkitWorld == null) {
+            Bukkit.createWorld(new WorldCreator(lobbyWorldName));
+            bukkitWorld = novswar.getPlugin().getServer().getWorld(lobbyWorldName);
+        }
+        lobbyWorld = new NovsWorld(lobbyWorldName, bukkitWorld);
+        loadRegions(lobbyWorld);
+
+        //Generate all worlds
         FileConfiguration worldConfig = novswar.getConfigurationCache().getConfig("worlds");
         List<String> enabledWorldNames = novswar.getConfigurationCache().getConfig("core").getStringList("core.world.enabled_worlds");
         for (String worldName : enabledWorldNames) {
@@ -86,19 +104,22 @@ public class WorldManager {
             }
             String name = worldConfig.getString("worlds."+worldName+".name");
             NovsWorld novsWorld = new NovsWorld(name, world);
-
-
-            loadRegions(novsWorld);
-
             worlds.put(world, novsWorld);
+        }
+
+        //Load regions for all worlds
+        for(NovsWorld novsworld : worlds.values()) {
+        	loadRegions(novsworld);
         }
     }
 
-    public void loadRegions(NovsWorld world) {
+    private void loadRegions(NovsWorld world) {
         FileConfiguration regionsConfig = novswar.getConfigurationCache().getConfig("regions");
         if (regionsConfig.get("regions."+world.getBukkitWorld().getName()) == null) {
+        	System.out.println("There is no region section for world "+world.getBukkitWorld().getName());
             return;
         }
+
         Set<String> teamNames = regionsConfig.getConfigurationSection("regions."+world.getBukkitWorld().getName()+".spawns").getKeys(false);
         for (String teamName : teamNames) {
             double x = novswar.getConfigurationCache().getConfig("regions").getDouble("regions."+world.getBukkitWorld().getName()+".spawns."+teamName+".x");
@@ -110,6 +131,33 @@ public class WorldManager {
 
             world.getTeamSpawns().put(team, new Location(world.getBukkitWorld(), x, y, z, pitch, yaw));
         }
+
+        //For the Lobby, this code runs when there is no Teamless spawn defined in the config
+        if (world.equals(lobbyWorld)) {
+        	if (world.getTeamSpawns().size() == 0) {
+        		NovsTeam defaultTeam = novswar.getTeamManager().getDefaultTeam();
+        		world.getTeamSpawns().put(defaultTeam, world.getBukkitWorld().getSpawnLocation());
+        		System.out.println("There was no defined spawn point for Teamless! Spawning at bukkit world spawn.");
+        	}
+        }
+        ArrayList<NovsSign> signs = (ArrayList<NovsSign>) regionsConfig.getList("regions."+world.getBukkitWorld().getName()+".signs");
+        world.getSigns().addAll(signs);
+        /*
+        ConfigurationSection signsSection = regionsConfig.getConfigurationSection("regions."+world.getBukkitWorld().getName()+".signs");
+
+        for(String locationKey : signsSection.getKeys(false)) {
+        	int x = signsSection.getInt(locationKey+".x");
+        	int y = signsSection.getInt(locationKey+".y");
+        	int z = signsSection.getInt(locationKey+".z");
+        	//Verify there is a sign at this position
+        	Block signBlock = world.getBukkitWorld().getBlockAt(x, y, z);
+        	if(signBlock.getState() instanceof Sign) {
+        		NovsSign sign = new NovsSign(signBlock);
+            	world.getSigns().put(locationKey, sign);
+        	} else {
+        		System.out.println("Uh Oh! Attempted to load a NovsSign in world "+world.getName()+" at "+x+", "+y+", "+z+" but there was no sign block");
+        	}
+        }*/
 
         ConfigurationSection regions = regionsConfig.getConfigurationSection("regions."+world.getBukkitWorld().getName()+".regions");
 
@@ -124,9 +172,10 @@ public class WorldManager {
 
             NovsRegion region = new NovsRegion(world,
                     new Location(world.getBukkitWorld(), cornerOneX, cornerOneY, cornerOneZ),
-                    new Location(world.getBukkitWorld(), cornerTwoX, cornerTwoY, cornerTwoZ), type);
+                    new Location(world.getBukkitWorld(), cornerTwoX, cornerTwoY, cornerTwoZ),
+                    type);
 
-            region.saveBlocks();
+            region.saveBlocks(); //TODO: possibly move this?
             world.getRegions().put(regionName, region);
         }
     }
@@ -142,12 +191,21 @@ public class WorldManager {
         return regions;
     }
 
+    /**
+     * Sets all spawn, infosign and region coordinates in the regions.yml file.
+     * Removes infosign keys that are not present in the corresponding world section
+     */
     public void saveRegions() {
         FileConfiguration regionsConfig = novswar.getConfigurationCache().getConfig("regions");
-        regionsConfig.set("regions", null);
-        ConfigurationSection root = regionsConfig.createSection("regions");
+        regionsConfig.set("regions", null); // reset regions config
 
-        for (NovsWorld world : worlds.values()) {
+        ConfigurationSection root = regionsConfig.createSection("regions");
+        //Create map with all worlds (game worlds and lobby) so we save everything
+        HashMap<World, NovsWorld> allWorlds = new HashMap<World, NovsWorld>();
+        allWorlds.putAll(worlds);
+		allWorlds.put(lobbyWorld.getBukkitWorld(), lobbyWorld);
+
+        for (NovsWorld world : allWorlds.values()) {
             ConfigurationSection worldSection = root.createSection(world.getBukkitWorld().getName());
             ConfigurationSection spawnsSection = worldSection.createSection("spawns");
 
@@ -159,6 +217,25 @@ public class WorldManager {
                 teamSection.set("pitch", entry.getValue().getPitch());
                 teamSection.set("yaw", entry.getValue().getYaw());
             }
+
+            worldSection.set("signs", world.getSigns());
+            /*
+            //Remove destroyed info signs from the config file
+            Set<String> sectionSet = signsSection.getKeys(false); //gets a set of location strings
+            for(String path : sectionSet) {
+            	if(world.getSigns().keySet().contains(path)==false) {
+            		signsSection.set(path, null);
+            	}
+            }
+            //Update valid info sign sections
+            for(Map.Entry<String, NovsSign> entry : world.getSigns().entrySet()) {
+            	//Create key that's the block location toString
+            	ConfigurationSection signSection = signsSection.createSection(entry.getKey().toString());
+            	signSection.set("x", (int) entry.getValue().getBlock().getX());
+            	signSection.set("y", (int) entry.getValue().getBlock().getY());
+            	signSection.set("z", (int) entry.getValue().getBlock().getZ());
+            }
+            */
 
             ConfigurationSection regionsSection = worldSection.createSection("regions");
             for (Map.Entry<String, NovsRegion> entry : world.getRegions().entrySet()) {
@@ -176,7 +253,9 @@ public class WorldManager {
                 cornerTwoSection.set("z", (int) entry.getValue().getCornerTwo().getBlockZ());
 
             }
+
         }
+
     }
 
 }
