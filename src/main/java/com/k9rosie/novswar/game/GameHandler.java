@@ -57,7 +57,9 @@ public class GameHandler {
     }
 
     public void updateInfoSigns() {
+    	System.out.println("Updating info signs...");
         for (Sign sign : novswar.getNovsWorldCache().getActiveSigns()) {
+        	System.out.println(sign.getLocation().toString());
             sign.setLine(1, game.getWorld().getName());
             sign.setLine(2, game.getGamemode().getGamemodeName());
             sign.setLine(3, game.getGamePlayers().size() + " players");
