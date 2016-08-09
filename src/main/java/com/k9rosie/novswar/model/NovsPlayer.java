@@ -28,6 +28,7 @@ public class NovsPlayer {
     private boolean isSettingRegion;
     private boolean hasVoted;
     private boolean isShiftToggled;
+    private boolean isGlobalChat; //True for global, false for team
 
     private Location cornerOneBuffer;
     private RegionType regionTypeBuffer;
@@ -44,6 +45,7 @@ public class NovsPlayer {
         isSettingRegion = false;
         hasVoted = false;
         isShiftToggled = true;
+        isGlobalChat = true;
         spectatorTarget = null;
         spectatorObservers = new ArrayList<NovsPlayer>();
     }
@@ -116,6 +118,14 @@ public class NovsPlayer {
 
     public void setDeathMessages(boolean deathMessages) {
         this.deathMessages = deathMessages;
+    }
+    
+    public boolean isGlobalChat() {
+        return isGlobalChat;
+    }
+
+    public void setGlobalChat(boolean isGlobalChat) {
+        this.isGlobalChat = isGlobalChat;
     }
 
     public boolean isDead() {

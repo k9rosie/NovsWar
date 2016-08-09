@@ -64,15 +64,28 @@ public class PlayerListener implements Listener {
 
     /**
      * Fires on chat events
+     * All players always see global chat messages and team chat messages
      * @param event
      */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
-        Player bukkitPlayer = event.getPlayer();
-        NovsPlayer player = novsPlayerCache.getPlayers().get(bukkitPlayer);
-        NovsTeam team = player.getTeam();
-
-        event.setFormat(team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
+        
+        //Check if the event was caused by a player
+        if(event.isAsynchronous()) {
+        	Player bukkitPlayer = event.getPlayer();
+            NovsPlayer player = novsPlayerCache.getPlayers().get(bukkitPlayer);
+            NovsTeam team = player.getTeam();
+            
+            if(player.isGlobalChat()) {
+            	event.setFormat(team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
+            } else {
+            	//Team chat only
+            	event.setCancelled(true);
+            	for(NovsPlayer teamPlayer : team.getPlayers()) {
+            		teamPlayer.getBukkitPlayer().sendMessage(ChatColor.GREEN + bukkitPlayer.getDisplayName() +":"+ ChatColor.ITALIC + event.getMessage());
+            	}
+            }
+        }
     }
 
     /**

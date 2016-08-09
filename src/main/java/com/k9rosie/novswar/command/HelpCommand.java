@@ -16,7 +16,11 @@ public class HelpCommand extends NovsCommand {
         NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
         String message = "";
         for(CommandType cmd : CommandType.values()) {
-        	message = "/nw "+cmd.toString().toLowerCase()+" "+cmd.arguments()+": "+cmd.description();
+        	String aliasmsg = "";
+        	if(cmd.alias().equals("")==false) {
+        		aliasmsg = (" Alias: "+cmd.alias());
+        	}
+        	message = "/nw "+cmd.toString().toLowerCase()+" "+cmd.arguments()+": "+cmd.description()+aliasmsg;
         	player.getBukkitPlayer().sendMessage(message);
         }
     }
