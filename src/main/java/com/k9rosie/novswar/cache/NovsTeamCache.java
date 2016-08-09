@@ -4,6 +4,7 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.util.ColorParser;
 import com.k9rosie.novswar.util.SendTitle;
 
 import org.bukkit.Bukkit;
@@ -57,7 +58,7 @@ public class NovsTeamCache {
         for(Map<?, ?> teamInfoMap : teamInfoMaps) {
             HashMap<String, Object> teamInfo = (HashMap<String, Object>) teamInfoMap;
             String teamName = (String) teamInfo.get("name");
-            ChatColor color = (ChatColor) teamInfo.get("color");
+            ChatColor color = ColorParser.parseString((String) teamInfo.get("color"));
             boolean canBeDamaged = (boolean) teamInfo.get("can_be_damaged");
             boolean canAttack = (boolean) teamInfo.get("can_attack");
             boolean friendlyFire = (boolean) teamInfo.get("can_attack");

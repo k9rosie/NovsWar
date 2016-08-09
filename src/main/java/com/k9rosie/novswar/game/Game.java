@@ -416,11 +416,12 @@ public class Game {
         bukkitPlayer.setHealth(player.getBukkitPlayer().getMaxHealth());
         bukkitPlayer.setFoodLevel(20);
         for(PotionEffect effect : bukkitPlayer.getActivePotionEffects()) {
+            System.out.println("Removing potion effect "+effect.getType().toString());
         	bukkitPlayer.removePotionEffect(effect.getType());
         }
         System.out.println("Generating effects");
-        bukkitPlayer.playEffect(EntityEffect.DEATH);
-        bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_PLAYER_DEATH, 20, 1);
+        bukkitPlayer.getWorld().playEffect(bukkitPlayer.getLocation(), Effect.SMOKE, 30, 2);
+        bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 20, 1);
         
         System.out.print(bukkitPlayer.getName()+" died and has observers: ");
         for(NovsPlayer observer : player.getSpectatorObservers()) {
