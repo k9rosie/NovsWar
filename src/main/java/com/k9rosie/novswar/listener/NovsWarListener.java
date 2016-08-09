@@ -94,7 +94,7 @@ public class NovsWarListener implements Listener {
                     	}
             		} else { //if there are enough players, check for imbalance
             			int largestImbalance = novswar.getNovsConfigCache().getConfig("core").getInt("core.game.largest_team_imbalance");
-            			if(largestImbalance == 0) {
+            			if(largestImbalance <= 0) {
             				//re-balancing is disabled
             				return;
             			} else {

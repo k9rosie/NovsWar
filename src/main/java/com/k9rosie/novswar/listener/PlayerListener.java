@@ -25,7 +25,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
@@ -34,16 +34,18 @@ import org.bukkit.inventory.ItemStack;
 
 public class PlayerListener implements Listener {
 
-    private NovsWarPlugin plugin;
     private NovsWar novswar;
     private NovsPlayerCache novsPlayerCache;
 
     public PlayerListener(NovsWarPlugin plugin) {
-        this.plugin = plugin;
         novswar = plugin.getNovswarInstance();
         novsPlayerCache = novswar.getNovsPlayerCache();
     }
 
+    /**
+     * Fires when a player joins the server
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
     	Game game = novswar.getGameHandler().getGame();
@@ -60,6 +62,10 @@ public class PlayerListener implements Listener {
         System.out.println("Player count: " + novswar.getNovsPlayerCache().getPlayers().values().size());
     }
 
+    /**
+     * Fires on chat events
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         Player bukkitPlayer = event.getPlayer();
@@ -69,6 +75,10 @@ public class PlayerListener implements Listener {
         event.setFormat(team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
     }
 
+    /**
+     * Fires when a player quits the server
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event) {
     	Game game = novswar.getGameHandler().getGame();
@@ -191,6 +201,10 @@ public class PlayerListener implements Listener {
         }
     }
 
+    /**
+     * Handles when players are setting regions and clicking signs
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player bukkitPlayer = event.getPlayer();
@@ -252,6 +266,11 @@ public class PlayerListener implements Listener {
         }
     }
     
+    /** 
+     * onInventoryClick
+     * Handles voting when the ballot box inventory is clicked
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
 	public void onInventoryClick(InventoryClickEvent event) {
     	Inventory inventory = event.getInventory();
@@ -276,6 +295,12 @@ public class PlayerListener implements Listener {
 		}
 	}
 
+    /**
+     * onPlayerMove
+     * Disables spectators from moving their camera.
+     * Detects when a player enters a region and acts appropriately
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player bukkitPlayer = event.getPlayer();
@@ -289,7 +314,17 @@ public class PlayerListener implements Listener {
         }
 
         for (NovsRegion region : currentGameWorld.getRegions().values()) {
+        	
+        	//If a player moved into this region
             if (region.inRegion(event.getTo())) {
+            	
+            	//If the player moved from outside the region
+            	if(region.inRegion(event.getFrom())==false) {
+            		region.getPlayersInRegion().add(player);
+            		System.out.println("Added "+player.getBukkitPlayer().getName()+" to region "+region.getRegionType());
+            	}
+            	
+            	//Perform specific actions based on region type
                 switch(region.getRegionType()) {
                 case TEAM_SPAWN :
                 	//Assume that players teleporting into the teamspawn do not trigger this code...
@@ -309,10 +344,21 @@ public class PlayerListener implements Listener {
                 default :
                 	break;
                 }
+                
+            } else {
+            	//The player moved outside this region
+            	if(region.inRegion(event.getFrom())) {
+            		region.getPlayersInRegion().remove(player);
+            		System.out.println("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getRegionType());
+            	}
             }
         }
     }
 
+    /**
+     * Disables sneaking for dead players & repurposes the LSHIFT key to switch spectator targets
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerToggleSneakEvent(PlayerToggleSneakEvent event) {
         NovsPlayer player = novsPlayerCache.getPlayers().get(event.getPlayer());
@@ -333,6 +379,10 @@ public class PlayerListener implements Listener {
         }
     }
     
+    /**
+     * Prevents other plugins from forcing a player's gamemode if they are spectating
+     * @param event
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
     	NovsPlayer player = novsPlayerCache.getPlayers().get(event.getPlayer());
@@ -342,60 +392,15 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
         }
     }
-
-   /* private void onPlayerAttacked(EntityDamageEvent event, NovsPlayer attacker, NovsPlayer victim, boolean arrowDeath) {
-        Game game = novswar.getGameHandler().getGame();
-        NovsTeam victimTeam = victim.getTeam();
-        NovsTeam attackerTeam = attacker.getTeam();
-        if (attackerTeam.equals(victimTeam)) {
-            if (!attackerTeam.getFriendlyFire()) {
-                event.setCancelled(true);
-                return;
-            }
-        }
-        if (!victim.getTeam().canBeDamaged()) {
-            event.setCancelled(true);
-            return;
-        }
-
-        double damage = event.getFinalDamage();
-        victim.getStats().incrementDamageTaken(damage);
-        attacker.getStats().incrementDamageGiven(damage);
-        victim.addAttacker(attacker, damage);
-
-        // if damage is fatal
-        if (victim.getBukkitPlayer().getHealth() - damage <= 0) {
-            event.setCancelled(true);
-            //Send death message
-            String deathMessage;
-            if (arrowDeath) {
-                deathMessage = Messages.SHOT_MESSAGE.toString();
-            } else {
-                deathMessage = Messages.KILL_MESSAGE.toString();
-            }
-            deathMessage = deathMessage.replace("%killed_tcolor%", victimTeam.getColor().toString())
-                    .replace("%killed%", victim.getBukkitPlayer().getDisplayName())
-                    .replace("%killer_tcolor%", attackerTeam.getColor().toString())
-                    .replace("%killer%", attacker.getBukkitPlayer().getDisplayName());
-            for (NovsPlayer p : novsPlayerCache.getPlayers().values()) {
-                if (p.canSeeDeathMessages()) {
-                    p.getBukkitPlayer().sendMessage(deathMessage);
-                }
-            }
-            //Evaluate statistics
-            if (arrowDeath) {
-                attacker.getStats().incrementArrowKills();
-                victim.getStats().incrementArrowDeaths();
-            } else {
-                attacker.getStats().incrementKills();
-                victim.getStats().incrementDeaths();
-            }
-            game.killPlayer(victim, attacker);
-        }
-    }*/
-
+    
+    /**
+     * Cancels hunger if enable_hunger is false in core
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerDeath(PlayerDeathEvent event) {
-    	System.out.println(event.getEntity().getName()+" has died...");
+    public void onPlayerFoodLevelChange(FoodLevelChangeEvent event) {
+    	if(novswar.getNovsConfigCache().getConfig("core").getBoolean("core.game.enable_hunger") == false) {
+    		event.setCancelled(true);
+    	}
     }
 }

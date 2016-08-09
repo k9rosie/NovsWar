@@ -94,18 +94,23 @@ public class NovsWorldCache {
         }
         worlds.put(bukkitWorld, new NovsWorld(lobbyWorldName, bukkitWorld));
 
-        //Generate all worlds
+        //Generate all worlds - ensure enabled_worlds are defined in Worlds.yml
         FileConfiguration worldConfig = novswar.getNovsConfigCache().getConfig("worlds");
+        Set<String> allWorldNames = worldConfig.getKeys(false);
         List<String> enabledWorldNames = novswar.getNovsConfigCache().getConfig("core").getStringList("core.world.enabled_worlds");
         for (String worldName : enabledWorldNames) {
-            World world = novswar.getPlugin().getServer().getWorld(worldName);
-            if (world == null) {
-                Bukkit.createWorld(new WorldCreator(worldName));
-                world = novswar.getPlugin().getServer().getWorld(worldName);
-            }
-            String name = worldConfig.getString("worlds."+worldName+".name");
-            NovsWorld novsWorld = new NovsWorld(name, world);
-            worlds.put(world, novsWorld);
+        	if(allWorldNames.contains(worldName)) {
+        		World world = novswar.getPlugin().getServer().getWorld(worldName);
+                if (world == null) {
+                    Bukkit.createWorld(new WorldCreator(worldName));
+                    world = novswar.getPlugin().getServer().getWorld(worldName);
+                }
+                String name = worldConfig.getString("worlds."+worldName+".name");
+                NovsWorld novsWorld = new NovsWorld(name, world);
+                worlds.put(world, novsWorld);
+        	} else {
+        		System.out.println("WARNING: World "+worldName+" is specified in enabled_worlds but is not defined in Worlds.yml");
+        	}
         }
 
         //Load regions for all worlds
@@ -117,7 +122,7 @@ public class NovsWorldCache {
     private void loadRegions(NovsWorld world) {
         FileConfiguration regionsConfig = novswar.getNovsConfigCache().getConfig("regions");
         if (regionsConfig.get("regions."+world.getBukkitWorld().getName()) == null) {
-        	System.out.println("There is no region section for world "+world.getBukkitWorld().getName());
+        	System.out.println("There is no region section for world "+world.getBukkitWorld().getName()+". NovsWar will create this section when regions are made.");
             return;
         }
 

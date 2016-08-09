@@ -63,6 +63,7 @@ public class GameHandler {
             sign.setLine(1, game.getWorld().getName());
             sign.setLine(2, game.getGamemode().getGamemodeName());
             sign.setLine(3, game.getGamePlayers().size() + " players");
+            sign.update();
         }
     }
 }
