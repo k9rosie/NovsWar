@@ -20,13 +20,13 @@ public class KickCommand extends NovsCommand {
     }
 
     public void execute() {
-    	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
-    	NovsPlayer kickPlayer = getNovsWar().getPlayerManager().getNovsPlayerFromUsername(getArgs()[2]);
-    	NovsTeam defaultTeam = getNovsWar().getTeamManager().getDefaultTeam();
+    	NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
+    	NovsPlayer kickPlayer = getNovsWar().getNovsPlayerCache().getPlayerFromName(getArgs()[2]);
+    	NovsTeam defaultTeam = getNovsWar().getNovsTeamCache().getDefaultTeam();
     	
     	if(kickPlayer != null) {
     		kickPlayer.setTeam(defaultTeam);
-            kickPlayer.getBukkitPlayer().teleport(getNovsWar().getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+            kickPlayer.getBukkitPlayer().teleport(getNovsWar().getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(defaultTeam));
             kickPlayer.getBukkitPlayer().setHealth(kickPlayer.getBukkitPlayer().getMaxHealth());
             kickPlayer.getBukkitPlayer().setFoodLevel(20);
             kickPlayer.getBukkitPlayer().sendMessage("You have been kicked to the lobby");

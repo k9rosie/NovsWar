@@ -3,7 +3,6 @@ package com.k9rosie.novswar.listener;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.command.CommandType;
-import com.k9rosie.novswar.model.NovsInfoSign;
 import com.k9rosie.novswar.model.NovsWorld;
 
 import org.bukkit.block.Block;
@@ -13,7 +12,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 public class WorldListener implements Listener {
 
@@ -46,20 +44,20 @@ public class WorldListener implements Listener {
         	} else if(firstLine.equalsIgnoreCase("infosign")) {
         		Block block = event.getBlock();
         		NovsWorld world;
-        		if(novswar.getWorldManager().getLobbyWorld().getBukkitWorld().equals(block.getWorld())) {
-        			world = novswar.getWorldManager().getLobbyWorld();
+        		if(novswar.getNovsWorldCache().getLobbyWorld().getBukkitWorld().equals(block.getWorld())) {
+        			world = novswar.getNovsWorldCache().getLobbyWorld();
         		} else {
-        			world = novswar.getWorldManager().getWorlds().get(block.getWorld());
+        			world = novswar.getNovsWorldCache().getWorlds().get(block.getWorld());
         		}
         		//Verify that world is valid
         		if(world == null) {
         			event.getPlayer().sendMessage("Could not create Info Sign, invalid world");
         		} else {
-        			world.getInfoSigns().put(block.getLocation().toString(), new NovsInfoSign(block));
+        			world.getSigns().put(block.getLocation(), (Sign) block.getState());
         			event.getPlayer().sendMessage("Created Info Sign in world "+block.getWorld());
-        			System.out.println("Created NovsInfoSign with key "+block.getLocation().toString());
-        			world.getInfoSigns().get(block.getLocation().toString()).updateMap(world.getName(), novswar.getGameHandler().getGame().getGamemode().getGamemodeName());
-        			world.getInfoSigns().get(block.getLocation().toString()).updatePlayers(novswar.getPlayerManager().getInGamePlayers().size());
+        			System.out.println("Created NovsSign with key "+block.getLocation().toString());
+					novswar.getGameHandler().updateInfoSign(world, novswar.getGameHandler().getGame().getGamemode());
+					novswar.getGameHandler().updatePlayers(novswar.getGameHandler().getGame().getGamePlayers().size());
         		}
         	}
     	}
@@ -75,20 +73,20 @@ public class WorldListener implements Listener {
     	if(broken.getState() instanceof Sign) {
     		//Get the world where the break occurred
     		NovsWorld world;
-    		if(novswar.getWorldManager().getLobbyWorld().getBukkitWorld().equals(broken.getWorld())) {
-    			world = novswar.getWorldManager().getLobbyWorld();
+    		if(novswar.getNovsWorldCache().getLobbyWorld().getBukkitWorld().equals(broken.getWorld())) {
+    			world = novswar.getNovsWorldCache().getLobbyWorld();
     		} else {
-    			world = novswar.getWorldManager().getWorlds().get(broken.getWorld());
+    			world = novswar.getNovsWorldCache().getWorlds().get(broken.getWorld());
     		}
     		//Verify that world is valid
     		if(world != null) {
-    			System.out.println("A sign was broken. Here is the NovsInfoSign map for world "+broken.getWorld());
-    			System.out.println(world.getInfoSigns().toString());
-    			if(world.getInfoSigns().remove(broken.getLocation().toString()) != null) {
+    			System.out.println("A sign was broken. Here is the NovsSign map for world "+broken.getWorld());
+    			System.out.println(world.getSigns().toString());
+    			if(world.getSigns().remove(broken.getLocation().toString()) != null) {
     				event.getPlayer().sendMessage("Removed Info Sign in world "+broken.getWorld());
-    				System.out.println("Found and removed NovsInfoSign with key "+broken.getLocation().toString());
+    				System.out.println("Found and removed NovsSign with key "+broken.getLocation().toString());
     			} else {
-    				System.out.println("Could not find NovsInfoSign with key "+broken.getLocation().toString());
+    				System.out.println("Could not find NovsSign with key "+broken.getLocation().toString());
     			}
     		}
     	}

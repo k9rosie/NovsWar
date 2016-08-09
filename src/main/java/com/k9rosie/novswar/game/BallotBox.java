@@ -28,10 +28,10 @@ public class BallotBox {
 	
 	public void castVotes() {
 			//List of enabled world names
-		List<String> enabledWorlds = novswar.getConfigurationCache().getConfig("core").getStringList("core.world.enabled_worlds");
+		List<String> enabledWorlds = novswar.getNovsConfigCache().getConfig("core").getStringList("core.world.enabled_worlds");
 
 		//Choose 9 gamemodes randomly, and get their names and gamemodes
-    	Collection<NovsWorld> worlds = novswar.getWorldManager().getWorlds().values();
+    	Collection<NovsWorld> worlds = novswar.getNovsWorldCache().getWorlds().values();
     	ballotList.addAll(worlds);
     	Collections.shuffle(ballotList);
     	int worldCount = worlds.size();
@@ -60,12 +60,12 @@ public class BallotBox {
     	for (int i = 0; i < worldCount && i < ballotList.size(); i++) {
     		String name = ballotList.get(i).getName();
     		String bukkitWorldName = ballotList.get(i).getBukkitWorld().getName();
-    		String gamemode = novswar.getConfigurationCache().getConfig("worlds").getString("worlds."+bukkitWorldName+".gamemode");
+    		String gamemode = novswar.getNovsConfigCache().getConfig("worlds").getString("worlds."+bukkitWorldName+".gamemode");
     		createVoteOption(voteItem, ballotBox, i, name, gamemode);
     	}
     	
     	//Open the voting screen for each player
-    	for(NovsPlayer player : novswar.getPlayerManager().getPlayers().values()) {
+    	for(NovsPlayer player : novswar.getNovsPlayerCache().getPlayers().values()) {
     		//player.getBukkitPlayer().sendMessage("Cast your Vote");
     		player.getBukkitPlayer().openInventory(ballotBox);
     		player.setVoted(false);
@@ -104,14 +104,14 @@ public class BallotBox {
 	public NovsWorld nextWorld(NovsWorld currentWorld) {
 		NovsWorld nextWorld = null;
 		String currentWorldName = currentWorld.getBukkitWorld().getName();
-		List<String> enabledWorlds = novswar.getConfigurationCache().getConfig("core").getStringList("core.world.enabled_worlds");
+		List<String> enabledWorlds = novswar.getNovsConfigCache().getConfig("core").getStringList("core.world.enabled_worlds");
 		for(int i = 0; i < enabledWorlds.size(); i++) {
 			if(enabledWorlds.get(i).equals(currentWorldName)) {
 				int nextIndex = i+1;
 				if(nextIndex == enabledWorlds.size()) {
 					nextIndex = 0;
 				}
-				for(NovsWorld nworld : novswar.getWorldManager().getWorlds().values()) {
+				for(NovsWorld nworld : novswar.getNovsWorldCache().getWorlds().values()) {
 					if(nworld.getBukkitWorld().getName().equals(enabledWorlds.get(nextIndex))) {
 						nextWorld = nworld;
 					}

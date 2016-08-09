@@ -29,8 +29,8 @@ public class NovsWarPlugin extends JavaPlugin {
 	}
 	
 	public void onDisable() {
-		novswar.getWorldManager().saveRegions();
-		novswar.getConfigurationCache().saveConfigs();
+		novswar.getNovsWorldCache().saveRegions();
+		novswar.getNovsConfigCache().saveConfigs();
 		//TODO respawn battlefield in game world
 	}
 	

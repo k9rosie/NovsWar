@@ -33,7 +33,7 @@ public enum Messages {
         this.path = path;
 
         novsWar = NovsWar.getInstance();
-        config = novsWar.getConfigurationCache().getConfig("messages");
+        config = novsWar.getNovsConfigCache().getConfig("messages");
     }
 
     public String toString() {

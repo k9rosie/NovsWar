@@ -6,6 +6,7 @@ import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.block.Sign;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 public class GameHandler {
@@ -20,16 +21,16 @@ public class GameHandler {
     }
 
     public void initialize() {
-        String firstWorld = novswar.getConfigurationCache().getConfig("core").getStringList("core.world.enabled_worlds").get(0);
+        String firstWorld = novswar.getNovsConfigCache().getConfig("core").getStringList("core.world.enabled_worlds").get(0);
         World initialBukkitWorld = novswar.getPlugin().getServer().getWorld(firstWorld);
-        NovsWorld initialWorld = novswar.getWorldManager().getWorlds().get(initialBukkitWorld);
+        NovsWorld initialWorld = novswar.getNovsWorldCache().getWorlds().get(initialBukkitWorld);
 
         newGame(initialWorld);
 
     }
 
     public void newGame(NovsWorld world) {
-        String gamemodeString = novswar.getConfigurationCache().getConfig("worlds").getString("worlds."+world.getBukkitWorld().getName()+".gamemode");
+        String gamemodeString = novswar.getNovsConfigCache().getConfig("worlds").getString("worlds."+world.getBukkitWorld().getName()+".gamemode");
         Gamemode gamemode = novswar.getGamemodes().get(gamemodeString);
 
         game = new Game(this, world, gamemode);
@@ -53,5 +54,18 @@ public class GameHandler {
 
     public ScoreboardManager getScoreboardManager() {
         return scoreboardManager;
+    }
+
+    public void updateInfoSign(NovsWorld world, Gamemode gamemode) {
+        for (Sign sign : novswar.getNovsWorldCache().getActiveSigns()) {
+            sign.setLine(1, world.getName());
+            sign.setLine(2, gamemode.getGamemodeName());
+        }
+    }
+
+    public void updatePlayers(int players) {
+        for (Sign sign : novswar.getNovsWorldCache().getActiveSigns()) {
+            sign.setLine(3, players + " players");
+        }
     }
 }

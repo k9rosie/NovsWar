@@ -16,7 +16,7 @@ public class SetSpawnCommand extends NovsCommand {
 
     public SetSpawnCommand(NovsWar novsWar, CommandSender sender, String[] args) {
         super(novsWar, sender, args);
-        //regions = novsWar.getConfigurationCache().getConfig("regions");
+        //regions = novsWar.getNovsConfigCache().getConfig("regions");
     }
 
     public void execute() {
@@ -32,22 +32,22 @@ public class SetSpawnCommand extends NovsCommand {
             String teamName = getArgs()[2];
             NovsTeam team;
             if(teamName.equalsIgnoreCase("default")) {
-            	team = getNovsWar().getTeamManager().getDefaultTeam();
+            	team = getNovsWar().getNovsTeamCache().getDefaultTeam();
             } else {
-            	team = getNovsWar().getTeamManager().getTeam(teamName);
+            	team = getNovsWar().getNovsTeamCache().getTeam(teamName);
             }
             
             //Check which world the sender is in
-            if(bukkitWorld.equals(getNovsWar().getWorldManager().getLobbyWorld().getBukkitWorld())) {
+            if(bukkitWorld.equals(getNovsWar().getNovsWorldCache().getLobbyWorld().getBukkitWorld())) {
             	//The player is in the lobby world
-            	world = getNovsWar().getWorldManager().getLobbyWorld();
-            	if(team == null || team.equals(getNovsWar().getTeamManager().getDefaultTeam())==false) {
+            	world = getNovsWar().getNovsWorldCache().getLobbyWorld();
+            	if(team == null || team.equals(getNovsWar().getNovsTeamCache().getDefaultTeam())==false) {
             		bukkitPlayer.sendMessage("You can only set the default team's spawn in Lobby World");
                     return;
             	}
             } else {
             	//The player is in a game world
-            	world = getNovsWar().getWorldManager().getWorlds().get(bukkitWorld);
+            	world = getNovsWar().getNovsWorldCache().getWorlds().get(bukkitWorld);
             	if (team == null || getNovsWar().getGameHandler().getGame().getTeams().contains(team)==false) {
                     bukkitPlayer.sendMessage("That team doesn't exist or is not enabled for this world.");
                     return;

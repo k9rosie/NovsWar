@@ -1,4 +1,4 @@
-package com.k9rosie.novswar.config;
+package com.k9rosie.novswar.model;
 
 import java.io.File;
 import java.io.IOException;

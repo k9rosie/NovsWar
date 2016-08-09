@@ -22,14 +22,16 @@ public class NovsRegion {
     private Location cornerOne;
     private Location cornerTwo;
     private RegionType regionType;
-    private ArrayList<NovsBlock> blocks;
+    private ArrayList<BlockState> blocks;
+    private ArrayList<NovsPlayer> playersInRegion;
 
     public NovsRegion(NovsWorld world, Location cornerOne, Location cornerTwo, RegionType regionType) {
         this.world = world;
         this.cornerOne = cornerOne;
         this.cornerTwo = cornerTwo;
         this.regionType = regionType;
-        blocks = new ArrayList<NovsBlock>();
+        blocks = new ArrayList<BlockState>();
+        playersInRegion = new ArrayList<NovsPlayer>();
     }
 
     public NovsWorld getWorld() {
@@ -60,16 +62,16 @@ public class NovsRegion {
         this.regionType = regionType;
     }
 
-    public ArrayList<NovsBlock> getBlocks() {
+    public ArrayList<BlockState> getBlocks() {
         return blocks;
     }
 
-    public void setBlocks(ArrayList<NovsBlock> blocks) {
+    public void setBlocks(ArrayList<BlockState> blocks) {
         this.blocks = blocks;
     }
 
-    public ArrayList<NovsBlock> getCuboid() {
-        ArrayList<NovsBlock> blocks = new ArrayList<NovsBlock>();
+    public ArrayList<BlockState> getCuboid() {
+        ArrayList<BlockState> blocks = new ArrayList<BlockState>();
 
         int topBlockX = Math.max(cornerOne.getBlockX(), cornerTwo.getBlockX());
         int topBlockY = Math.max(cornerOne.getBlockY(), cornerTwo.getBlockY());
@@ -81,26 +83,8 @@ public class NovsRegion {
         for (int x = bottomBlockX; x <= topBlockX; x++) {
             for (int y = bottomBlockY; y <= topBlockY; y++) {
                 for (int z = bottomBlockZ; z <= topBlockZ; z++) {
-                    Block bukkitBlock = getWorld().getBukkitWorld().getBlockAt(x, y, z);
-
-                    NovsBlock block = new NovsBlock(bukkitBlock.getState(), bukkitBlock.getLocation());
-
-                    if (bukkitBlock.getState() instanceof InventoryHolder) {
-                        InventoryHolder container = (InventoryHolder) bukkitBlock.getState();
-                        block.setInventoryContents(container.getInventory().getContents());
-                        System.out.println("This block holds items! " + block.getInventoryContents().length + " items stored");
-                    }
-
-                    if (bukkitBlock.getState() instanceof Sign) {
-                        Sign sign = (Sign) bukkitBlock.getState();
-                        block.setSignData(sign.getLines());
-                        System.out.println("This block is a sign! Here's the text: ");
-                        for (String text : sign.getLines()) {
-                            System.out.println(text);
-                        }
-                    }
-
-                    blocks.add(block);
+                    BlockState state = world.getBukkitWorld().getBlockAt(x, y, z).getState();
+                    blocks.add(state);
                 }
             }
         }
@@ -128,8 +112,8 @@ public class NovsRegion {
     }
 
     public void resetBlocks() {
-        for (NovsBlock block : blocks) {
-            block.respawn();
+        for (BlockState block : blocks) {
+            block.update(true, false);
         }
     }
 
@@ -149,6 +133,10 @@ public class NovsRegion {
                 }
             }
         }
+    }
+
+    public ArrayList<NovsPlayer> getPlayersInRegion() {
+        return playersInRegion;
     }
 
 }

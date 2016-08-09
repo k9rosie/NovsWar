@@ -1,17 +1,18 @@
-package com.k9rosie.novswar.config;
+package com.k9rosie.novswar.cache;
 
 import java.util.HashMap;
 
+import com.k9rosie.novswar.model.NovsConfig;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.k9rosie.novswar.NovsWar;
 
-public class ConfigurationCache {
+public class NovsConfigCache {
 	
 	private NovsWar novswar;
 	private HashMap<String, NovsConfig> configCache;
 	
-	public ConfigurationCache(NovsWar novswar) {
+	public NovsConfigCache(NovsWar novswar) {
 		this.novswar = novswar;
         configCache = new HashMap<String, NovsConfig>();
 	}

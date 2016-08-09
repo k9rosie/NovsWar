@@ -16,7 +16,7 @@ public class JoinCommand extends NovsCommand {
     }
 
     public void execute() {
-        NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
+        NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
         if(player.isSpectating()) {
         	player.getBukkitPlayer().sendMessage("You cannot join while spectating");
         } else {

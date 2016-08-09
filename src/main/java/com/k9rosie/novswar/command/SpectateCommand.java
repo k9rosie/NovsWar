@@ -22,20 +22,20 @@ public class SpectateCommand extends NovsCommand{
     }
 
     public void execute() {
-        NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
-        NovsTeam defaultTeam = getNovsWar().getTeamManager().getDefaultTeam();
+        NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
+        NovsTeam defaultTeam = getNovsWar().getNovsTeamCache().getDefaultTeam();
         
         if(player.isSpectating()) {
         	//Return the player to the lobby
         	player.setSpectating(false); //must occur BEFORE gamemode change
-        	player.getBukkitPlayer().teleport(getNovsWar().getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+        	player.getBukkitPlayer().teleport(getNovsWar().getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(defaultTeam));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
             
         } else {
         	if(player.getTeam().equals(defaultTeam)) {
         		//Begin spectating
             	if(game.getGameState().equals(GameState.DURING_GAME) || game.getGameState().equals(GameState.PRE_GAME)) {
-            		ArrayList<NovsPlayer> inGamePlayers = getNovsWar().getPlayerManager().getInGamePlayers();
+            		ArrayList<NovsPlayer> inGamePlayers = getNovsWar().getGameHandler().getGame().getGamePlayers();
             		NovsPlayer target = inGamePlayers.get(0);
             		player.setSpectatorTarget(target);
             		target.getSpectatorObservers().add(player);

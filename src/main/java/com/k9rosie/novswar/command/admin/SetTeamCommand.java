@@ -21,9 +21,9 @@ public class SetTeamCommand extends NovsCommand {
     }
 
     public void execute() {
-    	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
-    	NovsPlayer targetPlayer = getNovsWar().getPlayerManager().getNovsPlayerFromUsername(getArgs()[2]);
-    	NovsTeam targetTeam = getNovsWar().getTeamManager().getTeam(getArgs()[3]);
+    	NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
+    	NovsPlayer targetPlayer = getNovsWar().getNovsPlayerCache().getPlayerFromName(getArgs()[2]);
+    	NovsTeam targetTeam = getNovsWar().getNovsTeamCache().getTeam(getArgs()[3]);
     	if(targetPlayer != null && targetTeam != null) {
     		System.out.println("Setting player "+targetPlayer.getBukkitPlayer().getName()+" to team "+targetTeam.getTeamName());
     		game.forcePlayerTeam(targetPlayer, targetTeam);

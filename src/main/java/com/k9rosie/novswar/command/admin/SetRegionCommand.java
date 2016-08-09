@@ -23,9 +23,9 @@ public class SetRegionCommand extends NovsCommand {
             return;
         } else {
             Player bukkitPlayer = (Player) getSender();
-            NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get(bukkitPlayer);
+            NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get(bukkitPlayer);
             World bukkitWorld = bukkitPlayer.getWorld();
-            NovsWorld world = getNovsWar().getWorldManager().getWorlds().get(bukkitWorld);
+            NovsWorld world = getNovsWar().getNovsWorldCache().getWorlds().get(bukkitWorld);
 
             if (world == null) {
                 bukkitPlayer.sendMessage("The world you're in isn't enabled in NovsWar.");

@@ -24,7 +24,7 @@ public class DatabaseThread implements Runnable {
         database.initialize();
 
         Thread databaseFlusher = new Thread(new Runnable() {
-            int sleep = novsWar.getConfigurationCache().getConfig("core").getInt("core.database.flush_interval");
+            int sleep = novsWar.getNovsConfigCache().getConfig("core").getInt("core.database.flush_interval");
             @Override
             public void run() {
                 while (true) {
@@ -43,7 +43,7 @@ public class DatabaseThread implements Runnable {
     }
 
     public void createDatabase() {
-        FileConfiguration coreConfig = novsWar.getConfigurationCache().getConfig("core");
+        FileConfiguration coreConfig = novsWar.getNovsConfigCache().getConfig("core");
         String type = coreConfig.getString("core.database.connector");
         String prefix = coreConfig.getString("core.database.prefix");
 
@@ -59,7 +59,7 @@ public class DatabaseThread implements Runnable {
     }
 
     public void flushDatabase() {
-        for (NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+        for (NovsPlayer player : novsWar.getNovsPlayerCache().getPlayers().values()) {
             database.flushPlayerData(player);
         }
     }

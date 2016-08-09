@@ -4,6 +4,5 @@ public enum GameState {
     WAITING_FOR_PLAYERS,
     PRE_GAME,
     DURING_GAME,
-    PAUSED,
     POST_GAME
 }

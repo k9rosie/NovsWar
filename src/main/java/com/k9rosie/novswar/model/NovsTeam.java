@@ -1,16 +1,9 @@
 package com.k9rosie.novswar.model;
 
 import com.k9rosie.novswar.NovsWar;
-import com.k9rosie.novswar.event.NovsWarScoreModifyEvent;
-import com.k9rosie.novswar.manager.PlayerManager;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Team;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public class NovsTeam {
@@ -86,7 +79,7 @@ public class NovsTeam {
 
     public HashSet<NovsPlayer> getPlayers() {
         HashSet<NovsPlayer> teamMembers = new HashSet<NovsPlayer>();
-        for (NovsPlayer player : NovsWar.getInstance().getPlayerManager().getPlayers().values()) {
+        for (NovsPlayer player : NovsWar.getInstance().getNovsPlayerCache().getPlayers().values()) {
             if (player.getTeam().equals(this)) {
                 teamMembers.add(player);
             }

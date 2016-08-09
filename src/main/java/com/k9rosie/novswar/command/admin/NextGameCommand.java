@@ -20,7 +20,7 @@ public class NextGameCommand extends NovsCommand{
     }
 
     public void execute() {
-    	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
+    	NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
     	String mapName = getArgs()[2];
     	
     	if(mapName == null) { //There is no specified map
@@ -28,12 +28,12 @@ public class NextGameCommand extends NovsCommand{
         	game.nextGame(game.getBallotBox().nextWorld(game.getWorld()));
         	
     	} else { //There is a specific map to start
-    		NovsWorld world = getNovsWar().getWorldManager().getWorldByName(mapName);
+    		NovsWorld world = getNovsWar().getNovsWorldCache().getWorldFromName(mapName);
     		
         	if(world == null) {
         		String message = "";
         		
-        		for(NovsWorld option : getNovsWar().getWorldManager().getWorlds().values()) {
+        		for(NovsWorld option : getNovsWar().getNovsWorldCache().getWorlds().values()) {
         			message += (option.getBukkitWorld().getName() + " ");
         		}
         		player.getBukkitPlayer().sendMessage("Invalid world name. Options are "+message);

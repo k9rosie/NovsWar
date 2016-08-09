@@ -13,7 +13,7 @@ public class HelpCommand extends NovsCommand {
     }
 
     public void execute() {
-        NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
+        NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
         String message = "";
         for(CommandType cmd : CommandType.values()) {
         	message = "/nw "+cmd.toString().toLowerCase()+" "+cmd.arguments()+": "+cmd.description();

@@ -20,15 +20,15 @@ public class LeaveCommand extends NovsCommand{
     }
 
     public void execute() {
-        NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
-        NovsTeam defaultTeam = getNovsWar().getTeamManager().getDefaultTeam();
+        NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
+        NovsTeam defaultTeam = getNovsWar().getNovsTeamCache().getDefaultTeam();
         if(game.getGameState().equals(GameState.DURING_GAME) || 
           game.getGameState().equals(GameState.PRE_GAME) ||
-          game.getGameState().equals(GameState.PAUSED)) {
+          game.isPaused()) {
         	
         	if(player.getTeam().equals(defaultTeam)==false) {
         		player.setTeam(defaultTeam);
-        		player.getBukkitPlayer().teleport(getNovsWar().getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+        		player.getBukkitPlayer().teleport(getNovsWar().getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(defaultTeam));
                 player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
                 player.getBukkitPlayer().setFoodLevel(20);
                 NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(player, game);

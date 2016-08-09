@@ -16,7 +16,7 @@ public class MapCommand extends NovsCommand{
     }
 
     public void execute() {
-        NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
+        NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
         player.getBukkitPlayer().sendMessage("Map: "+game.getWorld().getName()+" playing "+game.getGamemode().getGamemodeName());
     }
 }

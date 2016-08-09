@@ -3,7 +3,6 @@ package com.k9rosie.novswar.database;
 import com.k9rosie.novswar.NovsWar;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.sql.*;
 import java.util.Properties;
@@ -33,7 +32,7 @@ public class DatabaseConnection {
         ClassLoader classLoader = Bukkit.getServer().getClass().getClassLoader();
         DatabaseType type = database.getType();
 
-        FileConfiguration config = NovsWar.getInstance().getConfigurationCache().getConfig("core");
+        FileConfiguration config = NovsWar.getInstance().getNovsConfigCache().getConfig("core");
         String className;
         String hostnameString;
         String portString;

@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.util.RegionType;
 
 import org.bukkit.Location;
@@ -192,6 +193,33 @@ public class NovsPlayer {
     
     public void setShiftToggled(boolean toggle) {
     	isShiftToggled = toggle;
+    }
+
+    public NovsPlayer nextSpectatorTarget(Game game) {
+        System.out.println(bukkitPlayer.getName()+" is switching spectator targets");
+        ArrayList<NovsPlayer> inGamePlayers = game.getGamePlayers();
+        int index = inGamePlayers.indexOf(spectatorTarget);
+        int nextIndex = index + 1;
+        if(nextIndex == 0) {
+            System.out.println("WARNING: Could not find target in nextSpectatorTarget");
+        }
+        System.out.println("...Old target was "+spectatorTarget.getBukkitPlayer().getName());
+        //Modify player index
+        if(nextIndex >= inGamePlayers.size()) {
+            nextIndex = 0;
+        }
+        NovsPlayer target = inGamePlayers.get(nextIndex);
+        if(target != null) {
+            System.out.println("...New target is "+target.getBukkitPlayer().getName());
+            spectatorTarget = target;
+            //target.getSpectatorObservers().add(observer);
+            bukkitPlayer.setSpectatorTarget(target.getBukkitPlayer());
+            bukkitPlayer.sendMessage("Spectating "+target.getBukkitPlayer().getName());
+        } else {
+            System.out.println("WARNING: nextSpectatorTarget used a null target");
+        }
+
+        return target;
     }
     
 }

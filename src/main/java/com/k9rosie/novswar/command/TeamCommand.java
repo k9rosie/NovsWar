@@ -21,7 +21,7 @@ public class TeamCommand extends NovsCommand {
 
     public void execute() {
         if (getArgs().length == 1) {
-            NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
+            NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
             NovsTeam team = player.getTeam();
             printTeam(team);
         } else if (getArgs().length == 2) {
@@ -37,7 +37,7 @@ public class TeamCommand extends NovsCommand {
                 printTeam(team);
                 return;
             } else {
-                NovsPlayer player = getNovsWar().getPlayerManager().getNovsPlayerFromUsername(arg);
+                NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayerFromName(arg);
 
                 if (player == null) {
                     getSender().sendMessage("That specific player/team couldn't be found");
@@ -72,7 +72,7 @@ public class TeamCommand extends NovsCommand {
                 playersList.append(ChatColor.GRAY+", ");
             }
         }
-        /*if (team.equals(getNovsWar().getTeamManager().getDefaultTeam())) {
+        /*if (team.equals(getNovsWar().getNovsTeamCache().getDefaultTeam())) {
             playersArray = game.getNeutralTeamData().getPlayers().toArray();
         } else {
             playersArray = game.getTeamData().get(team).getPlayers().toArray();

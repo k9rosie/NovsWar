@@ -27,7 +27,7 @@ public class Game {
     private NovsWorld world;
     private Gamemode gamemode;
     private GameState gameState;
-    private GameState previousGameState;
+    private boolean paused;
     private ArrayList<NovsTeam> enabledTeams;
     private HashMap<NovsPlayer, DeathTimer> deathTimers;
     private NovsWar novsWar;
@@ -35,7 +35,9 @@ public class Game {
     private GameScoreboard scoreboard;
     private BallotBox ballotBox;
     
-    private int numRoundsRemaining;
+    private int rounds;
+    private int messageTime;
+    private int messageTask;
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
@@ -44,24 +46,24 @@ public class Game {
         enabledTeams = new ArrayList<NovsTeam>();
         deathTimers = new HashMap<NovsPlayer, DeathTimer>();
         gameState = GameState.WAITING_FOR_PLAYERS;
-        previousGameState = GameState.WAITING_FOR_PLAYERS;
+        paused = false;
         novsWar = gameHandler.getNovsWarInstance();
         gameTimer = new GameTimer(this);
         scoreboard = new GameScoreboard(this);
         ballotBox = new BallotBox(novsWar);
-        numRoundsRemaining = gamemode.getRounds();
+        rounds = gamemode.getRounds();
     }
 
     public void initialize() {
     	//Create default team
-        NovsTeam defaultTeam = novsWar.getTeamManager().getDefaultTeam();
+        NovsTeam defaultTeam = novsWar.getNovsTeamCache().getDefaultTeam();
         Team defaultScoreboardTeam = scoreboard.createScoreboardTeam(defaultTeam);
         defaultTeam.setScoreboardTeam(defaultScoreboardTeam);
 
         //Populate the list 'enabledTeams' with valid NovsTeam objects
-        List<String> enabledTeamNames = novsWar.getConfigurationCache().getConfig("worlds").getStringList("worlds."+world.getBukkitWorld().getName()+".enabled_teams");
+        List<String> enabledTeamNames = novsWar.getNovsConfigCache().getConfig("worlds").getStringList("worlds."+world.getBukkitWorld().getName()+".enabled_teams");
         for (String validTeam : enabledTeamNames) {
-            for (NovsTeam team : novsWar.getTeamManager().getTeams()) {
+            for (NovsTeam team : novsWar.getNovsTeamCache().getTeams()) {
                 if (validTeam.equalsIgnoreCase(team.getTeamName())) {
                 	team.setScoreboardTeam(scoreboard.createScoreboardTeam(team));
                 	enabledTeams.add(team);
@@ -74,11 +76,11 @@ public class Game {
         }
 
 
-        for (NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+        for (NovsPlayer player : novsWar.getNovsPlayerCache().getPlayers().values()) {
         	player.setTeam(defaultTeam); // NovsPlayer now has private NovsTeam var
         	player.setSpectating(false); //remove from spectator mode
         	player.getSpectatorObservers().clear(); //clear spectators
-            player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+            player.getBukkitPlayer().teleport(novsWar.getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(defaultTeam));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
             player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
             player.getBukkitPlayer().setFoodLevel(20);
@@ -90,34 +92,32 @@ public class Game {
     }
 
     /**
-     * endTimer()
+     * onEndTimer()
      * Controls the next state of the game when the timer ends
      */
-    public void endTimer() {
+    public void onEndTimer() {
     	switch(gameState) {
-    	case PRE_GAME :
-    		startGame();
-    		break;
-    	case DURING_GAME :
-    		endGame();
-    		break;
-    	case POST_GAME :
-    		NovsWorld nextMap;
-    		if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
-    			nextMap = ballotBox.tallyResults();
+            case PRE_GAME:
+                startGame();
+                break;
+            case DURING_GAME:
+                endGame();
+                break;
+            case POST_GAME:
+                NovsWorld nextMap;
+                if(novsWar.getNovsConfigCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
+                    nextMap = ballotBox.tallyResults();
+                }
+                else {
+                    nextMap = ballotBox.nextWorld(world);
+                }
+                if(nextMap == null) {
+                    nextMap = world;
+                    System.out.println("There was a problem getting the next NovsWorld. Using previous world.");
+                }
+                gameHandler.newGame(nextMap);
+                break;
             }
-    		else {
-    			nextMap = ballotBox.nextWorld(world);
-    		}
-    		if(nextMap == null) {
-    			nextMap = world;
-    			System.out.println("There was a problem getting the next NovsWorld. Using previous world.");
-    		}
-    		gameHandler.newGame(nextMap);
-    		break;
-    	default :
-    		break;
-    	}
     }
 
     public void waitForPlayers() {
@@ -129,7 +129,7 @@ public class Game {
     public void preGame() {
         gameState = GameState.PRE_GAME;
         world.respawnBattlefields();
-        int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.pre_game_timer");
+        int gameTime = novsWar.getNovsConfigCache().getConfig("core").getInt("core.game.pre_game_timer");
         gameTimer.stopTimer();
         gameTimer.setTime(gameTime);
         gameTimer.startTimer();
@@ -146,11 +146,10 @@ public class Game {
     }
 
     public void pauseGame() {
-    	previousGameState = gameState;
-        gameState = GameState.PAUSED;
+    	paused = true;
         Bukkit.broadcastMessage("Pausing Round");
         world.closeIntermissionGates();
-        for(NovsPlayer player : novsWar.getPlayerManager().getInGamePlayers()) {
+        for(NovsPlayer player : getGamePlayers()) {
         	if(player.isDead()) {
         		respawn(player);
         	} else {
@@ -162,11 +161,10 @@ public class Game {
     }
 
     public void unpauseGame() {
-        if (!gameState.equals(GameState.PAUSED)) {
+        if (!paused) {
             return;
         }
         gameTimer.startTimer();
-        gameState = previousGameState;
         Bukkit.broadcastMessage("Resuming Round");
         world.openIntermissionGates();
     }
@@ -183,7 +181,7 @@ public class Game {
             gameState = GameState.POST_GAME;
             
             //Respawns all dead players and tp's alive players to their team spawns
-            for(NovsPlayer player : novsWar.getPlayerManager().getInGamePlayers()) {
+            for(NovsPlayer player : getGamePlayers()) {
             	if(player.isDead()) {
             		respawn(player);
             	} else {
@@ -192,12 +190,12 @@ public class Game {
             }
             
             //Determine winning teams and invoke events
-            ArrayList<NovsTeam> winners = getWinners();
+            ArrayList<NovsTeam> winners = winningTeams();
             System.out.println(winners.size());
             if (winners.size() == 1) {
                 NovsTeam winner = winners.get(0);
                 //Display victory message for all players, given single victor
-                for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+                for(NovsPlayer player : novsWar.getNovsPlayerCache().getPlayers().values()) {
                 	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 20*4, 20, " ", winner.getColor()+winner.getTeamName()+" §fwins!");
                 }
             } else if (winners.size() > 1) {
@@ -210,12 +208,12 @@ public class Game {
                     }
                 }
               //Display victory message for all players, given multiple victors
-                for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+                for(NovsPlayer player : novsWar.getNovsPlayerCache().getPlayers().values()) {
                 	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 20*4, 20, " ", teamList.toString() + " §fwin!");
                 }
             } else { //no winners (all teams scored 0)
-            	for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
-                	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 20*4, 20, " ", "§fNo Teams Won");
+            	for(NovsPlayer player : novsWar.getNovsPlayerCache().getPlayers().values()) {
+                	SendTitle.sendTitle(player.getBukkitPlayer(), 0, 20*4, 20, " ", "§fDraw");
                 }
             }
             for(NovsTeam winner : winners) {
@@ -229,6 +227,7 @@ public class Game {
                     player.getStats().incrementWins();
                 }
             }
+
             for (NovsTeam team : enabledTeams) {
                 for (NovsPlayer player : team.getPlayers()) {
                     player.getStats().incrementGamesPlayed();
@@ -237,7 +236,7 @@ public class Game {
 
             world.closeIntermissionGates();
             world.respawnBattlefields();
-            int gameTime = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.post_game_timer");
+            int gameTime = novsWar.getNovsConfigCache().getConfig("core").getInt("core.game.post_game_timer");
             gameTimer.stopTimer();
             gameTimer.setTime(gameTime);
             gameTimer.startTimer();
@@ -246,21 +245,21 @@ public class Game {
                 @Override
                 public void run() {
                 	//Remove victory message
-                	for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+                	for(NovsPlayer player : novsWar.getNovsPlayerCache().getPlayers().values()) {
                 		SendTitle.sendTitle(player.getBukkitPlayer(), 0, 0, 0, " ", "");
                 	}
-                	if(numRoundsRemaining <= 1) {
+                	if(rounds <= 1) {
                 		//This was the final round. Prompt voting.
-                		if(novsWar.getConfigurationCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
+                		if(novsWar.getNovsConfigCache().getConfig("core").getBoolean("core.voting.enabled") == true) {
                             ballotBox.castVotes();
                         }
                 	} else {
                 		//Start a new round
-                    	numRoundsRemaining--;
+                    	rounds--;
                     	for (NovsTeam team : enabledTeams) {
                         	team.getNovsScore().setScore(0);	//Resets all team's scores
                         }
-                    	novsWar.getTeamManager().rotateTeams();
+                    	rotateTeams();
                     	preGame();
                     } 
                 }
@@ -272,7 +271,7 @@ public class Game {
      * Determines the team(s) with the highest score
      * @return ArrayList of NovsTeams with highest score
      */
-    public ArrayList<NovsTeam> getWinners() {
+    public ArrayList<NovsTeam> winningTeams() {
         ArrayList<NovsTeam> winningTeams = new ArrayList<NovsTeam>();
         int topScore = 0;
         NovsTeam topTeam = enabledTeams.get(0); //arbitrarily initialize topTeam as team 0
@@ -310,12 +309,13 @@ public class Game {
         case POST_GAME :
         	gameStateString = ChatColor.GRAY + "Post game: ";
         	break;
-        case PAUSED :
-        	gameStateString = ChatColor.GRAY + "Game Paused ";
-        	break;
     	default :
     		gameStateString = "";
     		break;
+        }
+
+        if (paused) {
+            gameStateString = ChatColor.GRAY + "Game Paused ";
         }
 
         if (gameTimer.getSeconds() < 10) {
@@ -337,7 +337,7 @@ public class Game {
      */
     public boolean checkPlayerCount() {
         int numPlayers = 0;
-        int required = novsWar.getConfigurationCache().getConfig("core").getInt("core.game.minimum_players");
+        int required = novsWar.getNovsConfigCache().getConfig("core").getInt("core.game.minimum_players");
         for (NovsTeam team : enabledTeams) {
             numPlayers += team.getPlayers().size();
         }
@@ -381,7 +381,7 @@ public class Game {
         }
         
         //Print death message to all players
-        for (NovsPlayer p : novsWar.getPlayerManager().getPlayers().values()) {
+        for (NovsPlayer p : novsWar.getNovsPlayerCache().getPlayers().values()) {
             if (p.canSeeDeathMessages()) {
                 p.getBukkitPlayer().sendMessage(deathMessage);
             }
@@ -425,7 +425,7 @@ public class Game {
         System.out.print(bukkitPlayer.getName()+" died and has observers: ");
         for(NovsPlayer observer : player.getSpectatorObservers()) {
         	System.out.print(observer.getBukkitPlayer().getName()+" ");
-        	NovsPlayer newTarget = novsWar.getPlayerManager().nextSpectatorTarget(observer);
+        	NovsPlayer newTarget = observer.nextSpectatorTarget(this);
         	newTarget.getSpectatorObservers().add(observer);
         }
         System.out.println();
@@ -466,7 +466,7 @@ public class Game {
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         if (!event.isCancelled()) {
-            boolean canJoinInProgress = novsWar.getConfigurationCache().getConfig("core").getBoolean("core.game.join_in_progress");
+            boolean canJoinInProgress = novsWar.getNovsConfigCache().getConfig("core").getBoolean("core.game.join_in_progress");
 
             if (!canJoinInProgress && gameState.equals(GameState.DURING_GAME)) {
                 player.getBukkitPlayer().sendMessage(Messages.CANNOT_JOIN_GAME.toString());
@@ -478,12 +478,13 @@ public class Game {
             	case WAITING_FOR_PLAYERS :
             		preGame();
             		break;
-            	case PAUSED :
-            		unpauseGame();
-            		break;
         		default :
         			break;
             	}
+            }
+
+            if (paused) {
+                unpauseGame();
             }
         }
     }
@@ -558,5 +559,74 @@ public class Game {
     
     public NovsWorld getWorld() {
     	return world;
+    }
+
+    /**
+     * Sends all in-game players to their spawns and balances the teams
+     */
+    public void balanceTeams() {
+        pauseGame();
+        messageTime = 5;
+        messageTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(novsWar.getPlugin(), new Runnable() {
+            public void run() {
+                ArrayList<NovsPlayer> autobalancePlayers = new ArrayList<NovsPlayer>();
+                for(NovsPlayer player : getGamePlayers()) {
+                    SendTitle.sendTitle(player.getBukkitPlayer(), 0, 2000, 0, " ", "Team Auto-Balance in "+messageTime+"...");
+                    autobalancePlayers.add(player);
+                }
+                messageTime--;
+                if(messageTime <= 0) {
+                    Bukkit.getScheduler().cancelTask(messageTask);
+                    //Set every player's team to default
+                    for(NovsPlayer player : autobalancePlayers) {
+                        SendTitle.sendTitle(player.getBukkitPlayer(), 0, 0, 0, " ", "");
+                        player.setTeam(novsWar.getNovsTeamCache().getDefaultTeam());
+                    }
+                    //re-do the team sorting algorithm
+                    for(NovsPlayer player : autobalancePlayers) {
+                        assignPlayerTeam(player);
+                    }
+                    unpauseGame();
+                }
+            }
+        }, 0, 20);
+    }
+
+    /**
+     * Assigns all in-game players to the next team index in the NovsTeam array list
+     */
+    public void rotateTeams() {
+        HashMap<NovsTeam, NovsTeam> rotationMap = new HashMap<NovsTeam, NovsTeam>(); //key = source, value = target
+        int targetIndex = 0;
+        //Generate map for team switching
+        for(int sourceIndex = 0; sourceIndex < novsWar.getNovsTeamCache().getTeams().size(); sourceIndex++) {
+            targetIndex = sourceIndex + 1;
+            if(targetIndex >= novsWar.getNovsTeamCache().getTeams().size()) {
+                targetIndex = 0;
+            }
+            rotationMap.put(novsWar.getNovsTeamCache().getTeams().get(sourceIndex), novsWar.getNovsTeamCache().getTeams().get(targetIndex));
+        }
+        //Switch teams for each player in-game
+        for(NovsPlayer player : getGamePlayers()) {
+            NovsTeam newTeam = rotationMap.get(player.getTeam());
+            player.setTeam(newTeam);
+            player.getBukkitPlayer().teleport(world.getTeamSpawns().get(newTeam));
+            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+            player.getBukkitPlayer().setFoodLevel(20);
+        }
+    }
+
+    public ArrayList<NovsPlayer> getGamePlayers() {
+        ArrayList<NovsPlayer> inGamePlayers = new ArrayList<NovsPlayer>();
+        for(NovsPlayer aPlayer : novsWar.getNovsPlayerCache().getPlayers().values()) {
+            if(aPlayer.getTeam().equals(novsWar.getNovsTeamCache().getDefaultTeam())==false) {
+                inGamePlayers.add(aPlayer);
+            }
+        }
+        return inGamePlayers;
+    }
+
+    public boolean isPaused() {
+        return paused;
     }
 }

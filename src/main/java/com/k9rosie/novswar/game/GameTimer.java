@@ -2,12 +2,7 @@ package com.k9rosie.novswar.game;
 
 import com.k9rosie.novswar.NovsWar;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class GameTimer {
 
@@ -60,7 +55,7 @@ public class GameTimer {
                 time--;
                 if (time <= -1) {
                     stopTimer();
-                    game.endTimer();
+                    game.onEndTimer();
                 }
             }
         };

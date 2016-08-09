@@ -34,21 +34,9 @@ core:
       - world_nether
       - world_the_end
 
-  # lobby settings
-  # the lobby is the world your players are placed in when they first join the server
-  lobby:
-
-    # the world players are put in
-    # note: you don't have to include this world in core.world.enabled_worlds as it's already enabled by default
+    # the lobby world
+    # the lobby world is the first world players spawn when they join the game
     lobby_world: world
-
-    # the spawn point of the lobby
-    spawn:
-      x: 0
-      y: 64
-      z: 0
-      pitch: 0
-      yaw: 0
 
   # voting settings
   voting:

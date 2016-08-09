@@ -1,38 +1,28 @@
 package com.k9rosie.novswar.listener;
 
 
-import java.util.HashSet;
-
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
+import com.k9rosie.novswar.cache.NovsPlayerCache;
 import com.k9rosie.novswar.command.CommandType;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
-import com.k9rosie.novswar.event.NovsWarPlayerAssistEvent;
-import com.k9rosie.novswar.event.NovsWarPlayerKillEvent;
-import com.k9rosie.novswar.event.NovsWarTeamVictoryEvent;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
-import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsRegion;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
-import com.k9rosie.novswar.util.Messages;
-import com.k9rosie.novswar.util.RegionType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -46,34 +36,34 @@ public class PlayerListener implements Listener {
 
     private NovsWarPlugin plugin;
     private NovsWar novswar;
-    private PlayerManager playerManager;
+    private NovsPlayerCache novsPlayerCache;
 
     public PlayerListener(NovsWarPlugin plugin) {
         this.plugin = plugin;
         novswar = plugin.getNovswarInstance();
-        playerManager = novswar.getPlayerManager();
+        novsPlayerCache = novswar.getNovsPlayerCache();
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
     	Game game = novswar.getGameHandler().getGame();
         Player bukkitPlayer = event.getPlayer();
-        NovsPlayer player = playerManager.createNovsPlayer(bukkitPlayer); //handles assignment to default team
-        NovsTeam defaultTeam = novswar.getTeamManager().getDefaultTeam();
+        NovsPlayer player = novsPlayerCache.createNovsPlayer(bukkitPlayer); //handles assignment to default team
+        NovsTeam defaultTeam = novswar.getNovsTeamCache().getDefaultTeam();
 
         novswar.getDatabase().fetchPlayerData(player);
-        novswar.getTeamManager().getDefaultTeam().getScoreboardTeam().addEntry(player.getBukkitPlayer().getDisplayName());
+        novswar.getNovsTeamCache().getDefaultTeam().getScoreboardTeam().addEntry(player.getBukkitPlayer().getDisplayName());
         bukkitPlayer.setScoreboard(game.getScoreboard().getBukkitScoreboard());
-        bukkitPlayer.teleport(novswar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+        bukkitPlayer.teleport(novswar.getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(defaultTeam));
 
         player.getStats().incrementConnects();
-        System.out.println("Player count: " + novswar.getPlayerManager().getPlayers().values().size());
+        System.out.println("Player count: " + novswar.getNovsPlayerCache().getPlayers().values().size());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         Player bukkitPlayer = event.getPlayer();
-        NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
+        NovsPlayer player = novsPlayerCache.getPlayers().get(bukkitPlayer);
         NovsTeam team = player.getTeam();
 
         event.setFormat(team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
@@ -83,16 +73,16 @@ public class PlayerListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
     	Game game = novswar.getGameHandler().getGame();
         Player bukkitPlayer = event.getPlayer();
-        NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
+        NovsPlayer player = novsPlayerCache.getPlayers().get(bukkitPlayer);
 
         novswar.getDatabase().flushPlayerData(player);
-        playerManager.getPlayers().remove(bukkitPlayer);
-        if(player.getTeam().equals(novswar.getTeamManager().getDefaultTeam())==false) {
+        novsPlayerCache.getPlayers().remove(bukkitPlayer);
+        if(player.getTeam().equals(novswar.getNovsTeamCache().getDefaultTeam())==false) {
         	//If player is on a team, invoke event
         	NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(player, game);
             Bukkit.getPluginManager().callEvent(invokeEvent);
         }
-        //System.out.println("Player count: " + novswar.getPlayerManager().getPlayers().values().size());
+        //System.out.println("Player count: " + novswar.getNovsPlayerCache().getPlayers().values().size());
     }
 
     /**
@@ -129,8 +119,8 @@ public class PlayerListener implements Listener {
             	event.setCancelled(true);
                 return;
             }
-            NovsPlayer victim = playerManager.getPlayers().get(victimBukkitPlayer);
-            NovsPlayer attacker = playerManager.getPlayers().get(attackerBukkitPlayer);
+            NovsPlayer victim = novsPlayerCache.getPlayers().get(victimBukkitPlayer);
+            NovsPlayer attacker = novsPlayerCache.getPlayers().get(attackerBukkitPlayer);
             double damage = event.getFinalDamage();
             victim.getStats().incrementDamageTaken(damage);
             attacker.getStats().incrementDamageGiven(damage);
@@ -163,7 +153,7 @@ public class PlayerListener implements Listener {
     	//If the entity being damaged is a player
         if (event.getEntity() instanceof Player) {
             Player bukkitPlayer = (Player) event.getEntity();
-            NovsPlayer victim = playerManager.getPlayers().get(bukkitPlayer);
+            NovsPlayer victim = novsPlayerCache.getPlayers().get(bukkitPlayer);
             NovsPlayer killer = null;
             //Cancel the event if the player can't be damaged
             if (!victim.getTeam().canBeDamaged()) {
@@ -180,7 +170,7 @@ public class PlayerListener implements Listener {
                     return;
                 } else {
                 	//The player was killed by the environment, but still has a valid killer
-                    killer = playerManager.getPlayers().get(bukkitPlayer.getKiller());
+                    killer = novsPlayerCache.getPlayers().get(bukkitPlayer.getKiller());
                     //onPlayerAttacked(event, killer, victim, false);
                 }
             }
@@ -204,7 +194,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player bukkitPlayer = event.getPlayer();
-        NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
+        NovsPlayer player = novsPlayerCache.getPlayers().get(bukkitPlayer);
 
         if (player.isSettingRegion()) {
             if (event.getClickedBlock() == null) {
@@ -214,7 +204,7 @@ public class PlayerListener implements Listener {
             }
             Location location = event.getClickedBlock().getLocation();
 
-            if (novswar.getWorldManager().getWorlds().get(bukkitPlayer.getWorld()) == null) {
+            if (novswar.getNovsWorldCache().getWorlds().get(bukkitPlayer.getWorld()) == null) {
                 bukkitPlayer.sendMessage("The world you're in isn't enabled in NovsWar.");
                 event.setCancelled(true);
                 return;
@@ -224,7 +214,7 @@ public class PlayerListener implements Listener {
                 player.setCornerOneBuffer(location);
                 bukkitPlayer.sendMessage("Setting corner two...");
             } else if (player.getCornerOneBuffer() != null) {
-                NovsWorld world = novswar.getWorldManager().getWorlds().get(bukkitPlayer.getWorld());
+                NovsWorld world = novswar.getNovsWorldCache().getWorlds().get(bukkitPlayer.getWorld());
                 NovsRegion region = new NovsRegion(world,
                         player.getCornerOneBuffer(), location, player.getRegionTypeBuffer());
 
@@ -279,7 +269,7 @@ public class PlayerListener implements Listener {
 				player.closeInventory();
 				System.out.println(player.getName()+" voted for slot "+slot+", map "+clicked.getItemMeta().getDisplayName());
 				player.sendMessage("You voted for "+clicked.getItemMeta().getDisplayName());
-				NovsPlayer nplayer = novswar.getPlayerManager().getPlayers().get(player);
+				NovsPlayer nplayer = novswar.getNovsPlayerCache().getPlayers().get(player);
 				nplayer.setVoted(true);
 			}
 			event.setCancelled(true);
@@ -289,16 +279,16 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player bukkitPlayer = event.getPlayer();
-        NovsPlayer player = playerManager.getPlayers().get(bukkitPlayer);
+        NovsPlayer player = novsPlayerCache.getPlayers().get(bukkitPlayer);
         NovsWorld currentGameWorld = novswar.getGameHandler().getGame().getWorld();
         Game game = novswar.getGameHandler().getGame();
 
         if (player.isDead() && (bukkitPlayer.getSpectatorTarget() == null)) {
-            event.setCancelled(true);
+            event.getTo().setDirection(event.getFrom().getDirection());
             return;
         }
 
-        for (NovsRegion region : currentGameWorld.getEnterableRegions()) {
+        for (NovsRegion region : currentGameWorld.getRegions().values()) {
             if (region.inRegion(event.getTo())) {
                 switch(region.getRegionType()) {
                 case TEAM_SPAWN :
@@ -325,7 +315,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerToggleSneakEvent(PlayerToggleSneakEvent event) {
-        NovsPlayer player = playerManager.getPlayers().get(event.getPlayer());
+        NovsPlayer player = novsPlayerCache.getPlayers().get(event.getPlayer());
 
         if (player.isDead() || player.isSpectating()) {
             event.setCancelled(true);
@@ -335,7 +325,7 @@ public class PlayerListener implements Listener {
         		//Switch spectator targets
         		player.setShiftToggled(false);
         		player.getSpectatorTarget().getSpectatorObservers().remove(player);
-        		NovsPlayer newTarget = novswar.getPlayerManager().nextSpectatorTarget(player);
+        		NovsPlayer newTarget = player.nextSpectatorTarget(novswar.getGameHandler().getGame());
         		newTarget.getSpectatorObservers().add(player);
         	} else {
         		player.setShiftToggled(true);
@@ -345,7 +335,7 @@ public class PlayerListener implements Listener {
     
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
-    	NovsPlayer player = playerManager.getPlayers().get(event.getPlayer());
+    	NovsPlayer player = novsPlayerCache.getPlayers().get(event.getPlayer());
 
         if (player.isSpectating()) {
             System.out.println("PlayerGameModeChange! Player is spectating... cancelling");
@@ -387,7 +377,7 @@ public class PlayerListener implements Listener {
                     .replace("%killed%", victim.getBukkitPlayer().getDisplayName())
                     .replace("%killer_tcolor%", attackerTeam.getColor().toString())
                     .replace("%killer%", attacker.getBukkitPlayer().getDisplayName());
-            for (NovsPlayer p : playerManager.getPlayers().values()) {
+            for (NovsPlayer p : novsPlayerCache.getPlayers().values()) {
                 if (p.canSeeDeathMessages()) {
                     p.getBukkitPlayer().sendMessage(deathMessage);
                 }

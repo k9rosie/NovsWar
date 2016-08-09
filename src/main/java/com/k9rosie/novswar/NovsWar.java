@@ -1,15 +1,15 @@
 package com.k9rosie.novswar;
 
+import com.k9rosie.novswar.cache.NovsPlayerCache;
+import com.k9rosie.novswar.cache.NovsTeamCache;
 import com.k9rosie.novswar.command.CommandHandler;
-import com.k9rosie.novswar.config.ConfigurationCache;
+import com.k9rosie.novswar.cache.NovsConfigCache;
 import com.k9rosie.novswar.database.DatabaseThread;
 import com.k9rosie.novswar.database.NovswarDB;
 import com.k9rosie.novswar.event.NovsWarInitializationEvent;
 import com.k9rosie.novswar.game.GameHandler;
 import com.k9rosie.novswar.gamemode.Gamemode;
-import com.k9rosie.novswar.manager.PlayerManager;
-import com.k9rosie.novswar.manager.TeamManager;
-import com.k9rosie.novswar.manager.WorldManager;
+import com.k9rosie.novswar.cache.NovsWorldCache;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -23,10 +23,10 @@ public class NovsWar {
 	private NovsWarPlugin plugin;
 	private static NovsWar instance;
 	
-	private ConfigurationCache configurationCache;
-	private TeamManager teamManager;
-	private PlayerManager playerManager;
-	private WorldManager worldManager;
+	private NovsConfigCache novsConfigCache;
+	private NovsTeamCache novsTeamCache;
+	private NovsPlayerCache novsPlayerCache;
+	private NovsWorldCache novsWorldCache;
 	private DatabaseThread databaseThread;
 	private CommandHandler commandHandler;
 	private GameHandler gameHandler;
@@ -37,10 +37,10 @@ public class NovsWar {
 		this.plugin = plugin;
 		instance = this;
 		
-		configurationCache = new ConfigurationCache(this);
-		teamManager = new TeamManager(this);
-		playerManager = new PlayerManager(this);
-		worldManager = new WorldManager(this);
+		novsConfigCache = new NovsConfigCache(this);
+		novsTeamCache = new NovsTeamCache(this);
+		novsPlayerCache = new NovsPlayerCache(this);
+		novsWorldCache = new NovsWorldCache(this);
 		databaseThread = new DatabaseThread(this);
 		commandHandler = new CommandHandler(this);
 		gameHandler = new GameHandler(this);
@@ -52,10 +52,10 @@ public class NovsWar {
 		NovsWarInitializationEvent event = new NovsWarInitializationEvent(this);
 		Bukkit.getPluginManager().callEvent(event);
 
-		configurationCache.initialize();
+		novsConfigCache.initialize();
 		databaseThread.getThread().start();
-		teamManager.initialize();
-		worldManager.initialize();
+		novsTeamCache.initialize();
+		novsWorldCache.initialize();
 		gameHandler.initialize();
 	}
 	
@@ -67,20 +67,20 @@ public class NovsWar {
 		return plugin;
 	}
 
-	public ConfigurationCache getConfigurationCache() {
-		return configurationCache;
+	public NovsConfigCache getNovsConfigCache() {
+		return novsConfigCache;
 	}
 	
-	public TeamManager getTeamManager() {
-		return teamManager;
+	public NovsTeamCache getNovsTeamCache() {
+		return novsTeamCache;
 	}
 
-	public WorldManager getWorldManager() {
-		return worldManager;
+	public NovsWorldCache getNovsWorldCache() {
+		return novsWorldCache;
 	}
 
-	public PlayerManager getPlayerManager() {
-		return playerManager;
+	public NovsPlayerCache getNovsPlayerCache() {
+		return novsPlayerCache;
 	}
     
 	public DatabaseThread getDatabaseThread() {
