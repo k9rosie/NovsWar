@@ -421,7 +421,7 @@ public class Game {
         }
         System.out.println("Generating effects");
         bukkitPlayer.getWorld().playEffect(bukkitPlayer.getLocation(), Effect.SMOKE, 30, 2);
-        bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 20, 1);
+        bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_WITCH_DEATH, 20, 0.5f);
         
         System.out.print(bukkitPlayer.getName()+" died and has observers: ");
         for(NovsPlayer observer : player.getSpectatorObservers()) {
