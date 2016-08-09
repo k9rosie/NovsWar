@@ -141,12 +141,14 @@ public class NovsWorldCache {
             double z = signInfo.get("z");
 
             Location location = new Location(world.getBukkitWorld(), x, y, z);
-            Sign sign = null;
+            //Sign sign = null;
             if (location.getBlock().getState() instanceof Sign) {
-                sign = (Sign) location.getBlock().getState();
+                Sign sign = (Sign) location.getBlock().getState();
+                world.getSigns().put(location, sign);
+            } else {
+            	System.out.println("Oops! Tried to load an info sign at "+location.toString()+" but the block wasn't a sign!");
+            	System.out.println("The block is "+location.getBlock().getState().toString()+", "+location.getBlock().getState().getType());
             }
-
-            world.getSigns().put(location, sign);
         }
 
         ConfigurationSection regions = regionsConfig.getConfigurationSection("regions."+world.getBukkitWorld().getName()+".regions");

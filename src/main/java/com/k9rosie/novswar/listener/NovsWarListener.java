@@ -45,11 +45,7 @@ public class NovsWarListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onNovsWarNewGame(NovsWarNewGameEvent event) {
     	//Update all NovsInfoSigns with new round information	
-    	for(Sign sign : novswar.getNovsWorldCache().getActiveSigns()) {
-    		NovsWorld world = novswar.getGameHandler().getGame().getWorld();
-			Gamemode gamemode = novswar.getGameHandler().getGame().getGamemode();
-			novswar.getGameHandler().getGame().getGameHandler().updateInfoSign(world, gamemode);
-    	}
+		novswar.getGameHandler().updateInfoSigns();
     }
     
     /**
@@ -59,10 +55,7 @@ public class NovsWarListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onNovsWarJoinGame(NovsWarJoinGameEvent event) {
     	//Update all NovsInfoSigns with in-game player count information	
-    	for(Sign sign : novswar.getNovsWorldCache().getActiveSigns()) {
-    		int playerCount = novswar.getGameHandler().getGame().getGamePlayers().size();
-    		novswar.getGameHandler().updatePlayers(playerCount);
-    	}
+    	novswar.getGameHandler().updateInfoSigns();
     }
     
     /**
@@ -77,9 +70,7 @@ public class NovsWarListener implements Listener {
     		int inGamePlayerCount = novswar.getGameHandler().getGame().getGamePlayers().size();
     		
     		//Update all NovsInfoSigns with in-game player count information	
-        	for(Sign sign : novswar.getNovsWorldCache().getActiveSigns()) {
-				novswar.getGameHandler().updatePlayers(inGamePlayerCount);
-        	}
+    		novswar.getGameHandler().updateInfoSigns();
 
     		//Assess in-game players
     		if(game.getGameState().equals(GameState.PRE_GAME) || game.getGameState().equals(GameState.DURING_GAME)) {

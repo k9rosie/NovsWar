@@ -56,16 +56,11 @@ public class GameHandler {
         return scoreboardManager;
     }
 
-    public void updateInfoSign(NovsWorld world, Gamemode gamemode) {
+    public void updateInfoSigns() {
         for (Sign sign : novswar.getNovsWorldCache().getActiveSigns()) {
-            sign.setLine(1, world.getName());
-            sign.setLine(2, gamemode.getGamemodeName());
-        }
-    }
-
-    public void updatePlayers(int players) {
-        for (Sign sign : novswar.getNovsWorldCache().getActiveSigns()) {
-            sign.setLine(3, players + " players");
+            sign.setLine(1, game.getWorld().getName());
+            sign.setLine(2, game.getGamemode().getGamemodeName());
+            sign.setLine(3, game.getGamePlayers().size() + " players");
         }
     }
 }
