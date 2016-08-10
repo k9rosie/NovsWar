@@ -1,78 +1,43 @@
 package com.k9rosie.novswar.model;
 
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.*;
+import org.bukkit.block.banner.Pattern;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.DirectionalContainer;
 import org.bukkit.material.MaterialData;
+import org.bukkit.potion.PotionEffect;
+
+import java.util.ArrayList;
 
 public class NovsBlock {
-    private BlockState blockState;
     private Location location;
+    private Material material;
+    private MaterialData materialData;
 
+    private String[] signText;
+    private DyeColor bannerBaseColor;
+    private ArrayList<Pattern> bannerPatterns;
     private ItemStack[] inventoryContents;
-    private String[] signData;
+    private short furnaceBurnTime;
+    private short furnaceCookTime;
+    private int brewingStandBrewingTime;
+    private int brewingStandFuelLevel;
+    private PotionEffect beaconPrimaryEffect;
+    private PotionEffect beaconSecondaryEffect;
 
-    public NovsBlock(BlockState blockState, Location location) {
-        this.blockState = blockState;
+
+
+    public NovsBlock(Location location, Material material, MaterialData materialData) {
         this.location = location;
-    }
-
-    public BlockState getBlockState() {
-        return blockState;
-    }
-
-    public void setBlockState(BlockState blockState) {
-        this.blockState = blockState;
-    }
-
-    public ItemStack[] getInventoryContents() {
-        return inventoryContents;
-    }
-
-    public void setInventoryContents(ItemStack[] inventoryContents) {
-        this.inventoryContents = inventoryContents;
-    }
-
-    public String[] getSignData() {
-        return signData;
-    }
-
-    public void setSignData(String[] signData) {
-        this.signData = signData;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
+        this.material = material;
+        this.materialData = materialData;
     }
 
     public void respawn() {
-        blockState.update(true, false);
 
-        Block block = location.getBlock();
-
-        if (block.getState() instanceof InventoryHolder) {
-            System.out.println("Block at ("+block.getX()+", "+block.getY()+", "+block.getZ()+") is an InventoryHolder");
-            InventoryHolder container = (InventoryHolder) blockState;
-            container.getInventory().setContents(inventoryContents);
-            System.out.println("This block being restored holds items! " + inventoryContents.length + " items restored");
-        }
-
-        if (block.getState() instanceof Sign) {
-            System.out.println("Block at ("+block.getX()+", "+block.getY()+", "+block.getZ()+") is a Sign");
-            Sign sign = (Sign) blockState;
-            System.out.println("This block being restored is a sign! Here's the text: ");
-            for (int i = 0; i < signData.length; i++) {
-                sign.setLine(i, signData[i]);
-                System.out.println(signData[i]);
-            }
-
-        }
     }
 }
