@@ -12,6 +12,7 @@ import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsRegion;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.util.RegionType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -147,7 +148,7 @@ public class PlayerListener implements Listener {
             //Check if player is in a team spawn
             boolean isPlayerInSpawn = false;
             for(NovsRegion region : game.getWorld().getRegions().values()) {
-            	if(region.getPlayersInRegion().contains(victim)) {
+            	if(region.equals(RegionType.TEAM_SPAWN) && region.getPlayersInRegion().contains(victim)) {
             		isPlayerInSpawn = true;
             	}
             }
@@ -357,9 +358,9 @@ public class PlayerListener implements Listener {
                 default :
                 	break;
                 } 
-            }
-            onPlayerEnterLeaveRegion(event, region);
+            } 
         }
+        onPlayerEnterLeaveRegion(event);
     }
     
     /**
@@ -368,11 +369,8 @@ public class PlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
-    	NovsWorld currentGameWorld = novswar.getGameHandler().getGame().getWorld();
     	
-    	for (NovsRegion region : currentGameWorld.getRegions().values()) {
-            onPlayerEnterLeaveRegion(event, region);
-        }
+    	onPlayerEnterLeaveRegion(event);
     }
 
     /**
@@ -429,26 +427,29 @@ public class PlayerListener implements Listener {
      * @param event
      * @param region
      */
-    private void onPlayerEnterLeaveRegion(PlayerMoveEvent event, NovsRegion region) {
+    private void onPlayerEnterLeaveRegion(PlayerMoveEvent event) {
     	NovsPlayer player = novsPlayerCache.getPlayers().get(event.getPlayer());
+    	NovsWorld currentGameWorld = novswar.getGameHandler().getGame().getWorld();
     	
     	if(event.isCancelled()==false) {
-    		//If a player moved into this region
-            if (region.inRegion(event.getTo())) {
-            	
-            	//If the player moved from outside the region
-            	if(region.inRegion(event.getFrom())==false) {
-            		region.getPlayersInRegion().add(player);
-            		System.out.println("Added "+player.getBukkitPlayer().getName()+" to region "+region.getRegionType());
-            	}
-            	
-            } else {
-            	//The player moved out of this region
-            	if(region.inRegion(event.getFrom())) {
-            		region.getPlayersInRegion().remove(player);
-            		System.out.println("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getRegionType());
-            	}
-            }
+    		for (NovsRegion region : currentGameWorld.getRegions().values()) {
+    			//If a player moved into this region
+                if (region.inRegion(event.getTo())) {
+                	
+                	//If the player moved from outside the region
+                	if(region.inRegion(event.getFrom())==false) {
+                		region.getPlayersInRegion().add(player);
+                		System.out.println("Added "+player.getBukkitPlayer().getName()+" to region "+region.getRegionType());
+                	}
+                	
+                } else {
+                	//The player moved out of this region
+                	if(region.inRegion(event.getFrom())) {
+                		region.getPlayersInRegion().remove(player);
+                		System.out.println("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getRegionType());
+                	}
+                }
+    		}
     	}
     }
 }
