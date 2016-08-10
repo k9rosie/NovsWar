@@ -5,7 +5,10 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.cache.NovsPlayerCache;
 import com.k9rosie.novswar.command.CommandType;
+import com.k9rosie.novswar.event.NovsWarEndGameEvent;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
+import com.k9rosie.novswar.event.NovsWarRegionEnterEvent;
+import com.k9rosie.novswar.event.NovsWarRegionExitEvent;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
 import com.k9rosie.novswar.model.NovsPlayer;
@@ -145,18 +148,14 @@ public class PlayerListener implements Listener {
             }
             NovsPlayer victim = novsPlayerCache.getPlayers().get(victimBukkitPlayer);
             NovsPlayer attacker = novsPlayerCache.getPlayers().get(attackerBukkitPlayer);
+            
             //Check if player is in a team spawn
-            boolean isPlayerInSpawn = false;
-            for(NovsRegion region : game.getWorld().getRegions().values()) {
-            	if(region.equals(RegionType.TEAM_SPAWN) && region.inRegion(victim.getBukkitPlayer().getLocation())) {
-            		isPlayerInSpawn = true;
-            	}
-            }
-            if(isPlayerInSpawn) {
+            if(onPlayerAttackedInSpawn(victim)) {
             	attackerBukkitPlayer.sendMessage("You cannot attack players in spawn.");
             	event.setCancelled(true);
                 return;
             }
+            
             double damage = event.getFinalDamage();
             victim.getStats().incrementDamageTaken(damage);
             attacker.getStats().incrementDamageGiven(damage);
@@ -191,6 +190,11 @@ public class PlayerListener implements Listener {
             //Cancel the event if the player can't be damaged
             if (!victim.getTeam().canBeDamaged()) {
                 event.setCancelled(true);
+                return;
+            }
+            //Prevent damage to players in spawn
+            if(onPlayerAttackedInSpawn(victim)) {
+            	event.setCancelled(true);
                 return;
             }
             
@@ -440,6 +444,7 @@ public class PlayerListener implements Listener {
     private void onPlayerEnterLeaveRegion(PlayerMoveEvent event) {
     	NovsPlayer player = novsPlayerCache.getPlayers().get(event.getPlayer());
     	NovsWorld currentGameWorld = novswar.getGameHandler().getGame().getWorld();
+    	Game game = novswar.getGameHandler().getGame();
     	
     	if(event.isCancelled()==false) {
     		for (NovsRegion region : currentGameWorld.getRegions().values()) {
@@ -448,18 +453,43 @@ public class PlayerListener implements Listener {
                 	
                 	//If the player moved from outside the region
                 	if(region.inRegion(event.getFrom())==false) {
-                		region.getPlayersInRegion().add(player);
-                		System.out.println("Added "+player.getBukkitPlayer().getName()+" to region "+region.getRegionType());
+                		NovsWarRegionEnterEvent invokeEvent = new NovsWarRegionEnterEvent(game, player, region);
+                        Bukkit.getServer().getPluginManager().callEvent(invokeEvent);
+                        if(invokeEvent.isCancelled()) {
+                        	region.getPlayersInRegion().add(player);
+                    		System.out.println("Added "+player.getBukkitPlayer().getName()+" to region "+region.getRegionType());
+                        }
                 	}
                 	
                 } else {
                 	//The player moved out of this region
                 	if(region.inRegion(event.getFrom())) {
-                		region.getPlayersInRegion().remove(player);
-                		System.out.println("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getRegionType());
+                		NovsWarRegionExitEvent invokeEvent = new NovsWarRegionExitEvent(game, player, region);
+                        Bukkit.getServer().getPluginManager().callEvent(invokeEvent);
+                        if(invokeEvent.isCancelled()) {
+                        	region.getPlayersInRegion().remove(player);
+                        	System.out.println("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getRegionType());
+                        }
                 	}
                 }
     		}
     	}
+    }
+    
+    /**
+     * Helper method to check if a victim player is in a TEAM_SPAWN region
+     * @param victim
+     * @return
+     */
+    private boolean onPlayerAttackedInSpawn(NovsPlayer victim) {
+    	Game game = novswar.getGameHandler().getGame();
+    	
+    	boolean isPlayerInSpawn = false;
+        for(NovsRegion region : game.getWorld().getRegions().values()) {
+        	if(region.equals(RegionType.TEAM_SPAWN) && region.getPlayersInRegion().contains(victim)) {
+        		isPlayerInSpawn = true;
+        	}
+        }
+        return isPlayerInSpawn;
     }
 }

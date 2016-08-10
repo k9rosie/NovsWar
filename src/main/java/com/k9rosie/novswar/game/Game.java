@@ -4,6 +4,8 @@ package com.k9rosie.novswar.game;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.event.NovsWarEndGameEvent;
 import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
+import com.k9rosie.novswar.event.NovsWarJoinTeamEvent;
+import com.k9rosie.novswar.event.NovsWarNewGameEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerAssistEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerKillEvent;
 import com.k9rosie.novswar.event.NovsWarTeamVictoryEvent;
@@ -87,6 +89,9 @@ public class Game {
         }
 
         scoreboard.initialize();
+        
+        NovsWarNewGameEvent event = new NovsWarNewGameEvent(this);
+        Bukkit.getPluginManager().callEvent(event);
 
         waitForPlayers();
     }
@@ -517,13 +522,18 @@ public class Game {
      * @param team
      */
     public void forcePlayerTeam(NovsPlayer player, NovsTeam team) {
-    	player.setTeam(team);
-        System.out.println(world.getTeamSpawns().get(team));
-        player.getBukkitPlayer().teleport(world.getTeamSpawns().get(team));
-        player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
-        player.getBukkitPlayer().setFoodLevel(20);
-        String message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
-        player.getBukkitPlayer().sendMessage(message);
+    	NovsWarJoinTeamEvent event = new NovsWarJoinTeamEvent(this, player, team);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+    	
+        if(event.isCancelled()==false) {
+        	player.setTeam(team);
+            System.out.println(world.getTeamSpawns().get(team));
+            player.getBukkitPlayer().teleport(world.getTeamSpawns().get(team));
+            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+            player.getBukkitPlayer().setFoodLevel(20);
+            String message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
+            player.getBukkitPlayer().sendMessage(message);
+        }
     }
     
     public void nextGame(NovsWorld world) {

@@ -35,12 +35,13 @@ public class GameHandler {
 
         game = new Game(this, world, gamemode);
 
-        NovsWarNewGameEvent event = new NovsWarNewGameEvent(game);
-        Bukkit.getPluginManager().callEvent(event);
+        //Moved this event call to Game's initialize method
+        //NovsWarNewGameEvent event = new NovsWarNewGameEvent(game);
+        //Bukkit.getPluginManager().callEvent(event);
 
-        if (!event.isCancelled()) {
-            game.initialize();
-        }
+        //if (!event.isCancelled()) {
+        game.initialize();
+        //}
 
     }
 

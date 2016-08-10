@@ -3,6 +3,7 @@ package com.k9rosie.novswar.listener;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
+import com.k9rosie.novswar.event.NovsWarJoinTeamEvent;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
 import com.k9rosie.novswar.event.NovsWarNewGameEvent;
 import com.k9rosie.novswar.event.NovsWarScoreModifyEvent;
@@ -11,8 +12,8 @@ import com.k9rosie.novswar.game.GameState;
 import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsScore;
 import com.k9rosie.novswar.model.NovsTeam;
-
 import com.k9rosie.novswar.model.NovsWorld;
+
 import org.bukkit.Bukkit;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
@@ -49,11 +50,11 @@ public class NovsWarListener implements Listener {
     }
     
     /**
-     * Join Game Event
+     * Join Team Event
      * @param event
      */
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onNovsWarJoinGame(NovsWarJoinGameEvent event) {
+    public void onNovsWarJoinTeam(NovsWarJoinTeamEvent event) {
     	//Update all NovsInfoSigns with in-game player count information	
     	novswar.getGameHandler().updateInfoSigns();
     }
