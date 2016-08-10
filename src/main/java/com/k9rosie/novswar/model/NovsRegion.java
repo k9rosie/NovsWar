@@ -1,6 +1,7 @@
 package com.k9rosie.novswar.model;
 
 import com.k9rosie.novswar.util.RegionType;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -14,6 +15,7 @@ import org.bukkit.material.MaterialData;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class NovsRegion {
@@ -23,7 +25,7 @@ public class NovsRegion {
     private Location cornerTwo;
     private RegionType regionType;
     private ArrayList<BlockState> blocks;
-    private ArrayList<NovsPlayer> playersInRegion;
+    private HashSet<NovsPlayer> playersInRegion;
 
     public NovsRegion(NovsWorld world, Location cornerOne, Location cornerTwo, RegionType regionType) {
         this.world = world;
@@ -31,7 +33,7 @@ public class NovsRegion {
         this.cornerTwo = cornerTwo;
         this.regionType = regionType;
         blocks = new ArrayList<BlockState>();
-        playersInRegion = new ArrayList<NovsPlayer>();
+        playersInRegion = new HashSet<NovsPlayer>();
     }
 
     public NovsWorld getWorld() {
@@ -135,7 +137,7 @@ public class NovsRegion {
         }
     }
 
-    public ArrayList<NovsPlayer> getPlayersInRegion() {
+    public HashSet<NovsPlayer> getPlayersInRegion() {
         return playersInRegion;
     }
 

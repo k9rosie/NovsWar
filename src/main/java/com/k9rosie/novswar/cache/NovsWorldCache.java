@@ -96,7 +96,7 @@ public class NovsWorldCache {
 
         //Generate all worlds - ensure enabled_worlds are defined in Worlds.yml
         FileConfiguration worldConfig = novswar.getNovsConfigCache().getConfig("worlds");
-        Set<String> allWorldNames = worldConfig.getKeys(false);
+        Set<String> allWorldNames = worldConfig.getConfigurationSection("worlds").getKeys(false);
         List<String> enabledWorldNames = novswar.getNovsConfigCache().getConfig("core").getStringList("core.world.enabled_worlds");
         for (String worldName : enabledWorldNames) {
         	if(allWorldNames.contains(worldName)) {
