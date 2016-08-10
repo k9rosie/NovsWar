@@ -42,6 +42,17 @@ public class NovsWorld {
     public HashMap<NovsTeam, Location> getTeamSpawns() {
         return teamSpawns;
     }
+    
+    public Location getTeamSpawnLoc(NovsTeam team) {
+    	Location loc;
+    	if(teamSpawns.containsKey(team)) {
+    		loc = teamSpawns.get(team);
+    	} else {
+    		loc = bukkitWorld.getSpawnLocation();
+    		System.out.println("Oops! Tried to get team "+team.getTeamName()+" spawn but it wasn't in world "+name);
+    	}
+    	return loc;
+    }
 
     public HashMap<String, NovsRegion> getRegions() {
         return regions;

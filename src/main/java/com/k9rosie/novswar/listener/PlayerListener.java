@@ -60,7 +60,7 @@ public class PlayerListener implements Listener {
         novswar.getDatabase().fetchPlayerData(player);
         novswar.getNovsTeamCache().getDefaultTeam().getScoreboardTeam().addEntry(player.getBukkitPlayer().getDisplayName());
         bukkitPlayer.setScoreboard(game.getScoreboard().getBukkitScoreboard());
-        bukkitPlayer.teleport(novswar.getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+        bukkitPlayer.teleport(novswar.getNovsWorldCache().getLobbyWorld().getTeamSpawnLoc(defaultTeam));
 
         player.getStats().incrementConnects();
         System.out.println("Player count: " + novswar.getNovsPlayerCache().getPlayers().values().size());

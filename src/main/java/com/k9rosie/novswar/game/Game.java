@@ -82,7 +82,7 @@ public class Game {
         	player.setTeam(defaultTeam); // NovsPlayer now has private NovsTeam var
         	player.setSpectating(false); //remove from spectator mode
         	player.getSpectatorObservers().clear(); //clear spectators
-            player.getBukkitPlayer().teleport(novsWar.getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+            player.getBukkitPlayer().teleport(novsWar.getNovsWorldCache().getLobbyWorld().getTeamSpawnLoc(defaultTeam));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
             player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
             player.getBukkitPlayer().setFoodLevel(20);
@@ -158,7 +158,7 @@ public class Game {
         	if(player.isDead()) {
         		respawn(player);
         	} else {
-        		player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
+        		player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(player.getTeam()));
         	}
         }
         gameTimer.pauseTimer();
@@ -190,7 +190,7 @@ public class Game {
             	if(player.isDead()) {
             		respawn(player);
             	} else {
-            		player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
+            		player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(player.getTeam()));
             	}
             }
             
@@ -462,7 +462,7 @@ public class Game {
         if (player.isDead()) {
             NovsTeam team = player.getTeam();
             player.setDeath(false);
-            player.getBukkitPlayer().teleport(world.getTeamSpawns().get(team));
+            player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(team));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
         }
     }
@@ -528,7 +528,7 @@ public class Game {
         if(event.isCancelled()==false) {
         	player.setTeam(team);
             System.out.println(world.getTeamSpawns().get(team));
-            player.getBukkitPlayer().teleport(world.getTeamSpawns().get(team));
+            player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(team));
             player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
             player.getBukkitPlayer().setFoodLevel(20);
             String message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
@@ -621,7 +621,7 @@ public class Game {
         for(NovsPlayer player : getGamePlayers()) {
             NovsTeam newTeam = rotationMap.get(player.getTeam());
             player.setTeam(newTeam);
-            player.getBukkitPlayer().teleport(world.getTeamSpawns().get(newTeam));
+            player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(newTeam));
             player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
             player.getBukkitPlayer().setFoodLevel(20);
         }
