@@ -82,7 +82,7 @@ public class PlayerListener implements Listener {
             	//Team chat only
             	event.setCancelled(true);
             	for(NovsPlayer teamPlayer : team.getPlayers()) {
-            		teamPlayer.getBukkitPlayer().sendMessage(ChatColor.GREEN + bukkitPlayer.getDisplayName() +":"+ ChatColor.ITALIC + event.getMessage());
+            		teamPlayer.getBukkitPlayer().sendMessage(ChatColor.GREEN + "[Team]"+bukkitPlayer.getDisplayName() +": "+ ChatColor.ITALIC + event.getMessage());
             	}
             }
         }
@@ -316,7 +316,8 @@ public class PlayerListener implements Listener {
     /**
      * onPlayerMove
      * Disables spectators from moving their camera.
-     * Detects when a player enters a region and acts appropriately
+     * Detects when a player enters a region and acts appropriately.
+     * Supports adding/removing players from multiple regions on a single move event (for overlapping regions)
      * @param event
      */
     @EventHandler(priority = EventPriority.NORMAL)
@@ -335,13 +336,7 @@ public class PlayerListener implements Listener {
         	
         	//If a player moved into this region
             if (region.inRegion(event.getTo())) {
-            	
-            	//If the player moved from outside the region
-            	if(region.inRegion(event.getFrom())==false) {
-            		region.getPlayersInRegion().add(player);
-            		System.out.println("Added "+player.getBukkitPlayer().getName()+" to region "+region.getRegionType());
-            	}
-            	
+
             	//Perform specific actions based on region type
                 switch(region.getRegionType()) {
                 case TEAM_SPAWN :
@@ -361,15 +356,22 @@ public class PlayerListener implements Listener {
                 	break;
                 default :
                 	break;
-                }
-                
-            } else {
-            	//The player moved outside this region
-            	if(region.inRegion(event.getFrom())) {
-            		region.getPlayersInRegion().remove(player);
-            		System.out.println("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getRegionType());
-            	}
+                } 
             }
+            onPlayerEnterLeaveRegion(event, region);
+        }
+    }
+    
+    /**
+     * Checks for players teleporting into regions
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+    	NovsWorld currentGameWorld = novswar.getGameHandler().getGame().getWorld();
+    	
+    	for (NovsRegion region : currentGameWorld.getRegions().values()) {
+            onPlayerEnterLeaveRegion(event, region);
         }
     }
 
@@ -419,6 +421,34 @@ public class PlayerListener implements Listener {
     public void onPlayerFoodLevelChange(FoodLevelChangeEvent event) {
     	if(novswar.getNovsConfigCache().getConfig("core").getBoolean("core.game.enable_hunger") == false) {
     		event.setCancelled(true);
+    	}
+    }
+    
+    /**
+     * Helper method to add/remove players from region lists
+     * @param event
+     * @param region
+     */
+    private void onPlayerEnterLeaveRegion(PlayerMoveEvent event, NovsRegion region) {
+    	NovsPlayer player = novsPlayerCache.getPlayers().get(event.getPlayer());
+    	
+    	if(event.isCancelled()==false) {
+    		//If a player moved into this region
+            if (region.inRegion(event.getTo())) {
+            	
+            	//If the player moved from outside the region
+            	if(region.inRegion(event.getFrom())==false) {
+            		region.getPlayersInRegion().add(player);
+            		System.out.println("Added "+player.getBukkitPlayer().getName()+" to region "+region.getRegionType());
+            	}
+            	
+            } else {
+            	//The player moved out of this region
+            	if(region.inRegion(event.getFrom())) {
+            		region.getPlayersInRegion().remove(player);
+            		System.out.println("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getRegionType());
+            	}
+            }
     	}
     }
 }
