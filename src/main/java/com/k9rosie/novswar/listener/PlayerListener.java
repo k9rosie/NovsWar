@@ -83,7 +83,7 @@ public class PlayerListener implements Listener {
             	//Team chat only
             	event.setCancelled(true);
             	for(NovsPlayer teamPlayer : team.getPlayers()) {
-            		teamPlayer.getBukkitPlayer().sendMessage(ChatColor.GREEN + "[Team]"+bukkitPlayer.getDisplayName() +": "+ ChatColor.ITALIC + event.getMessage());
+            		teamPlayer.getBukkitPlayer().sendMessage(ChatColor.GREEN + "[Team] "+bukkitPlayer.getDisplayName() +": "+ ChatColor.ITALIC + event.getMessage());
             	}
             }
         }
@@ -148,7 +148,7 @@ public class PlayerListener implements Listener {
             //Check if player is in a team spawn
             boolean isPlayerInSpawn = false;
             for(NovsRegion region : game.getWorld().getRegions().values()) {
-            	if(region.equals(RegionType.TEAM_SPAWN) && region.getPlayersInRegion().contains(victim)) {
+            	if(region.equals(RegionType.TEAM_SPAWN) && region.inRegion(victim.getBukkitPlayer().getLocation())) {
             		isPlayerInSpawn = true;
             	}
             }
@@ -419,6 +419,16 @@ public class PlayerListener implements Listener {
     public void onPlayerFoodLevelChange(FoodLevelChangeEvent event) {
     	if(novswar.getNovsConfigCache().getConfig("core").getBoolean("core.game.enable_hunger") == false) {
     		event.setCancelled(true);
+    		//Keep saturation full if enabled
+    		if(event.getEntity() instanceof Player) {
+    			Player player = (Player)event.getEntity();
+    			if(novswar.getNovsConfigCache().getConfig("core").getBoolean("core.game.fast_health_regen") == true) {
+    				player.setSaturation(20);
+    			} else {
+    				//keep saturation zero
+    				player.setSaturation(0);
+    			}
+    		}
     	}
     }
     
