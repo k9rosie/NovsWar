@@ -32,8 +32,8 @@ public class NovsWarPlugin extends JavaPlugin {
 		novswar.getNovsWorldCache().saveRegions();
 		novswar.getNovsConfigCache().saveConfigs();
 		//TODO respawn battlefield in game world
-		novswar.getGameHandler().getGame().getWorld().respawnBattlefields();
-		novswar.getGameHandler().getGame().getWorld().closeIntermissionGates();
+		//novswar.getGameHandler().getGame().getWorld().respawnBattlefields();
+		//novswar.getGameHandler().getGame().getWorld().closeIntermissionGates();
 	}
 	
 	public NovsWar getNovswarInstance() {

@@ -4,10 +4,7 @@ import com.k9rosie.novswar.util.RegionType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
-import org.bukkit.block.Sign;
+import org.bukkit.block.*;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.MaterialData;
 
@@ -22,7 +19,7 @@ public class NovsRegion {
     private Location cornerOne;
     private Location cornerTwo;
     private RegionType regionType;
-    private ArrayList<BlockState> blocks;
+    private ArrayList<NovsBlock> blocks;
     private ArrayList<NovsPlayer> playersInRegion;
 
     public NovsRegion(NovsWorld world, Location cornerOne, Location cornerTwo, RegionType regionType) {
@@ -30,7 +27,7 @@ public class NovsRegion {
         this.cornerOne = cornerOne;
         this.cornerTwo = cornerTwo;
         this.regionType = regionType;
-        blocks = new ArrayList<BlockState>();
+        blocks = new ArrayList<NovsBlock>();
         playersInRegion = new ArrayList<NovsPlayer>();
     }
 
@@ -62,16 +59,16 @@ public class NovsRegion {
         this.regionType = regionType;
     }
 
-    public ArrayList<BlockState> getBlocks() {
+    public ArrayList<NovsBlock> getBlocks() {
         return blocks;
     }
 
-    public void setBlocks(ArrayList<BlockState> blocks) {
+    public void setBlocks(ArrayList<NovsBlock> blocks) {
         this.blocks = blocks;
     }
 
-    public ArrayList<BlockState> getCuboid() {
-        ArrayList<BlockState> blocks = new ArrayList<BlockState>();
+    public ArrayList<NovsBlock> getCuboid() {
+        ArrayList<NovsBlock> blocks = new ArrayList<NovsBlock>();
 
         int topBlockX = Math.max(cornerOne.getBlockX(), cornerTwo.getBlockX());
         int topBlockY = Math.max(cornerOne.getBlockY(), cornerTwo.getBlockY());
@@ -83,8 +80,9 @@ public class NovsRegion {
         for (int x = bottomBlockX; x <= topBlockX; x++) {
             for (int y = bottomBlockY; y <= topBlockY; y++) {
                 for (int z = bottomBlockZ; z <= topBlockZ; z++) {
-                    BlockState state = world.getBukkitWorld().getBlockAt(x, y, z).getState();
-                    blocks.add(state);
+                    Block bukkitBlock = world.getBukkitWorld().getBlockAt(x, y, z);
+                    NovsBlock block = createNovsBlock(bukkitBlock);
+                    blocks.add(block);
                 }
             }
         }
@@ -112,8 +110,8 @@ public class NovsRegion {
     }
 
     public void resetBlocks() {
-        for (BlockState block : blocks) {
-            block.update(true, false);
+        for (NovsBlock block : blocks) {
+            block.respawn();
         }
     }
 
@@ -139,4 +137,101 @@ public class NovsRegion {
         return playersInRegion;
     }
 
+    public NovsBlock createNovsBlock(Block bukkitBlock) {
+        BlockState blockState = bukkitBlock.getState();
+        NovsBlock block = new NovsBlock(bukkitBlock.getLocation(), bukkitBlock.getType(), blockState.getData());
+
+        if (blockState instanceof InventoryHolder) {
+            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type InventoryHolder");
+            InventoryHolder inventoryHolder = (InventoryHolder) blockState;
+            block.setInventoryContents(inventoryHolder.getInventory().getContents());
+        }
+
+        if (blockState instanceof Sign) {
+            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Sign");
+            Sign sign = (Sign) blockState;
+            block.setSignText(sign.getLines());
+        }
+
+        if (blockState instanceof Banner) {
+            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Banner");
+            Banner banner = (Banner) blockState;
+            block.setBannerBaseColor(banner.getBaseColor());
+            block.setBannerPatterns((ArrayList) banner.getPatterns());
+        }
+
+        if (blockState instanceof Furnace) {
+            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Furnace");
+            Furnace furnace = (Furnace) blockState;
+            block.setFurnaceBurnTime(furnace.getBurnTime());
+            block.setFurnaceCookTime(furnace.getCookTime());
+        }
+
+        if (blockState instanceof BrewingStand) {
+            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type BrewingStand");
+            BrewingStand brewingStand = (BrewingStand) blockState;
+            block.setBrewingStandBrewingTime(brewingStand.getBrewingTime());
+            block.setBrewingStandFuelLevel(brewingStand.getFuelLevel());
+        }
+
+        if (blockState instanceof Beacon) {
+            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Beacon");
+            Beacon beacon = (Beacon) blockState;
+            if (beacon.getPrimaryEffect() != null) {
+                block.setBeaconPrimaryEffectType(beacon.getPrimaryEffect().getType());
+            }
+            if (beacon.getSecondaryEffect() != null) {
+                block.setBeaconSecondaryEffectType(beacon.getSecondaryEffect().getType());
+            }
+        }
+
+        if (blockState instanceof CreatureSpawner) {
+            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type CreatureSpawner");
+            CreatureSpawner creatureSpawner = (CreatureSpawner) blockState;
+            block.setCreatureSpawnerDelay(creatureSpawner.getDelay());
+            block.setCreatureSpawnerCreatureType(creatureSpawner.getSpawnedType());
+        }
+
+        if (blockState instanceof NoteBlock) {
+            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type NoteBlock");
+            NoteBlock noteBlock = (NoteBlock) blockState;
+            block.setNoteBlockNote(noteBlock.getNote());
+        }
+
+        if (blockState instanceof Jukebox) {
+            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Jukebox");
+            Jukebox jukebox = (Jukebox) blockState;
+            block.setJukeboxRecord(jukebox.getPlaying());
+        }
+
+        if (blockState instanceof Skull) {
+            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Skull");
+            Skull skull = (Skull) blockState;
+            block.setSkullOwningPlayer(skull.getOwningPlayer());
+            block.setSkullRotation(skull.getRotation());
+            block.setSkullSkullType(skull.getSkullType());
+        }
+
+        if (blockState instanceof CommandBlock) {
+            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type CommandBlock");
+            CommandBlock commandBlock = (CommandBlock) blockState;
+            block.setCommandBlockCommand(commandBlock.getCommand());
+            block.setCommandBlockName(commandBlock.getName());
+        }
+
+        if (blockState instanceof EndGateway) {
+            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type EndGateway");
+            EndGateway endGateway = (EndGateway) blockState;
+            block.setEndGatewayExactTeleport(endGateway.isExactTeleport());
+            block.setEndGatewayExitLocation(endGateway.getExitLocation());
+        }
+
+        if (blockState instanceof FlowerPot) {
+            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type FlowerPot");
+            FlowerPot flowerPot = (FlowerPot) blockState;
+            block.setFlowerPotContents(flowerPot.getContents());
+        }
+
+        return block;
+    }
 }
