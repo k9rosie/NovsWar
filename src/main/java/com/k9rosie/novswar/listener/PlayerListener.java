@@ -435,12 +435,7 @@ public class PlayerListener implements Listener {
     		}
     	}
     }
-    
-    /**
-     * Helper method to add/remove players from region lists
-     * @param event
-     * @param region
-     */
+
     private void onPlayerEnterLeaveRegion(PlayerMoveEvent event) {
     	NovsPlayer player = novsPlayerCache.getPlayers().get(event.getPlayer());
     	NovsWorld currentGameWorld = novswar.getGameHandler().getGame().getWorld();
