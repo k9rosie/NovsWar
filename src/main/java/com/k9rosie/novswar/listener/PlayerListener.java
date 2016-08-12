@@ -5,13 +5,17 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.cache.NovsPlayerCache;
 import com.k9rosie.novswar.command.CommandType;
+import com.k9rosie.novswar.event.NovsWarEndGameEvent;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
+import com.k9rosie.novswar.event.NovsWarRegionEnterEvent;
+import com.k9rosie.novswar.event.NovsWarRegionExitEvent;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsRegion;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.util.RegionType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,7 +29,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
@@ -34,16 +38,18 @@ import org.bukkit.inventory.ItemStack;
 
 public class PlayerListener implements Listener {
 
-    private NovsWarPlugin plugin;
     private NovsWar novswar;
     private NovsPlayerCache novsPlayerCache;
 
     public PlayerListener(NovsWarPlugin plugin) {
-        this.plugin = plugin;
         novswar = plugin.getNovswarInstance();
         novsPlayerCache = novswar.getNovsPlayerCache();
     }
 
+    /**
+     * Fires when a player joins the server
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
     	Game game = novswar.getGameHandler().getGame();
@@ -54,21 +60,42 @@ public class PlayerListener implements Listener {
         novswar.getDatabase().fetchPlayerData(player);
         novswar.getNovsTeamCache().getDefaultTeam().getScoreboardTeam().addEntry(player.getBukkitPlayer().getDisplayName());
         bukkitPlayer.setScoreboard(game.getScoreboard().getBukkitScoreboard());
-        bukkitPlayer.teleport(novswar.getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+        bukkitPlayer.teleport(novswar.getNovsWorldCache().getLobbyWorld().getTeamSpawnLoc(defaultTeam));
 
         player.getStats().incrementConnects();
         System.out.println("Player count: " + novswar.getNovsPlayerCache().getPlayers().values().size());
     }
 
+    /**
+     * Fires on chat events
+     * All players always see global chat messages and team chat messages
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
-        Player bukkitPlayer = event.getPlayer();
-        NovsPlayer player = novsPlayerCache.getPlayers().get(bukkitPlayer);
-        NovsTeam team = player.getTeam();
-
-        event.setFormat(team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
+        
+        //Check if the event was caused by a player
+        if(event.isAsynchronous()) {
+        	Player bukkitPlayer = event.getPlayer();
+            NovsPlayer player = novsPlayerCache.getPlayers().get(bukkitPlayer);
+            NovsTeam team = player.getTeam();
+            
+            if(player.isGlobalChat()) {
+            	event.setFormat(team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
+            } else {
+            	//Team chat only
+            	event.setCancelled(true);
+            	for(NovsPlayer teamPlayer : team.getPlayers()) {
+            		teamPlayer.getBukkitPlayer().sendMessage(ChatColor.GREEN + "[Team] "+bukkitPlayer.getDisplayName() +": "+ ChatColor.ITALIC + event.getMessage());
+            	}
+            }
+        }
     }
 
+    /**
+     * Fires when a player quits the server
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event) {
     	Game game = novswar.getGameHandler().getGame();
@@ -121,6 +148,14 @@ public class PlayerListener implements Listener {
             }
             NovsPlayer victim = novsPlayerCache.getPlayers().get(victimBukkitPlayer);
             NovsPlayer attacker = novsPlayerCache.getPlayers().get(attackerBukkitPlayer);
+            
+            //Check if player is in a team spawn
+            if(onPlayerAttackedInSpawn(victim)) {
+            	attackerBukkitPlayer.sendMessage("You cannot attack players in spawn.");
+            	event.setCancelled(true);
+                return;
+            }
+            
             double damage = event.getFinalDamage();
             victim.getStats().incrementDamageTaken(damage);
             attacker.getStats().incrementDamageGiven(damage);
@@ -131,9 +166,6 @@ public class PlayerListener implements Listener {
                 event.setCancelled(true);
                 game.killPlayer(victim, attacker, arrowDeath);
             }
-            
-            
-            //onPlayerAttacked(event, attacker, victim, arrowDeath);
         }
     }
 
@@ -160,18 +192,21 @@ public class PlayerListener implements Listener {
                 event.setCancelled(true);
                 return;
             }
+            //Prevent damage to players in spawn
+            if(onPlayerAttackedInSpawn(victim)) {
+            	event.setCancelled(true);
+                return;
+            }
             
             //Determine whether there is a killer
             if (bukkitPlayer.getKiller() != null && bukkitPlayer.getKiller() instanceof Player) {
             	//The victim has a valid killer
                 if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                 	//The player was killed by another entity. onPlayerDamageByPlayer handles the rest.
-                	//event.setCancelled(true);
                     return;
                 } else {
                 	//The player was killed by the environment, but still has a valid killer
                     killer = novsPlayerCache.getPlayers().get(bukkitPlayer.getKiller());
-                    //onPlayerAttacked(event, killer, victim, false);
                 }
             }
             
@@ -184,13 +219,15 @@ public class PlayerListener implements Listener {
             // if damage is fatal
             if (bukkitPlayer.getHealth() - damage <= 0) {
                 event.setCancelled(true);
-                //player.getStats().incrementSuicides();
                 game.killPlayer(victim, killer, false);
-                //game.scheduleDeath(player, game.getGamemode().getDeathTime());
             }
         }
     }
 
+    /**
+     * Handles when players are setting regions and clicking signs
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player bukkitPlayer = event.getPlayer();
@@ -252,6 +289,11 @@ public class PlayerListener implements Listener {
         }
     }
     
+    /** 
+     * onInventoryClick
+     * Handles voting when the ballot box inventory is clicked
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
 	public void onInventoryClick(InventoryClickEvent event) {
     	Inventory inventory = event.getInventory();
@@ -276,6 +318,13 @@ public class PlayerListener implements Listener {
 		}
 	}
 
+    /**
+     * onPlayerMove
+     * Disables spectators from moving their camera.
+     * Detects when a player enters a region and acts appropriately.
+     * Supports adding/removing players from multiple regions on a single move event (for overlapping regions)
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player bukkitPlayer = event.getPlayer();
@@ -289,7 +338,11 @@ public class PlayerListener implements Listener {
         }
 
         for (NovsRegion region : currentGameWorld.getRegions().values()) {
+        	
+        	//If a player moved into this region
             if (region.inRegion(event.getTo())) {
+
+            	//Perform specific actions based on region type
                 switch(region.getRegionType()) {
                 case TEAM_SPAWN :
                 	//Assume that players teleporting into the teamspawn do not trigger this code...
@@ -308,11 +361,26 @@ public class PlayerListener implements Listener {
                 	break;
                 default :
                 	break;
-                }
-            }
+                } 
+            } 
         }
+        onPlayerEnterLeaveRegion(event);
+    }
+    
+    /**
+     * Checks for players teleporting into regions
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+    	
+    	onPlayerEnterLeaveRegion(event);
     }
 
+    /**
+     * Disables sneaking for dead players & repurposes the LSHIFT key to switch spectator targets
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerToggleSneakEvent(PlayerToggleSneakEvent event) {
         NovsPlayer player = novsPlayerCache.getPlayers().get(event.getPlayer());
@@ -333,6 +401,10 @@ public class PlayerListener implements Listener {
         }
     }
     
+    /**
+     * Prevents other plugins from forcing a player's gamemode if they are spectating
+     * @param event
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
     	NovsPlayer player = novsPlayerCache.getPlayers().get(event.getPlayer());
@@ -342,60 +414,82 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
         }
     }
-
-   /* private void onPlayerAttacked(EntityDamageEvent event, NovsPlayer attacker, NovsPlayer victim, boolean arrowDeath) {
-        Game game = novswar.getGameHandler().getGame();
-        NovsTeam victimTeam = victim.getTeam();
-        NovsTeam attackerTeam = attacker.getTeam();
-        if (attackerTeam.equals(victimTeam)) {
-            if (!attackerTeam.getFriendlyFire()) {
-                event.setCancelled(true);
-                return;
-            }
-        }
-        if (!victim.getTeam().canBeDamaged()) {
-            event.setCancelled(true);
-            return;
-        }
-
-        double damage = event.getFinalDamage();
-        victim.getStats().incrementDamageTaken(damage);
-        attacker.getStats().incrementDamageGiven(damage);
-        victim.addAttacker(attacker, damage);
-
-        // if damage is fatal
-        if (victim.getBukkitPlayer().getHealth() - damage <= 0) {
-            event.setCancelled(true);
-            //Send death message
-            String deathMessage;
-            if (arrowDeath) {
-                deathMessage = Messages.SHOT_MESSAGE.toString();
-            } else {
-                deathMessage = Messages.KILL_MESSAGE.toString();
-            }
-            deathMessage = deathMessage.replace("%killed_tcolor%", victimTeam.getColor().toString())
-                    .replace("%killed%", victim.getBukkitPlayer().getDisplayName())
-                    .replace("%killer_tcolor%", attackerTeam.getColor().toString())
-                    .replace("%killer%", attacker.getBukkitPlayer().getDisplayName());
-            for (NovsPlayer p : novsPlayerCache.getPlayers().values()) {
-                if (p.canSeeDeathMessages()) {
-                    p.getBukkitPlayer().sendMessage(deathMessage);
-                }
-            }
-            //Evaluate statistics
-            if (arrowDeath) {
-                attacker.getStats().incrementArrowKills();
-                victim.getStats().incrementArrowDeaths();
-            } else {
-                attacker.getStats().incrementKills();
-                victim.getStats().incrementDeaths();
-            }
-            game.killPlayer(victim, attacker);
-        }
-    }*/
-
+    
+    /**
+     * Cancels hunger if enable_hunger is false in core
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerDeath(PlayerDeathEvent event) {
-    	System.out.println(event.getEntity().getName()+" has died...");
+    public void onPlayerFoodLevelChange(FoodLevelChangeEvent event) {
+    	if(novswar.getNovsConfigCache().getConfig("core").getBoolean("core.game.enable_hunger") == false) {
+    		event.setCancelled(true);
+    		//Keep saturation full if enabled
+    		if(event.getEntity() instanceof Player) {
+    			Player player = (Player)event.getEntity();
+    			if(novswar.getNovsConfigCache().getConfig("core").getBoolean("core.game.fast_health_regen") == true) {
+    				player.setSaturation(20);
+    			} else {
+    				//keep saturation zero
+    				player.setSaturation(0);
+    			}
+    		}
+    	}
+    }
+    
+    /**
+     * Helper method to add/remove players from region lists
+     * @param event
+     * @param region
+     */
+    private void onPlayerEnterLeaveRegion(PlayerMoveEvent event) {
+    	NovsPlayer player = novsPlayerCache.getPlayers().get(event.getPlayer());
+    	NovsWorld currentGameWorld = novswar.getGameHandler().getGame().getWorld();
+    	Game game = novswar.getGameHandler().getGame();
+    	
+    	if(event.isCancelled()==false) {
+    		for (NovsRegion region : currentGameWorld.getRegions().values()) {
+    			//If a player moved into this region
+                if (region.inRegion(event.getTo())) {
+                	
+                	//If the player moved from outside the region
+                	if(region.inRegion(event.getFrom())==false) {
+                		NovsWarRegionEnterEvent invokeEvent = new NovsWarRegionEnterEvent(game, player, region);
+                        Bukkit.getServer().getPluginManager().callEvent(invokeEvent);
+                        if(invokeEvent.isCancelled()) {
+                        	region.getPlayersInRegion().add(player);
+                    		System.out.println("Added "+player.getBukkitPlayer().getName()+" to region "+region.getRegionType());
+                        }
+                	}
+                	
+                } else {
+                	//The player moved out of this region
+                	if(region.inRegion(event.getFrom())) {
+                		NovsWarRegionExitEvent invokeEvent = new NovsWarRegionExitEvent(game, player, region);
+                        Bukkit.getServer().getPluginManager().callEvent(invokeEvent);
+                        if(invokeEvent.isCancelled()) {
+                        	region.getPlayersInRegion().remove(player);
+                        	System.out.println("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getRegionType());
+                        }
+                	}
+                }
+    		}
+    	}
+    }
+    
+    /**
+     * Helper method to check if a victim player is in a TEAM_SPAWN region
+     * @param victim
+     * @return
+     */
+    private boolean onPlayerAttackedInSpawn(NovsPlayer victim) {
+    	Game game = novswar.getGameHandler().getGame();
+    	
+    	boolean isPlayerInSpawn = false;
+        for(NovsRegion region : game.getWorld().getRegions().values()) {
+        	if(region.equals(RegionType.TEAM_SPAWN) && region.getPlayersInRegion().contains(victim)) {
+        		isPlayerInSpawn = true;
+        	}
+        }
+        return isPlayerInSpawn;
     }
 }

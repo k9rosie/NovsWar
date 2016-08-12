@@ -35,12 +35,13 @@ public class GameHandler {
 
         game = new Game(this, world, gamemode);
 
-        NovsWarNewGameEvent event = new NovsWarNewGameEvent(game);
-        Bukkit.getPluginManager().callEvent(event);
+        //Moved this event call to Game's initialize method
+        //NovsWarNewGameEvent event = new NovsWarNewGameEvent(game);
+        //Bukkit.getPluginManager().callEvent(event);
 
-        if (!event.isCancelled()) {
-            game.initialize();
-        }
+        //if (!event.isCancelled()) {
+        game.initialize();
+        //}
 
     }
 
@@ -57,10 +58,13 @@ public class GameHandler {
     }
 
     public void updateInfoSigns() {
+    	System.out.println("Updating info signs...");
         for (Sign sign : novswar.getNovsWorldCache().getActiveSigns()) {
+        	System.out.println(sign.getLocation().toString());
             sign.setLine(1, game.getWorld().getName());
             sign.setLine(2, game.getGamemode().getGamemodeName());
             sign.setLine(3, game.getGamePlayers().size() + " players");
+            sign.update();
         }
     }
 }

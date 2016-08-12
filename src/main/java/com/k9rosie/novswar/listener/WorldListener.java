@@ -37,6 +37,7 @@ public class WorldListener implements Listener {
         		if(CommandType.contains(event.getLine(1))) {
         			event.getPlayer().sendMessage("Successfully created NovsWar sign!");
             		event.setLine(0, "§2NovsWar");
+            		event.getBlock().getState().update();
         		} else {
         			event.getPlayer().sendMessage("Invalid command for NovsWar sign");
         		}

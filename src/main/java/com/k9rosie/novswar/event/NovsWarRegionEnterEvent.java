@@ -1,37 +1,36 @@
 package com.k9rosie.novswar.event;
 
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.model.NovsPlayer;
-import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.model.NovsRegion;
 
-public class NovsWarJoinTeamEvent extends Event implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+public class NovsWarRegionEnterEvent  extends Event {
+	private static final HandlerList handlers = new HandlerList();
+	private NovsPlayer player;
     private Game game;
-    private NovsPlayer player;
-    private NovsTeam team;
+    private NovsRegion region;
     private boolean cancelled;
-
-    public NovsWarJoinTeamEvent(Game game, NovsPlayer player, NovsTeam team) {
+    
+    public NovsWarRegionEnterEvent(Game game, NovsPlayer player, NovsRegion region) {
+    	this.player = player;
         this.game = game;
-        this.player = player;
-        this.team = team;
+        this.region = region;
         cancelled = false;
+    }
+
+    public NovsPlayer getPlayer() {
+    	return player;
     }
 
     public Game getGame() {
         return game;
     }
-
-    public NovsPlayer getPlayer() {
-        return player;
-    }
     
-    public NovsTeam getTeam() {
-    	return team;
+    public NovsRegion getRegion() {
+    	return region;
     }
 
     public boolean isCancelled() {

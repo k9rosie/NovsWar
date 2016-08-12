@@ -25,58 +25,43 @@ public class CommandHandler implements CommandExecutor {
         if (args.length >= 1) {
         	//Get command type. If args[0] is not a command, defaults to HELP
         	CommandType commandArg = CommandType.getCommand(args[0]);
-            switch (commandArg) {
+        	if (sender.hasPermission(commandArg.permission())) {
+        		switch (commandArg) {
                 case ADMIN:
-                    if (sender.hasPermission(commandArg.permission())) {
-                        new AdminCommand(novsWar, sender, args).execute();
-                        return true;
-                    }
+                    new AdminCommand(novsWar, sender, args).execute();
+                    return true;
                 case TEAM:
-                    if (sender.hasPermission(commandArg.permission())) {
-                        new TeamCommand(novsWar, sender, args).execute();
-                        return true;
-                    }
+                    new TeamCommand(novsWar, sender, args).execute();
+                    return true;
                 case PLAYER:
-                    if (sender.hasPermission(commandArg.permission())) {
-                        new PlayerCommand(novsWar, sender, args).execute();
-                        return true;
-                    }
-                case STATS:
-                    if (sender.hasPermission(commandArg.permission())) {
-                        new PlayerCommand(novsWar, sender, args).execute();
-                        return true;
-                    }
+                    new PlayerCommand(novsWar, sender, args).execute();
+                    return true;
                 case JOIN:
-                    if (sender.hasPermission(commandArg.permission())) {
-                        new JoinCommand(novsWar, sender, args).execute();
-                        return true;
-                    } 
+                    new JoinCommand(novsWar, sender, args).execute();
+                    return true;
                 case VOTE:
-                    if (sender.hasPermission(commandArg.permission())) {
-                        new VoteCommand(novsWar, sender, args).execute();
-                        return true;
-                    }
+                    new VoteCommand(novsWar, sender, args).execute();
+                    return true;
                 case SPECTATE:
-                    if (sender.hasPermission(commandArg.permission())) {
-                    	new SpectateCommand(novsWar, sender, args).execute();
-                    	return true;
-                    }
+                	new SpectateCommand(novsWar, sender, args).execute();
+                	return true;
                 case LEAVE:
-                    if (sender.hasPermission(commandArg.permission())) {
-                        new LeaveCommand(novsWar, sender, args).execute();
-                        return true;
-                    }
+                    new LeaveCommand(novsWar, sender, args).execute();
+                    return true;
                 case MAP:
-                    if (sender.hasPermission(commandArg.permission())) {
-                        new MapCommand(novsWar, sender, args).execute();
-                        return true;
-                    }
+                    new MapCommand(novsWar, sender, args).execute();
+                    return true;
                 case HELP:
-                    if (sender.hasPermission(commandArg.permission())) {
-                        new HelpCommand(novsWar, sender, args).execute();
-                        return true;
-                    }
-            }
+                    new HelpCommand(novsWar, sender, args).execute();
+                    return true;
+                case DEATHMESSAGE:
+                    new DeathmessageCommand(novsWar, sender, args).execute();
+                    return true;
+                case CHAT:
+                    new ChatCommand(novsWar, sender, args).execute();
+                    return true;
+        		}
+        	}  
         }
         return false;
     }

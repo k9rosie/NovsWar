@@ -4,6 +4,8 @@ package com.k9rosie.novswar.game;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.event.NovsWarEndGameEvent;
 import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
+import com.k9rosie.novswar.event.NovsWarJoinTeamEvent;
+import com.k9rosie.novswar.event.NovsWarNewGameEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerAssistEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerKillEvent;
 import com.k9rosie.novswar.event.NovsWarTeamVictoryEvent;
@@ -80,13 +82,16 @@ public class Game {
         	player.setTeam(defaultTeam); // NovsPlayer now has private NovsTeam var
         	player.setSpectating(false); //remove from spectator mode
         	player.getSpectatorObservers().clear(); //clear spectators
-            player.getBukkitPlayer().teleport(novsWar.getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+            player.getBukkitPlayer().teleport(novsWar.getNovsWorldCache().getLobbyWorld().getTeamSpawnLoc(defaultTeam));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
             player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
             player.getBukkitPlayer().setFoodLevel(20);
         }
 
         scoreboard.initialize();
+        
+        NovsWarNewGameEvent event = new NovsWarNewGameEvent(this);
+        Bukkit.getPluginManager().callEvent(event);
 
         waitForPlayers();
     }
@@ -153,7 +158,7 @@ public class Game {
         	if(player.isDead()) {
         		respawn(player);
         	} else {
-        		player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
+        		player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(player.getTeam()));
         	}
         }
         gameTimer.pauseTimer();
@@ -185,7 +190,7 @@ public class Game {
             	if(player.isDead()) {
             		respawn(player);
             	} else {
-            		player.getBukkitPlayer().teleport(world.getTeamSpawns().get(player.getTeam()));
+            		player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(player.getTeam()));
             	}
             }
             
@@ -457,7 +462,7 @@ public class Game {
         if (player.isDead()) {
             NovsTeam team = player.getTeam();
             player.setDeath(false);
-            player.getBukkitPlayer().teleport(world.getTeamSpawns().get(team));
+            player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(team));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
         }
     }
@@ -517,13 +522,18 @@ public class Game {
      * @param team
      */
     public void forcePlayerTeam(NovsPlayer player, NovsTeam team) {
-    	player.setTeam(team);
-        System.out.println(world.getTeamSpawns().get(team));
-        player.getBukkitPlayer().teleport(world.getTeamSpawns().get(team));
-        player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
-        player.getBukkitPlayer().setFoodLevel(20);
-        String message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
-        player.getBukkitPlayer().sendMessage(message);
+    	NovsWarJoinTeamEvent event = new NovsWarJoinTeamEvent(this, player, team);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+    	
+        if(event.isCancelled()==false) {
+        	player.setTeam(team);
+            System.out.println(world.getTeamSpawns().get(team));
+            player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(team));
+            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+            player.getBukkitPlayer().setFoodLevel(20);
+            String message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
+            player.getBukkitPlayer().sendMessage(message);
+        }
     }
     
     public void nextGame(NovsWorld world) {
@@ -611,7 +621,7 @@ public class Game {
         for(NovsPlayer player : getGamePlayers()) {
             NovsTeam newTeam = rotationMap.get(player.getTeam());
             player.setTeam(newTeam);
-            player.getBukkitPlayer().teleport(world.getTeamSpawns().get(newTeam));
+            player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(newTeam));
             player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
             player.getBukkitPlayer().setFoodLevel(20);
         }
