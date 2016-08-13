@@ -6,12 +6,15 @@ apply plugin: 'maven'
 group = 'com.k9rosie'
 version = '1.0.0-SNAPSHOT'
 
+deployment_username = System.getenv('NEXUS_CREDENTIALS_USERNAME')
+deployment_password = System.getenv('NEXUS_CREDENTIALS_PASSWORD')
+
 repositories {
   mavenCentral()
   maven {
     credentials {
-      username '$System.env.NEXUS_CREDENTIALS_USERNAME'
-      password '$System.env.NEXUS_CREDENTIALS_PASSWORD'
+      username deployment_username
+      password deployment_password
     }
     url "https://nexus.k9rosie.com/content/groups/public"
   }
@@ -36,7 +39,7 @@ uploadArchives {
   repositories {
     mavenDeployer {
       repository(url: "https://nexus.k9rosie.com/content/repositories/snapshots") {
-        authentication(userName: "$System.env.NEXUS_CREDENTIALS_USERNAME", password: "$System.env.NEXUS_CREDENTIALS_PASSWORD")
+        authentication(userName: deployment_username, password: deployment_password)
       }
       pom.version = project.version
       pom.artifactId = project.name
