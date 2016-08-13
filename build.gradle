@@ -8,7 +8,13 @@ version = '1.0.0-SNAPSHOT'
 
 repositories {
   mavenCentral()
-  maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+  maven {
+    credentials {
+      username '$System.env.NEXUS_CREDENTIALS_USERNAME'
+      password '$System.env.NEXUS_CREDENTIALS_PASSWORD'
+    }
+    url "https://nexus.k9rosie.com/content/groups/public"
+  }
 }
 
 dependencies {
@@ -26,13 +32,18 @@ processResources {
   }
 }
 
-/*jar {
-  from {
-    configurations.compile.collect {
-      it.isDirectory() ? it : zipTree(it)
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      repository(url: "https://nexus.k9rosie.com/content/repositories/snapshots") {
+        authentication(userName: "$System.env.NEXUS_CREDENTIALS_USERNAME", password: "$System.env.NEXUS_CREDENTIALS_PASSWORD")
+      }
+      pom.version = project.version
+      pom.artifactId = project.name
+      pom.groupId = project.group
     }
   }
-}*/
+}
 
 task wrapper(type: Wrapper) {
   gradleVersion = '2.13'
