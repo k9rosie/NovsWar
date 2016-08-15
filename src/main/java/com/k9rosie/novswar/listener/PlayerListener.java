@@ -481,7 +481,7 @@ public class PlayerListener implements Listener {
     	
     	boolean isPlayerInSpawn = false;
         for(NovsRegion region : game.getWorld().getRegions().values()) {
-        	if(region.equals(RegionType.TEAM_SPAWN) && region.getPlayersInRegion().contains(victim)) {
+        	if(region.getRegionType().equals(RegionType.TEAM_SPAWN) && region.getPlayersInRegion().contains(victim)) {
         		isPlayerInSpawn = true;
         	}
         }
