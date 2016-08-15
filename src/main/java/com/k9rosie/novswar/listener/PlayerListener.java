@@ -452,7 +452,7 @@ public class PlayerListener implements Listener {
                 	if(region.inRegion(event.getFrom())==false) {
                 		NovsWarRegionEnterEvent invokeEvent = new NovsWarRegionEnterEvent(game, player, region);
                         Bukkit.getServer().getPluginManager().callEvent(invokeEvent);
-                        if(invokeEvent.isCancelled()) {
+                        if(invokeEvent.isCancelled()==false) {
                         	region.getPlayersInRegion().add(player);
                     		System.out.println("Added "+player.getBukkitPlayer().getName()+" to region "+region.getRegionType());
                         }
@@ -463,7 +463,7 @@ public class PlayerListener implements Listener {
                 	if(region.inRegion(event.getFrom())) {
                 		NovsWarRegionExitEvent invokeEvent = new NovsWarRegionExitEvent(game, player, region);
                         Bukkit.getServer().getPluginManager().callEvent(invokeEvent);
-                        if(invokeEvent.isCancelled()) {
+                        if(invokeEvent.isCancelled()==false) {
                         	region.getPlayersInRegion().remove(player);
                         	System.out.println("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getRegionType());
                         }
