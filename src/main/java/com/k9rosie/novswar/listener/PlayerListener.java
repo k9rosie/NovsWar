@@ -153,6 +153,7 @@ public class PlayerListener implements Listener {
             if(onPlayerAttackedInSpawn(victim)) {
             	attackerBukkitPlayer.sendMessage("You cannot attack players in spawn.");
             	event.setCancelled(true);
+            	System.out.println("EntityDamageByEntity event cancelled due to being in spawn");
                 return;
             }
             
@@ -195,6 +196,7 @@ public class PlayerListener implements Listener {
             //Prevent damage to players in spawn
             if(onPlayerAttackedInSpawn(victim)) {
             	event.setCancelled(true);
+            	System.out.println("EntityDamageEvent event cancelled due to being in spawn");
                 return;
             }
             
@@ -483,6 +485,7 @@ public class PlayerListener implements Listener {
         for(NovsRegion region : game.getWorld().getRegions().values()) {
         	if(region.getRegionType().equals(RegionType.TEAM_SPAWN) && region.getPlayersInRegion().contains(victim)) {
         		isPlayerInSpawn = true;
+        		System.out.println(victim.getBukkitPlayer().getName()+" was attacked in spawn!");
         	}
         }
         return isPlayerInSpawn;
