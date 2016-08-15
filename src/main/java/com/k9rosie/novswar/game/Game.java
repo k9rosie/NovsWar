@@ -7,7 +7,9 @@ import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
 import com.k9rosie.novswar.event.NovsWarJoinTeamEvent;
 import com.k9rosie.novswar.event.NovsWarNewGameEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerAssistEvent;
+import com.k9rosie.novswar.event.NovsWarPlayerDeathEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerKillEvent;
+import com.k9rosie.novswar.event.NovsWarPlayerRespawnEvent;
 import com.k9rosie.novswar.event.NovsWarTeamVictoryEvent;
 import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsPlayer;
@@ -406,6 +408,8 @@ public class Game {
 	        Bukkit.getPluginManager().callEvent(invokeEvent);
         } else { //if there isn't an attacker, increment suicides
         	victim.getStats().incrementSuicides();
+        	NovsWarPlayerDeathEvent invokeEvent = new NovsWarPlayerDeathEvent(victim, victim.getTeam(), this);
+	        Bukkit.getPluginManager().callEvent(invokeEvent);
         }
         if(assistAttacker != null) {
             NovsWarPlayerAssistEvent invokeEvent_1 = new NovsWarPlayerAssistEvent(assistAttacker, victim, assistAttacker.getTeam(), victim.getTeam(), this);
@@ -464,6 +468,9 @@ public class Game {
             player.setDeath(false);
             player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(team));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
+            //Invoke Event
+            NovsWarPlayerRespawnEvent invokeEvent = new NovsWarPlayerRespawnEvent(player, this);
+	        Bukkit.getPluginManager().callEvent(invokeEvent);
         }
     }
 
