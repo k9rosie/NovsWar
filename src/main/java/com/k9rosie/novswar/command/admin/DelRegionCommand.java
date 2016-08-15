@@ -32,6 +32,7 @@ public class DelRegionCommand extends NovsCommand {
             String regionName = getArgs()[2];
             if(world.getRegions().keySet().contains(regionName)) {
             	world.getRegions().remove(regionName);
+            	bukkitPlayer.sendMessage("Region "+regionName+" has been removed from "+world.getName());
             } else {
             	bukkitPlayer.sendMessage("Invalid region name");
             }
