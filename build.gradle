@@ -7,7 +7,6 @@ group = 'com.k9rosie'
 version = '1.0.0-SNAPSHOT'
 
 repositories {
-  mavenCentral()
   maven {
     credentials {
       username System.env.NEXUS_CREDENTIALS_USERNAME
