@@ -61,7 +61,7 @@ public class NovsTeamCache {
             ChatColor color = ColorParser.parseString((String) teamInfo.get("color"));
             boolean canBeDamaged = (boolean) teamInfo.get("can_be_damaged");
             boolean canAttack = (boolean) teamInfo.get("can_attack");
-            boolean friendlyFire = (boolean) teamInfo.get("can_attack");
+            boolean friendlyFire = (boolean) teamInfo.get("friendly_fire");
             NovsTeam team = new NovsTeam(teamName, color, canBeDamaged, canAttack, friendlyFire);
             teams.add(team);
         }

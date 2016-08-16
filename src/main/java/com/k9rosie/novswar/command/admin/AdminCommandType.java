@@ -8,7 +8,10 @@ public enum AdminCommandType {
 	RESTART		("",					"Force a round restart on the same map"),
 	SETREGION	("<name> <RegionType>",	"Creates a new region"),
 	SETSPAWN	("<team>",				"Sets the spawn location for team"),
-	SETTEAM		("<player> <team>",		"Forces the player to join team");
+	SETTEAM		("<player> <team>",		"Forces the player to join team"),
+	LISTREGIONS ("",					"Lists the regions in this world"),
+	DELREGION	("<name>", 				"Deletes the region"),
+	SAVEREGIONS ("",					"Saves all regions");
 	
 	private final String arguments;
 	private final String description;

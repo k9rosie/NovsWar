@@ -37,6 +37,15 @@ public class AdminCommand extends NovsCommand {
                 case HELP:
                     new HelpAdminCommand(getNovsWar(), getSender(), getArgs()).execute();
                     return;
+                case LISTREGIONS:
+                    new ListRegionsCommand(getNovsWar(), getSender(), getArgs()).execute();
+                    return;
+                case DELREGION:
+                    new DelRegionCommand(getNovsWar(), getSender(), getArgs()).execute();
+                    return;
+                case SAVEREGIONS:
+                    new SaveRegionsCommand(getNovsWar(), getSender(), getArgs()).execute();
+                    return;
             }
         }
     }

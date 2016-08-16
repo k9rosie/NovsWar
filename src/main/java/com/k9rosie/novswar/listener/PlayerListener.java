@@ -153,6 +153,7 @@ public class PlayerListener implements Listener {
             if(onPlayerAttackedInSpawn(victim)) {
             	attackerBukkitPlayer.sendMessage("You cannot attack players in spawn.");
             	event.setCancelled(true);
+            	System.out.println("EntityDamageByEntity event cancelled due to being in spawn");
                 return;
             }
             
@@ -195,6 +196,7 @@ public class PlayerListener implements Listener {
             //Prevent damage to players in spawn
             if(onPlayerAttackedInSpawn(victim)) {
             	event.setCancelled(true);
+            	System.out.println("EntityDamageEvent event cancelled due to being in spawn");
                 return;
             }
             
@@ -450,7 +452,7 @@ public class PlayerListener implements Listener {
                 	if(region.inRegion(event.getFrom())==false) {
                 		NovsWarRegionEnterEvent invokeEvent = new NovsWarRegionEnterEvent(game, player, region);
                         Bukkit.getServer().getPluginManager().callEvent(invokeEvent);
-                        if(invokeEvent.isCancelled()) {
+                        if(invokeEvent.isCancelled()==false) {
                         	region.getPlayersInRegion().add(player);
                     		System.out.println("Added "+player.getBukkitPlayer().getName()+" to region "+region.getRegionType());
                         }
@@ -461,7 +463,7 @@ public class PlayerListener implements Listener {
                 	if(region.inRegion(event.getFrom())) {
                 		NovsWarRegionExitEvent invokeEvent = new NovsWarRegionExitEvent(game, player, region);
                         Bukkit.getServer().getPluginManager().callEvent(invokeEvent);
-                        if(invokeEvent.isCancelled()) {
+                        if(invokeEvent.isCancelled()==false) {
                         	region.getPlayersInRegion().remove(player);
                         	System.out.println("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getRegionType());
                         }
@@ -480,9 +482,17 @@ public class PlayerListener implements Listener {
     	Game game = novswar.getGameHandler().getGame();
     	
     	boolean isPlayerInSpawn = false;
+    	System.out.println("Evaluating regions for attacked player "+victim.getBukkitPlayer().getName());
         for(NovsRegion region : game.getWorld().getRegions().values()) {
-        	if(region.equals(RegionType.TEAM_SPAWN) && region.getPlayersInRegion().contains(victim)) {
-        		isPlayerInSpawn = true;
+        	if(region.getRegionType().equals(RegionType.TEAM_SPAWN)) {
+        		System.out.println("Found a teamspawn region! Players inside are... ");
+        		for(NovsPlayer occupier : region.getPlayersInRegion()) {
+        			System.out.print(occupier.getBukkitPlayer().getName()+" ");
+        		}
+        		if(region.getPlayersInRegion().contains(victim)) {
+        			isPlayerInSpawn = true;
+            		System.out.println(victim.getBukkitPlayer().getName()+" was attacked in spawn!");
+        		}
         	}
         }
         return isPlayerInSpawn;
