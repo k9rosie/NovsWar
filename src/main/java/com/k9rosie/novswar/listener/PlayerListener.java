@@ -482,16 +482,11 @@ public class PlayerListener implements Listener {
     	Game game = novswar.getGameHandler().getGame();
     	
     	boolean isPlayerInSpawn = false;
-    	System.out.println("Evaluating regions for attacked player "+victim.getBukkitPlayer().getName());
         for(NovsRegion region : game.getWorld().getRegions().values()) {
         	if(region.getRegionType().equals(RegionType.TEAM_SPAWN)) {
-        		System.out.println("Found a teamspawn region! Players inside are... ");
-        		for(NovsPlayer occupier : region.getPlayersInRegion()) {
-        			System.out.print(occupier.getBukkitPlayer().getName()+" ");
-        		}
         		if(region.getPlayersInRegion().contains(victim)) {
         			isPlayerInSpawn = true;
-            		System.out.println(victim.getBukkitPlayer().getName()+" was attacked in spawn!");
+            		//System.out.println(victim.getBukkitPlayer().getName()+" was attacked in spawn!");
         		}
         	}
         }

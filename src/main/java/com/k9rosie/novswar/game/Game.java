@@ -475,30 +475,30 @@ public class Game {
     }
 
     public void joinGame(NovsPlayer player) {
+        
+        boolean canJoinInProgress = novsWar.getNovsConfigCache().getConfig("core").getBoolean("core.game.join_in_progress");
+
+        if (!canJoinInProgress && gameState.equals(GameState.DURING_GAME)) {
+            player.getBukkitPlayer().sendMessage(Messages.CANNOT_JOIN_GAME.toString());
+            return;
+        }
+        assignPlayerTeam(player);
+        //Invoke event
         NovsWarJoinGameEvent event = new NovsWarJoinGameEvent(this, player);
         Bukkit.getServer().getPluginManager().callEvent(event);
+        
+        if (checkPlayerCount()) {
+        	switch (gameState) {
+        	case WAITING_FOR_PLAYERS :
+        		preGame();
+        		break;
+    		default :
+    			break;
+        	}
+        }
 
-        if (!event.isCancelled()) {
-            boolean canJoinInProgress = novsWar.getNovsConfigCache().getConfig("core").getBoolean("core.game.join_in_progress");
-
-            if (!canJoinInProgress && gameState.equals(GameState.DURING_GAME)) {
-                player.getBukkitPlayer().sendMessage(Messages.CANNOT_JOIN_GAME.toString());
-                return;
-            }
-            assignPlayerTeam(player);
-            if (checkPlayerCount()) {
-            	switch (gameState) {
-            	case WAITING_FOR_PLAYERS :
-            		preGame();
-            		break;
-        		default :
-        			break;
-            	}
-            }
-
-            if (paused) {
-                unpauseGame();
-            }
+        if (paused) {
+            unpauseGame();
         }
     }
     
