@@ -79,13 +79,13 @@ public class WorldListener implements Listener {
     		}
     		//Verify that world is valid
     		if(world != null) {
-    			System.out.println("A sign was broken. Here is the NovsSign map for world "+broken.getWorld());
-    			System.out.println(world.getSigns().toString());
+    			novswar.printDebug("A sign was broken. Here is the NovsSign map for world "+broken.getWorld());
+    			novswar.printDebug(world.getSigns().toString());
     			if(world.getSigns().remove(broken.getLocation().toString()) != null) {
     				event.getPlayer().sendMessage("Removed Info Sign in world "+broken.getWorld());
-    				System.out.println("Found and removed NovsSign with key "+broken.getLocation().toString());
+    				novswar.printDebug("Found and removed NovsSign with key "+broken.getLocation().toString());
     			} else {
-    				System.out.println("Could not find NovsSign with key "+broken.getLocation().toString());
+    				novswar.printDebug("Could not find NovsSign with key "+broken.getLocation().toString());
     			}
     		}
     	}

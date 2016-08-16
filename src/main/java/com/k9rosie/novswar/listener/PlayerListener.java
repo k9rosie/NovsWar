@@ -63,7 +63,7 @@ public class PlayerListener implements Listener {
         bukkitPlayer.teleport(novswar.getNovsWorldCache().getLobbyWorld().getTeamSpawnLoc(defaultTeam));
 
         player.getStats().incrementConnects();
-        System.out.println("Player count: " + novswar.getNovsPlayerCache().getPlayers().values().size());
+        novswar.printDebug("Player count: " + novswar.getNovsPlayerCache().getPlayers().values().size());
     }
 
     /**
@@ -118,7 +118,7 @@ public class PlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDamageByPlayer(EntityDamageByEntityEvent event) {
-        System.out.println("EntityDamageByEntityEvent: " + event.getFinalDamage() + " / " + event.getCause());
+    	novswar.printDebug("EntityDamageByEntityEvent: " + event.getFinalDamage() + " / " + event.getCause());
         Player victimBukkitPlayer;
         Player attackerBukkitPlayer = null;
         boolean arrowDeath = false;
@@ -153,7 +153,7 @@ public class PlayerListener implements Listener {
             if(onPlayerAttackedInSpawn(victim)) {
             	attackerBukkitPlayer.sendMessage("You cannot attack players in spawn.");
             	event.setCancelled(true);
-            	System.out.println("EntityDamageByEntity event cancelled due to being in spawn");
+            	novswar.printDebug("EntityDamageByEntity event cancelled due to being in spawn");
                 return;
             }
             
@@ -176,7 +176,7 @@ public class PlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDamage(EntityDamageEvent event) {
-        System.out.println("EntityDamageEvent: " + event.getFinalDamage() + " / " + event.getCause());
+    	novswar.printDebug("EntityDamageEvent: " + event.getFinalDamage() + " / " + event.getCause());
     	Game game = novswar.getGameHandler().getGame();
     	//If the entity being damaged is a player
         if (event.getEntity() instanceof Player) {
@@ -196,7 +196,7 @@ public class PlayerListener implements Listener {
             //Prevent damage to players in spawn
             if(onPlayerAttackedInSpawn(victim)) {
             	event.setCancelled(true);
-            	System.out.println("EntityDamageEvent event cancelled due to being in spawn");
+            	novswar.printDebug("EntityDamageEvent event cancelled due to being in spawn");
                 return;
             }
             
@@ -271,13 +271,13 @@ public class PlayerListener implements Listener {
         	if(event.getClickedBlock() != null && event.getClickedBlock().getType().equals(Material.WALL_SIGN)) {
         		bukkitPlayer.sendMessage("Ouch");
         		Sign clicked = (Sign) event.getClickedBlock().getState();
-        		System.out.println("Sign content is...");
+        		novswar.printDebug("Sign content is...");
             	String[] lines = clicked.getLines();
             	for(int i = 0; i < lines.length; i++) {
-            		System.out.println(lines[i]);
+            		novswar.printDebug(lines[i]);
             	}
             	if(clicked.getLine(0).toLowerCase().contains("novswar")) {
-            		System.out.println("Sign is a NovsWar sign!");
+            		novswar.printDebug("Sign is a NovsWar sign!");
             		//Check for valid command
             		String command = clicked.getLine(1);
             		if(CommandType.contains(command)) {
@@ -303,7 +303,7 @@ public class PlayerListener implements Listener {
 		Inventory ballotBox = game.getBallotBox().getBallots();
 		//check to make sure click occurs inside voting Inventory screen
 		if(inventory != null && inventory.getName().equals(ballotBox.getName())) {
-			System.out.println("InventoryClickEvent! "+event.toString());
+			novswar.printDebug("InventoryClickEvent! "+event.toString());
 			Player player = (Player) event.getWhoClicked();
 			int slot = event.getSlot();
 			ItemStack clicked = event.getCurrentItem();
@@ -311,7 +311,7 @@ public class PlayerListener implements Listener {
 			if(clicked != null && clicked.getType().equals(game.getBallotBox().getVoteItem()) && player != null){
 				game.getBallotBox().recordResult(slot);
 				player.closeInventory();
-				System.out.println(player.getName()+" voted for slot "+slot+", map "+clicked.getItemMeta().getDisplayName());
+				novswar.printDebug(player.getName()+" voted for slot "+slot+", map "+clicked.getItemMeta().getDisplayName());
 				player.sendMessage("You voted for "+clicked.getItemMeta().getDisplayName());
 				NovsPlayer nplayer = novswar.getNovsPlayerCache().getPlayers().get(player);
 				nplayer.setVoted(true);
@@ -412,7 +412,7 @@ public class PlayerListener implements Listener {
     	NovsPlayer player = novsPlayerCache.getPlayers().get(event.getPlayer());
 
         if (player.isSpectating()) {
-            System.out.println("PlayerGameModeChange! Player is spectating... cancelling");
+        	novswar.printDebug("PlayerGameModeChange! Player is spectating... cancelling");
             event.setCancelled(true);
         }
     }
@@ -454,7 +454,7 @@ public class PlayerListener implements Listener {
                         Bukkit.getServer().getPluginManager().callEvent(invokeEvent);
                         if(invokeEvent.isCancelled()==false) {
                         	region.getPlayersInRegion().add(player);
-                    		System.out.println("Added "+player.getBukkitPlayer().getName()+" to region "+region.getRegionType());
+                        	novswar.printDebug("Added "+player.getBukkitPlayer().getName()+" to region "+region.getRegionType());
                         }
                 	}
                 	
@@ -465,7 +465,7 @@ public class PlayerListener implements Listener {
                         Bukkit.getServer().getPluginManager().callEvent(invokeEvent);
                         if(invokeEvent.isCancelled()==false) {
                         	region.getPlayersInRegion().remove(player);
-                        	System.out.println("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getRegionType());
+                        	novswar.printDebug("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getRegionType());
                         }
                 	}
                 }

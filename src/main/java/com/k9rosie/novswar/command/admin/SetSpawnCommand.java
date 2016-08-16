@@ -65,7 +65,7 @@ public class SetSpawnCommand extends NovsCommand {
             float pitch = location.getPitch();
             float yaw = location.getYaw();
             world.getTeamSpawns().put(team, new Location(location.getWorld(), x, y, z, pitch, yaw));
-            bukkitPlayer.sendMessage("Spawn set for team " + team.getColor()+team.getTeamName());
+            bukkitPlayer.sendMessage(Messages.SPAWN_SET.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName()));
         }
     }
 }

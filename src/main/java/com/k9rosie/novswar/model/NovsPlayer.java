@@ -77,19 +77,18 @@ public class NovsPlayer {
     		attackerMap.remove(killer);
     	}
     	NovsPlayer assistAttacker = null;
-    	System.out.println(bukkitPlayer.getName()+" is evaluating assist attackers...");
     	if(attackerMap.size() > 0) {
     		Iterator<Entry<NovsPlayer, Double>> it = attackerMap.entrySet().iterator();
         	double assistAttackerDamage = 0;
         	while (it.hasNext()) {
         		Map.Entry<NovsPlayer, Double> pair = (Map.Entry<NovsPlayer, Double>)it.next();
-        		System.out.println(pair.getKey().getBukkitPlayer().getName()+" has dealt "+pair.getValue()+" damage.");
+        		//System.out.println(pair.getKey().getBukkitPlayer().getName()+" has dealt "+pair.getValue()+" damage.");
         		if(pair.getValue() > assistAttackerDamage) {
         			assistAttackerDamage = pair.getValue();
         			assistAttacker = pair.getKey();
         		}
         	}
-        	System.out.println("assistAttacker is: "+assistAttacker.getBukkitPlayer().getName());
+        	//System.out.println("assistAttacker is: "+assistAttacker.getBukkitPlayer().getName());
     	}
     	return assistAttacker;
     }
@@ -185,7 +184,7 @@ public class NovsPlayer {
     }
     
     public void setSpectatorTarget(NovsPlayer player) {
-    	System.out.println("Setting "+this.getBukkitPlayer().getName()+"'s target to "+player.getBukkitPlayer().getName());
+    	//System.out.println("Setting "+this.getBukkitPlayer().getName()+"'s target to "+player.getBukkitPlayer().getName());
     	spectatorTarget = player;
     }
     
@@ -206,27 +205,27 @@ public class NovsPlayer {
     }
 
     public NovsPlayer nextSpectatorTarget(Game game) {
-        System.out.println(bukkitPlayer.getName()+" is switching spectator targets");
+        //System.out.println(bukkitPlayer.getName()+" is switching spectator targets");
         ArrayList<NovsPlayer> inGamePlayers = game.getGamePlayers();
         int index = inGamePlayers.indexOf(spectatorTarget);
         int nextIndex = index + 1;
         if(nextIndex == 0) {
-            System.out.println("WARNING: Could not find target in nextSpectatorTarget");
+            System.out.println("WARNING: Could not find target in nextSpectatorTarget for player "+bukkitPlayer.getName());
         }
-        System.out.println("...Old target was "+spectatorTarget.getBukkitPlayer().getName());
+        //System.out.println("...Old target was "+spectatorTarget.getBukkitPlayer().getName());
         //Modify player index
         if(nextIndex >= inGamePlayers.size()) {
             nextIndex = 0;
         }
         NovsPlayer target = inGamePlayers.get(nextIndex);
         if(target != null) {
-            System.out.println("...New target is "+target.getBukkitPlayer().getName());
+            //System.out.println("...New target is "+target.getBukkitPlayer().getName());
             spectatorTarget = target;
             //target.getSpectatorObservers().add(observer);
             bukkitPlayer.setSpectatorTarget(target.getBukkitPlayer());
             bukkitPlayer.sendMessage("Spectating "+target.getBukkitPlayer().getName());
         } else {
-            System.out.println("WARNING: nextSpectatorTarget used a null target");
+            System.out.println("WARNING: nextSpectatorTarget used a null target for player "+bukkitPlayer.getName());
         }
 
         return target;
