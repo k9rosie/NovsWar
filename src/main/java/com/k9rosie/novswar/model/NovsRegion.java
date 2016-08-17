@@ -21,6 +21,7 @@ public class NovsRegion {
     private Location cornerTwo;
     private RegionType regionType;
     private ArrayList<NovsBlock> blocks;
+    private HashSet<BlockState> regionBlockStates;
     private HashSet<NovsPlayer> playersInRegion;
 
     public NovsRegion(NovsWorld world, Location cornerOne, Location cornerTwo, RegionType regionType) {
@@ -29,6 +30,7 @@ public class NovsRegion {
         this.cornerTwo = cornerTwo;
         this.regionType = regionType;
         blocks = new ArrayList<NovsBlock>();
+        regionBlockStates = new HashSet<BlockState>();
         playersInRegion = new HashSet<NovsPlayer>();
     }
 
@@ -63,11 +65,22 @@ public class NovsRegion {
     public ArrayList<NovsBlock> getBlocks() {
         return blocks;
     }
+    
+    public HashSet<BlockState> getBlockStates() {
+    	return regionBlockStates;
+    }
 
     public void setBlocks(ArrayList<NovsBlock> blocks) {
         this.blocks = blocks;
     }
+    
+    public HashSet<NovsPlayer> getPlayersInRegion() {
+        return playersInRegion;
+    }
 
+    /**
+     * NOT USED
+     */
     public ArrayList<NovsBlock> getCuboid() {
         ArrayList<NovsBlock> blocks = new ArrayList<NovsBlock>();
 
@@ -90,11 +103,37 @@ public class NovsRegion {
 
         return blocks;
     }
-
+    /*
     public void saveBlocks() {
         blocks = getCuboid();
+    }*/
+    
+    /**
+     * Saves all block's BlockState inside the region
+     */
+    public void saveBlocks() {
+    	int topBlockX = Math.max(cornerOne.getBlockX(), cornerTwo.getBlockX());
+        int topBlockY = Math.max(cornerOne.getBlockY(), cornerTwo.getBlockY());
+        int topBlockZ = Math.max(cornerOne.getBlockZ(), cornerTwo.getBlockZ());
+        int bottomBlockX = Math.min(cornerOne.getBlockX(), cornerTwo.getBlockX());
+        int bottomBlockY = Math.min(cornerOne.getBlockY(), cornerTwo.getBlockY());
+        int bottomBlockZ = Math.min(cornerOne.getBlockZ(), cornerTwo.getBlockZ());
+
+        for (int x = bottomBlockX; x <= topBlockX; x++) {
+            for (int y = bottomBlockY; y <= topBlockY; y++) {
+                for (int z = bottomBlockZ; z <= topBlockZ; z++) {
+                    Block bukkitBlock = world.getBukkitWorld().getBlockAt(x, y, z);
+                    regionBlockStates.add(bukkitBlock.getState());
+                }
+            }
+        }
     }
 
+    /**
+     * Determines whether a location is inside this region
+     * @param location
+     * @return
+     */
     public boolean inRegion(Location location) {
         int x = location.getBlockX();
         int y = location.getBlockY();
@@ -110,12 +149,30 @@ public class NovsRegion {
         return x >= bottomX && x <= topX && y >= bottomY && y <= topY && z >= bottomZ && z <= topZ;
     }
 
+    /*
     public void resetBlocks() {
         for (NovsBlock block : blocks) {
             block.respawn();
         }
+    }*/
+    
+    /**
+     * Resets all block's BlockState inside the region
+     */
+    public void resetBlocks() {
+    	boolean result;
+    	for(BlockState bs : regionBlockStates) {
+    		result = bs.update();
+    		if(result == false) {
+    			System.out.println("HOLY SHIT a blockstate update failed");
+    		}
+    	}
     }
 
+    /**
+     * Sets all blocks inside this region to a given material
+     * @param material
+     */
     public void setBlocksWithinCuboid(Material material) {
         int topBlockX = Math.max(cornerOne.getBlockX(), cornerTwo.getBlockX());
         int topBlockY = Math.max(cornerOne.getBlockY(), cornerTwo.getBlockY());
@@ -134,10 +191,9 @@ public class NovsRegion {
         }
     }
 
-    public HashSet<NovsPlayer> getPlayersInRegion() {
-        return playersInRegion;
-    }
-
+    /**
+     * NOT USED
+     */
     public NovsBlock createNovsBlock(Block bukkitBlock) {
         BlockState blockState = bukkitBlock.getState();
         NovsBlock block = new NovsBlock(bukkitBlock.getType(), bukkitBlock.getLocation());
