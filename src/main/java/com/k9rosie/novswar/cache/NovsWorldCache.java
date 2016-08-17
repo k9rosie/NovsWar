@@ -150,10 +150,10 @@ public class NovsWorldCache {
             if (location.getBlock().getState() instanceof Sign) {
                 Sign sign = (Sign) location.getBlock().getState();
                 world.getSigns().put(location, sign);
-                System.out.println("Loaded Info Sign at "+location.toString());
+                novswar.printDebug("Loaded Info Sign at "+location.toString());
             } else {
-            	System.out.println("Oops! Tried to load an info sign at "+location.toString()+" but the block wasn't a sign!");
-            	System.out.println("The block is "+location.getBlock().getState().toString()+", "+location.getBlock().getState().getType());
+            	novswar.printDebug("Oops! Tried to load an info sign at "+location.toString()+" but the block wasn't a sign!");
+            	novswar.printDebug("The block is "+location.getBlock().getState().toString()+", "+location.getBlock().getState().getType());
             }
         }
 

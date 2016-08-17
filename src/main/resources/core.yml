@@ -70,3 +70,6 @@ core:
     
     # disable/enable faster health regen when enable_hunger is FALSE
     fast_health_regen: false
+    
+  # Enable debug messages
+  debug: true

@@ -76,12 +76,12 @@ public class NovsWarListener implements Listener {
     		//Assess in-game players
     		if(game.getGameState().equals(GameState.PRE_GAME) || game.getGameState().equals(GameState.DURING_GAME)) {
     			if(inGamePlayerCount == 0) {
-        			System.out.println("There are no in-game players. Starting new round.");
+    				novswar.printDebug("There are no in-game players. Starting new round.");
         			game.nextGame(game.getWorld());
         		} else {
-        			System.out.println("A player left the game");
+        			novswar.printDebug("A player left the game");
             		if(game.checkPlayerCount()==false) { //if there are not enough players
-            			System.out.println("There are not enough players");
+            			novswar.printDebug("There are not enough players");
             			switch (game.getGameState()) {
                     	case PRE_GAME :
                     		game.waitForPlayers();

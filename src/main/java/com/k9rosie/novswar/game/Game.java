@@ -120,7 +120,7 @@ public class Game {
                 }
                 if(nextMap == null) {
                     nextMap = world;
-                    System.out.println("There was a problem getting the next NovsWorld. Using previous world.");
+                    novsWar.printDebug("There was a problem getting the next NovsWorld. Using previous world.");
                 }
                 gameHandler.newGame(nextMap);
                 break;
@@ -364,6 +364,7 @@ public class Game {
     public void killPlayer(NovsPlayer victim, NovsPlayer attacker, boolean isArrowDeath) {
         //Generate death message
         String deathMessage;
+        novsWar.printDebug("Killing player "+victim.getBukkitPlayer().getName()+"...");
         if(attacker != null) {
         	//There is a valid attacker
         	//Evaluate statistics
@@ -396,13 +397,14 @@ public class Game {
         
     	//Evaluate assists
         NovsPlayer assistAttacker = victim.getAssistAttacker(attacker);
+        novsWar.printDebug("...Assist attacker was "+assistAttacker.getBukkitPlayer().getName());
         victim.clearAttackers();
         
         //Schedule death spectating
         scheduleDeath(victim, gamemode.getDeathTime());
         
         //Event calls
-        System.out.println("Calling events");
+        novsWar.printDebug("...Calling events");
         if(attacker != null) { //if there is an attacker, invoke kill event
 	        NovsWarPlayerKillEvent invokeEvent = new NovsWarPlayerKillEvent(attacker, victim, attacker.getTeam(), victim.getTeam(), this);
 	        Bukkit.getPluginManager().callEvent(invokeEvent);
@@ -415,37 +417,36 @@ public class Game {
             NovsWarPlayerAssistEvent invokeEvent_1 = new NovsWarPlayerAssistEvent(assistAttacker, victim, assistAttacker.getTeam(), victim.getTeam(), this);
             Bukkit.getPluginManager().callEvent(invokeEvent_1);
         }
-        System.out.println("Finished killing player");
+        novsWar.printDebug("...Finished killing player");
     }
     
     private void scheduleDeath(NovsPlayer player, int seconds) {
         Player bukkitPlayer = player.getBukkitPlayer();
         player.setDeath(true);
-        System.out.println("Scheduling death, setting max food & health");
+        novsWar.printDebug("...Scheduling death, setting max food & health");
         bukkitPlayer.setHealth(player.getBukkitPlayer().getMaxHealth());
         bukkitPlayer.setFoodLevel(20);
         for(PotionEffect effect : bukkitPlayer.getActivePotionEffects()) {
-            System.out.println("Removing potion effect "+effect.getType().toString());
+        	novsWar.printDebug("...Removing potion effect "+effect.getType().toString());
         	bukkitPlayer.removePotionEffect(effect.getType());
         }
-        System.out.println("Generating effects");
+        novsWar.printDebug("...Generating effects");
         bukkitPlayer.getWorld().playEffect(bukkitPlayer.getLocation(), Effect.SMOKE, 30, 2);
         bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_WITCH_DEATH, 20, 0.5f);
         
-        System.out.print(bukkitPlayer.getName()+" died and has observers: ");
+        novsWar.printDebug("..."+bukkitPlayer.getName()+" died and has observers: ");
         for(NovsPlayer observer : player.getSpectatorObservers()) {
-        	System.out.print(observer.getBukkitPlayer().getName()+" ");
+        	novsWar.printDebug("    "+observer.getBukkitPlayer().getName());
         	NovsPlayer newTarget = observer.nextSpectatorTarget(this);
         	newTarget.getSpectatorObservers().add(observer);
         }
-        System.out.println();
         player.getSpectatorObservers().clear();
-        System.out.println("Setting spectator mode...");
+        novsWar.printDebug("...Setting spectator mode");
         bukkitPlayer.setGameMode(GameMode.SPECTATOR);
         if (bukkitPlayer.getKiller() != null) {
             bukkitPlayer.setSpectatorTarget(bukkitPlayer.getKiller());
         }
-        System.out.println("Starting death timer...");
+        novsWar.printDebug("...Starting death timer");
         DeathTimer timer = new DeathTimer(this, seconds, player);
         timer.startTimer();
         deathTimers.put(player, timer);
@@ -475,30 +476,34 @@ public class Game {
     }
 
     public void joinGame(NovsPlayer player) {
+        
+        boolean canJoinInProgress = novsWar.getNovsConfigCache().getConfig("core").getBoolean("core.game.join_in_progress");
+
+        if (!canJoinInProgress && gameState.equals(GameState.DURING_GAME)) {
+            player.getBukkitPlayer().sendMessage(Messages.CANNOT_JOIN_GAME.toString());
+            return;
+        }
+        assignPlayerTeam(player);
+        //Invoke event
         NovsWarJoinGameEvent event = new NovsWarJoinGameEvent(this, player);
         Bukkit.getServer().getPluginManager().callEvent(event);
+        
+        if (checkPlayerCount()) {
+        	switch (gameState) {
+        	case WAITING_FOR_PLAYERS :
+        		preGame();
+        		break;
+    		default :
+    			break;
+        	}
+        } else {
+        	int minimum = novsWar.getNovsConfigCache().getConfig("core").getInt("core.game.minimum_players");
+        	String message = Messages.NOT_ENOUGH_PLAYERS.toString().replace("%minimum%", Integer.toString(minimum));
+            Bukkit.broadcastMessage(message);
+        }
 
-        if (!event.isCancelled()) {
-            boolean canJoinInProgress = novsWar.getNovsConfigCache().getConfig("core").getBoolean("core.game.join_in_progress");
-
-            if (!canJoinInProgress && gameState.equals(GameState.DURING_GAME)) {
-                player.getBukkitPlayer().sendMessage(Messages.CANNOT_JOIN_GAME.toString());
-                return;
-            }
-            assignPlayerTeam(player);
-            if (checkPlayerCount()) {
-            	switch (gameState) {
-            	case WAITING_FOR_PLAYERS :
-            		preGame();
-            		break;
-        		default :
-        			break;
-            	}
-            }
-
-            if (paused) {
-                unpauseGame();
-            }
+        if (paused) {
+            unpauseGame();
         }
     }
     
@@ -533,13 +538,19 @@ public class Game {
         Bukkit.getServer().getPluginManager().callEvent(event);
     	
         if(event.isCancelled()==false) {
-        	player.setTeam(team);
-            System.out.println(world.getTeamSpawns().get(team));
-            player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(team));
-            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
-            player.getBukkitPlayer().setFoodLevel(20);
-            String message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
-            player.getBukkitPlayer().sendMessage(message);
+        	
+        	if(enabledTeams.contains(team)) {
+        		player.setTeam(team);
+        		novsWar.printDebug("Assigning team "+team.getTeamName()+" location "+world.getTeamSpawns().get(team).toString());
+                player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(team));
+                player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+                player.getBukkitPlayer().setFoodLevel(20);
+                String message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
+                player.getBukkitPlayer().sendMessage(message);
+        	} else {
+        		String message = Messages.CANNOT_JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
+        		player.getBukkitPlayer().sendMessage(message);
+        	}
         }
     }
     

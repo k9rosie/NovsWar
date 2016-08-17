@@ -10,6 +10,7 @@ import com.k9rosie.novswar.event.NovsWarInitializationEvent;
 import com.k9rosie.novswar.game.GameHandler;
 import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.cache.NovsWorldCache;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -136,5 +137,11 @@ public class NovsWar {
 			}
 		}
 		return null;
+	}
+	
+	public void printDebug(String message) {
+		if(novsConfigCache.getConfig("core").getBoolean("core.debug")) {
+        	System.out.println("[DEBUG]: "+message);
+        }
 	}
 }

@@ -75,10 +75,6 @@ public class BallotBox {
 	
 	public void recordResult(int result) {
 		mapWinner[result]++;
-		for (int i : mapWinner) {
-			System.out.print(i+", ");
-		}
-		System.out.println();
 	}
 	
 	public NovsWorld tallyResults() {

@@ -5,30 +5,44 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public enum Messages {
+	//Indented enums are in use. Others are not.
     PLUGIN_TAG("plugin_tag"),
-    INVALID_PARAMETERS("invalid_parameters"),
+    	INVALID_PARAMETERS("invalid_parameters"),
     PLAYER_OFFLINE("player_offline"),
     TEAM_MISSING("team_missing"),
     SIGN_CREATED("sign_created"),
-    NO_PERMISSION("no_permission"),
+    	NO_PERMISSION("no_permission"),
     TEAM_FULL("team_full"),
     ALREADY_ASSIGNED("already_assigned"),
-    JOIN_TEAM("join_team"),
-    DEATH_MESSAGE("death_message"),
-    KILL_MESSAGE("kill_message"),
-    SHOT_MESSAGE("shot_message"),
-    SPAWN_SET("spawn_set"),
-    CANNOT_JOIN_TEAM("cannot_join_team"),
-    CANNOT_JOIN_GAME("cannot_join_game"),
-    COMMAND_NONEXISTENT("command_nonexistent"),
-    PLAYER_DATA_NONEXISTENT("player_data_nonexistent"),
-    NOT_ENOUGH_PLAYERS("not_enough_players");
+    	JOIN_TEAM("join_team"),
+    	DEATH_MESSAGE("death_message"),
+    	KILL_MESSAGE("kill_message"),
+    	SHOT_MESSAGE("shot_message"),
+    	SPAWN_SET("spawn_set"),
+    	CANNOT_JOIN_TEAM("cannot_join_team"),
+    	CANNOT_JOIN_GAME("cannot_join_game"),
+    	COMMAND_NONEXISTENT("command_nonexistent"),
+    	PLAYER_DATA_NONEXISTENT("player_data_nonexistent"),
+    	NOT_ENOUGH_PLAYERS("not_enough_players");
 
     private NovsWar novsWar;
     private FileConfiguration config;
 
     private String path;
-
+    
+    //Valid codes are
+    /*
+     * %player%
+     * %team%
+     * %team_color%
+     * %player_tcolor%
+     * %killer_tcolor%
+     * %killer%
+     * %killed_tcolor%
+     * %killed%
+     * %minimum%
+     */
+    //TODO: Implement dynamic message codes
     Messages(String path) {
         this.path = path;
 
