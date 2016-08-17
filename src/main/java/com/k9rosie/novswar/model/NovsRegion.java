@@ -140,7 +140,7 @@ public class NovsRegion {
 
     public NovsBlock createNovsBlock(Block bukkitBlock) {
         BlockState blockState = bukkitBlock.getState();
-        NovsBlock block = new NovsBlock(bukkitBlock.getLocation(), bukkitBlock.getType(), blockState.getData());
+        NovsBlock block = new NovsBlock(blockState);
 
         if (blockState instanceof InventoryHolder) {
             System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type InventoryHolder");

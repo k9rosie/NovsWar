@@ -14,13 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.ArrayList;
 
 public class NovsBlock {
-    private Location location;
-    private Material material;
-    private MaterialData materialData;
-
-    // Directionable
-    private BlockFace facing;
-
+    private BlockState blockState;
 
     // InventoryHolder
     private ItemStack[] inventoryContents;
@@ -70,20 +64,16 @@ public class NovsBlock {
     // FlowerPot
     private MaterialData flowerPotContents;
 
-    public NovsBlock(Location location, Material material, MaterialData materialData) {
-        this.location = location;
-        this.material = material;
-        this.materialData = materialData;
+    public NovsBlock(BlockState blockState) {
+        this.blockState = blockState;
     }
 
     public void respawn() {
-        location.getBlock().setType(material, false);
+        blockState.update(true, false);
          Bukkit.getScheduler().scheduleSyncDelayedTask(NovsWar.getInstance().getPlugin(), new Runnable() {
              @Override
              public void run() {
-                 location.getBlock().getState().setData(materialData);
-                 BlockState blockState = location.getBlock().getState();
-
+                 Location location = blockState.getLocation();
                  if (blockState instanceof InventoryHolder) {
                      System.out.println("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type InventoryHolder. Respawning...");
                      InventoryHolder inventoryHolder = (InventoryHolder) blockState;
@@ -148,7 +138,9 @@ public class NovsBlock {
                  if (blockState instanceof Skull) {
                      System.out.println("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type Skull. Respawning...");
                      Skull skull = (Skull) blockState;
-                     skull.setOwningPlayer(skullOwningPlayer);
+                     if (skullOwningPlayer != null) {
+                         skull.setOwningPlayer(skullOwningPlayer);
+                     }
                      skull.setRotation(skullRotation);
                      skull.setSkullType(skullSkullType);
                  }
@@ -176,28 +168,12 @@ public class NovsBlock {
          });
     }
 
-    public Location getLocation() {
-        return location;
+    public BlockState getBlockState() {
+        return blockState;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public Material getMaterial() {
-        return material;
-    }
-
-    public void setMaterial(Material material) {
-        this.material = material;
-    }
-
-    public MaterialData getMaterialData() {
-        return materialData;
-    }
-
-    public void setMaterialData(MaterialData materialData) {
-        this.materialData = materialData;
+    public void setBlockState(BlockState blockState) {
+        this.blockState = blockState;
     }
 
     public String[] getSignText() {
