@@ -15,7 +15,9 @@ import java.util.ArrayList;
 
 public class NovsBlock {
     private Location location;
+    private BlockState blockState;
     private Material material;
+    private MaterialData materialData;
 
     // Directionable
     private BlockFace facing;
@@ -69,17 +71,20 @@ public class NovsBlock {
     // FlowerPot
     private MaterialData flowerPotContents;
 
-    public NovsBlock(Material material, Location location) {
-        this.material = material;
+    public NovsBlock(Location location, BlockState blockState, Material material, MaterialData materialData) {
         this.location = location;
+        this.blockState = blockState;
+        this.material = material;
+        this.materialData = materialData;
     }
 
     public void respawn() {
         location.getBlock().setType(material);
         Bukkit.getScheduler().scheduleSyncDelayedTask(NovsWar.getInstance().getPlugin(), new Runnable() {
+
             @Override
             public void run() {
-                BlockState blockState = location.getBlock().getState();
+                blockState.setData(materialData);
                 if (blockState instanceof InventoryHolder) {
                     System.out.println("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type InventoryHolder. Respawning...");
                     InventoryHolder inventoryHolder = (InventoryHolder) blockState;
@@ -168,6 +173,8 @@ public class NovsBlock {
                     FlowerPot flowerPot = (FlowerPot) blockState;
                     flowerPot.setContents(flowerPotContents);
                 }
+
+                blockState.update(true);
             }
         });
     }
