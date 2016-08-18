@@ -162,7 +162,7 @@ public class NovsRegion {
     public void resetBlocks() {
     	boolean result;
     	for(BlockState bs : regionBlockStates) {
-    		result = bs.update();
+    		result = bs.update(true);
     		if(result == false) {
     			System.out.println("HOLY SHIT a blockstate update failed");
     		}
