@@ -72,9 +72,6 @@ public class NovsRegion {
         return playersInRegion;
     }
 
-    /**
-     * NOT USED
-     */
     public ArrayList<NovsBlock> getCuboid() {
         ArrayList<NovsBlock> blocks = new ArrayList<NovsBlock>();
 
@@ -151,9 +148,7 @@ public class NovsRegion {
         }
     }
 
-    /**
-     * NOT USED
-     */
+
     public NovsBlock createNovsBlock(Block bukkitBlock) {
         BlockState blockState = bukkitBlock.getState();
         NovsBlock block = new NovsBlock(bukkitBlock.getLocation(), bukkitBlock.getState(), bukkitBlock.getType(), bukkitBlock.getState().getData());

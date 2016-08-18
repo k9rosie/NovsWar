@@ -402,7 +402,7 @@ public class Game {
         victim.clearAttackers();
         
         //Schedule death spectating
-        scheduleDeath(victim, gamemode.getDeathTime());
+        scheduleDeath(victim, attacker, gamemode.getDeathTime());
         
         //Event calls
         novsWar.printDebug("...Calling events");
@@ -422,7 +422,7 @@ public class Game {
         novsWar.printDebug("...Finished killing player");
     }
     
-    private void scheduleDeath(NovsPlayer player, int seconds) {
+    private void scheduleDeath(NovsPlayer player, NovsPlayer spectatorTarget, int seconds) {
         Player bukkitPlayer = player.getBukkitPlayer();
         player.setDeath(true);
         novsWar.printDebug("...Scheduling death, setting max food & health");
@@ -434,20 +434,34 @@ public class Game {
         }
         novsWar.printDebug("...Generating effects");
         bukkitPlayer.getWorld().playEffect(bukkitPlayer.getLocation(), Effect.SMOKE, 30, 2);
-        bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_WITCH_DEATH, 20, 0.5f);
+        bukkitPlayer.getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_WITCH_DEATH, 5, 0.5f);
         
         novsWar.printDebug("..."+bukkitPlayer.getName()+" died and has observers: ");
+        //Set each observer for this player to a new target
         for(NovsPlayer observer : player.getSpectatorObservers()) {
         	novsWar.printDebug("    "+observer.getBukkitPlayer().getName());
-        	NovsPlayer newTarget = observer.nextSpectatorTarget(this);
-        	newTarget.getSpectatorObservers().add(observer);
+        	NovsPlayer newTarget = observer.nextSpectatorTarget(this); //sets the observer's target to another player
+        	if(newTarget != null) {
+        		newTarget.getSpectatorObservers().add(observer);
+        	}
         }
+        //Clear this player's observer list
         player.getSpectatorObservers().clear();
         novsWar.printDebug("...Setting spectator mode");
         bukkitPlayer.setGameMode(GameMode.SPECTATOR);
-        if (bukkitPlayer.getKiller() != null) {
-            bukkitPlayer.setSpectatorTarget(bukkitPlayer.getKiller());
+        
+        //If there is an attacker, set spectator target.
+        if (spectatorTarget != null) {
+        	player.setSpectatorTarget(spectatorTarget);
+        	spectatorTarget.getSpectatorObservers().add(player);
+        } else {
+        	//Check if there are available spectator targets
+        	NovsPlayer noAttackerTarget = player.nextSpectatorTarget(this);
+        	if(noAttackerTarget != null) {
+        		noAttackerTarget.getSpectatorObservers().add(player);
+        	}
         }
+        
         novsWar.printDebug("...Starting death timer");
         DeathTimer timer = new DeathTimer(this, seconds, player);
         timer.startTimer();

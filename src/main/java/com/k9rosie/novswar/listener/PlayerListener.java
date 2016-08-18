@@ -218,8 +218,8 @@ public class PlayerListener implements Listener {
         	double damage = event.getFinalDamage();
         	victim.getStats().incrementDamageTaken(damage);
 
-            // if damage is fatal
-            if (bukkitPlayer.getHealth() - damage <= 0) {
+            // if damage is fatal or fell into void
+            if ((bukkitPlayer.getHealth() - damage <= 0) || event.getCause().equals(EntityDamageEvent.DamageCause.VOID)) {
                 event.setCancelled(true);
                 game.killPlayer(victim, killer, false);
             }
@@ -394,9 +394,14 @@ public class PlayerListener implements Listener {
         	if(player.isShiftToggled()) {
         		//Switch spectator targets
         		player.setShiftToggled(false);
+        		//Remove this player from their current target's observer list
         		player.getSpectatorTarget().getSpectatorObservers().remove(player);
+        		//Set this player's next spectator target, if available
         		NovsPlayer newTarget = player.nextSpectatorTarget(novswar.getGameHandler().getGame());
-        		newTarget.getSpectatorObservers().add(player);
+        		if(newTarget != null) {
+        			//If there is a new target, add this player to their observer list
+        			newTarget.getSpectatorObservers().add(player);
+        		}
         	} else {
         		player.setShiftToggled(true);
         	}
