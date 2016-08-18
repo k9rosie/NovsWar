@@ -2,13 +2,12 @@ package com.k9rosie.novswar.command.admin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
 import com.k9rosie.novswar.game.Game;
-import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.util.Messages;
 
 public class NextGameCommand extends NovsCommand{
 	
@@ -20,15 +19,17 @@ public class NextGameCommand extends NovsCommand{
     }
 
     public void execute() {
-    	NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
-    	String mapName = getArgs()[2];
+    	if (getArgs().length > 3) {
+            getSender().sendMessage(Messages.INVALID_PARAMETERS.toString());
+            return;
+        }
     	
-    	if(mapName == null) { //There is no specified map
+    	if(getArgs().length < 3) {
     		Bukkit.broadcastMessage("Forcing next game...");
         	game.nextGame(game.getBallotBox().nextWorld(game.getWorld()));
-        	
-    	} else { //There is a specific map to start
-    		NovsWorld world = getNovsWar().getNovsWorldCache().getWorldFromName(mapName);
+    		
+    	} else {
+    		NovsWorld world = getNovsWar().getNovsWorldCache().getWorldFromName(getArgs()[2]);
     		
         	if(world == null) {
         		String message = "";
@@ -36,7 +37,7 @@ public class NextGameCommand extends NovsCommand{
         		for(NovsWorld option : getNovsWar().getNovsWorldCache().getWorlds().values()) {
         			message += (option.getBukkitWorld().getName() + " ");
         		}
-        		player.getBukkitPlayer().sendMessage("Invalid world name. Options are "+message);
+        		getSender().sendMessage("Invalid world name. Options are "+message);
         	}
         	Bukkit.broadcastMessage("Forcing next game to "+world.getBukkitWorld().getName());
         	game.nextGame(world);
