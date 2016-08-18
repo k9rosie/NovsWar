@@ -59,6 +59,7 @@ public class Game {
     }
 
     public void initialize() {
+        world.saveRegionBlocks();
     	//Create default team
         NovsTeam defaultTeam = novsWar.getNovsTeamCache().getDefaultTeam();
         Team defaultScoreboardTeam = scoreboard.createScoreboardTeam(defaultTeam);
@@ -397,7 +398,7 @@ public class Game {
         
     	//Evaluate assists
         NovsPlayer assistAttacker = victim.getAssistAttacker(attacker);
-        novsWar.printDebug("...Assist attacker was "+assistAttacker.getBukkitPlayer().getName());
+
         victim.clearAttackers();
         
         //Schedule death spectating
@@ -414,6 +415,7 @@ public class Game {
 	        Bukkit.getPluginManager().callEvent(invokeEvent);
         }
         if(assistAttacker != null) {
+            novsWar.printDebug("...Assist attacker was "+assistAttacker.getBukkitPlayer().getName());
             NovsWarPlayerAssistEvent invokeEvent_1 = new NovsWarPlayerAssistEvent(assistAttacker, victim, assistAttacker.getTeam(), victim.getTeam(), this);
             Bukkit.getPluginManager().callEvent(invokeEvent_1);
         }
@@ -541,7 +543,7 @@ public class Game {
         	
         	if(enabledTeams.contains(team)) {
         		player.setTeam(team);
-        		novsWar.printDebug("Assigning team "+team.getTeamName()+" location "+world.getTeamSpawns().get(team).toString());
+        		//novsWar.printDebug("Assigning team "+team.getTeamName()+" location "+world.getTeamSpawns().get(team).toString());
                 player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(team));
                 player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
                 player.getBukkitPlayer().setFoodLevel(20);

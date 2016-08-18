@@ -173,7 +173,6 @@ public class NovsWorldCache {
                     new Location(world.getBukkitWorld(), cornerTwoX, cornerTwoY, cornerTwoZ),
                     type);
 
-            region.saveBlocks(); //TODO: possibly move this?
             world.getRegions().put(regionName, region);
         }
     }

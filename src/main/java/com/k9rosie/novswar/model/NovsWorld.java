@@ -42,6 +42,12 @@ public class NovsWorld {
     public HashMap<NovsTeam, Location> getTeamSpawns() {
         return teamSpawns;
     }
+
+    public void saveRegionBlocks() {
+        for (NovsRegion region : regions.values()) {
+            region.saveBlocks();
+        }
+    }
     
     public Location getTeamSpawnLoc(NovsTeam team) {
     	Location loc;

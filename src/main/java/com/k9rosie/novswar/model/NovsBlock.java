@@ -80,11 +80,15 @@ public class NovsBlock {
 
     public void respawn() {
         location.getBlock().setType(material);
+        blockState.setData(materialData);
+        boolean update = blockState.update();
+        if (!update) {
+            System.out.println("block at "+location.getX()+", "+location.getY()+", "+location.getZ()+" update failed");
+        }
         Bukkit.getScheduler().scheduleSyncDelayedTask(NovsWar.getInstance().getPlugin(), new Runnable() {
-
             @Override
             public void run() {
-                blockState.setData(materialData);
+                BlockState blockState = location.getBlock().getState();
                 if (blockState instanceof InventoryHolder) {
                     System.out.println("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type InventoryHolder. Respawning...");
                     InventoryHolder inventoryHolder = (InventoryHolder) blockState;
@@ -173,8 +177,6 @@ public class NovsBlock {
                     FlowerPot flowerPot = (FlowerPot) blockState;
                     flowerPot.setContents(flowerPotContents);
                 }
-
-                blockState.update(true);
             }
         });
     }
