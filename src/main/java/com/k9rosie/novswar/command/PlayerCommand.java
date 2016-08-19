@@ -4,7 +4,9 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsStats;
 import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.util.ChatFormat;
 import com.k9rosie.novswar.util.Messages;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -24,22 +26,22 @@ public class PlayerCommand extends NovsCommand {
     }
 
     public void execute() {
+    	NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
         if (getArgs().length == 1) {
-            NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
             printStats(player);
         } else if (getArgs().length == 2) {
             String playerName = getArgs()[1];
             if (NovsWar.isOnline(playerName)) {
-                NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayerFromName(playerName);
-                printStats(player);
+                NovsPlayer target = getNovsWar().getNovsPlayerCache().getPlayerFromName(playerName);
+                printStats(target);
             } else {
                 UUID uuid = NovsWar.getUUID(playerName);
                 if (uuid == null) {
-                    getSender().sendMessage(Messages.PLAYER_DATA_NONEXISTENT.toString());
+                	ChatFormat.sendNotice(player, Messages.PLAYER_DATA_NONEXISTENT.toString());
                     return;
                 }
                 if (!getNovsWar().getDatabase().exists("stats", "player_uuid", uuid.toString())) {
-                    getSender().sendMessage(Messages.PLAYER_DATA_NONEXISTENT.toString());
+                	ChatFormat.sendNotice(player, Messages.PLAYER_DATA_NONEXISTENT.toString());
                     return;
                 } else {
                     OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
@@ -47,7 +49,7 @@ public class PlayerCommand extends NovsCommand {
                 }
             }
         } else {
-            getSender().sendMessage(Messages.INVALID_PARAMETERS.toString());
+        	ChatFormat.sendNotice(player, Messages.INVALID_PARAMETERS.toString());
         }
     }
 

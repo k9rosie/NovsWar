@@ -138,10 +138,10 @@ public class NovsWar {
 		}
 		return null;
 	}
-	
+	/*//Replaced by ChatFormat.printDebug()
 	public void printDebug(String message) {
 		if(novsConfigCache.getConfig("core").getBoolean("core.debug")) {
         	System.out.println("[DEBUG]: "+message);
         }
-	}
+	}*/
 }

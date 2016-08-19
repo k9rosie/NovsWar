@@ -13,6 +13,7 @@ import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsScore;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.util.ChatFormat;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Sign;
@@ -76,12 +77,12 @@ public class NovsWarListener implements Listener {
     		//Assess in-game players
     		if(game.getGameState().equals(GameState.PRE_GAME) || game.getGameState().equals(GameState.DURING_GAME)) {
     			if(inGamePlayerCount == 0) {
-    				novswar.printDebug("There are no in-game players. Starting new round.");
+    				ChatFormat.printDebug("There are no in-game players. Starting new round.");
         			game.nextGame(game.getWorld());
         		} else {
-        			novswar.printDebug("A player left the game");
+        			ChatFormat.printDebug("A player left the game");
             		if(game.checkPlayerCount()==false) { //if there are not enough players
-            			novswar.printDebug("There are not enough players");
+            			ChatFormat.printDebug("There are not enough players");
             			switch (game.getGameState()) {
                     	case PRE_GAME :
                     		game.waitForPlayers();

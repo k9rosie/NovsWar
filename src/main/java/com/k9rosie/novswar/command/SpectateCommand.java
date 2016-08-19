@@ -12,6 +12,7 @@ import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.util.ChatFormat;
 
 public class SpectateCommand extends NovsCommand{
 	private Game game;
@@ -37,21 +38,19 @@ public class SpectateCommand extends NovsCommand{
             	if(game.getGameState().equals(GameState.DURING_GAME) || game.getGameState().equals(GameState.PRE_GAME)) {
             		ArrayList<NovsPlayer> inGamePlayers = getNovsWar().getGameHandler().getGame().getGamePlayers();
             		NovsPlayer target = inGamePlayers.get(0);
-            		player.setSpectatorTarget(target);
-            		target.getSpectatorObservers().add(player);
             		player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
             		player.setSpectating(true); //must occur AFTER gamemode change
             		player.getBukkitPlayer().teleport(target.getBukkitPlayer().getLocation());
-            		player.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
-            		player.getBukkitPlayer().sendMessage("Spectate next player with LSHIFT. F5 to change view.");
-            		player.getBukkitPlayer().sendMessage("Spectating "+target.getBukkitPlayer().getName());
-            		Bukkit.broadcastMessage(player.getBukkitPlayer().getName()+" is spectating the round!");
+            		player.setSpectatorTarget(target);
+            		target.getSpectatorObservers().add(player);
+            		ChatFormat.sendNotice(player, "Spectate next player with LSHIFT. F5 to change view.");
+            		ChatFormat.sendBroadcast(player.getBukkitPlayer().getName()+" is spectating the round!");
 
             	} else {
-            		player.getBukkitPlayer().sendMessage("You can only spectate during the round");
+            		ChatFormat.sendNotice(player, "You can only spectate during the round");
             	}
         	} else {
-        		player.getBukkitPlayer().sendMessage("You can only spectate while in the Lobby");
+        		ChatFormat.sendNotice(player, "You can only spectate while in the Lobby");
         	}
         }
     }

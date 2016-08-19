@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.model.NovsPlayer;
+import com.k9rosie.novswar.util.ChatFormat;
 
 public class ChatCommand extends NovsCommand{
 	
@@ -16,10 +17,10 @@ public class ChatCommand extends NovsCommand{
     public void execute() {
     	NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
     	if(player.isGlobalChat()) {
-    		player.getBukkitPlayer().sendMessage("Chat mode: Team");
+    		ChatFormat.sendNotice(player, "Chat mode: Team");
     		player.setGlobalChat(false);
     	} else {
-    		player.getBukkitPlayer().sendMessage("Chat mode: Global");
+    		ChatFormat.sendNotice(player, "Chat mode: Global");
     		player.setGlobalChat(true);
     	}
     }

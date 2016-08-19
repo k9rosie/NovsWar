@@ -15,6 +15,7 @@ public class HelpCommand extends NovsCommand {
     public void execute() {
         NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
         String message = "";
+        player.getBukkitPlayer().sendMessage("Help: Command, Arguments, Description, Alias");
         for(CommandType cmd : CommandType.values()) {
         	String aliasmsg = "";
         	if(cmd.alias().equals("")==false) {

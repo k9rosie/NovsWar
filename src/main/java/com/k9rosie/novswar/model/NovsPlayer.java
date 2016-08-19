@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.k9rosie.novswar.game.Game;
+import com.k9rosie.novswar.util.ChatFormat;
 import com.k9rosie.novswar.util.RegionType;
 
 import org.bukkit.Location;
@@ -23,8 +24,8 @@ public class NovsPlayer {
     private NovsTeam team;
     private HashMap<NovsPlayer, Double> attackerMap;
     private boolean deathMessages;
-    private boolean isDead;
-    private boolean isSpectating;
+    private boolean isDead; //Whether a player has died and is spectating via death cam
+    private boolean isSpectating; //Whether a player in the lobby entered spectator mode
     private boolean isSettingRegion;
     private boolean hasVoted;
     private boolean isShiftToggled;
@@ -56,8 +57,7 @@ public class NovsPlayer {
     	} else {
     		attackerMap.put(player, damage);
     	}
-    	//DEBUG
-    	System.out.println(player.getBukkitPlayer().getName()+" attacked "+bukkitPlayer.getName()+" with "+attackerMap.get(player)+" cumulitive damage.");
+    	ChatFormat.printDebug(player.getBukkitPlayer().getName()+" attacked "+bukkitPlayer.getName()+" with "+attackerMap.get(player)+" cumulitive damage.");
     }
     
     public void clearAttackers() {
@@ -184,8 +184,10 @@ public class NovsPlayer {
     }
     
     public void setSpectatorTarget(NovsPlayer player) {
-    	//System.out.println("Setting "+this.getBukkitPlayer().getName()+"'s target to "+player.getBukkitPlayer().getName());
+    	ChatFormat.printDebug("Setting "+this.getBukkitPlayer().getName()+"'s target to "+player.getBukkitPlayer().getName());
     	spectatorTarget = player;
+    	bukkitPlayer.setSpectatorTarget(player.getBukkitPlayer());
+    	ChatFormat.sendNotice(this, "Spectating "+player.getBukkitPlayer().getName());
     }
     
     public ArrayList<NovsPlayer> getSpectatorObservers() {
@@ -204,28 +206,45 @@ public class NovsPlayer {
     	isShiftToggled = toggle;
     }
 
+    /**
+     * Iterates through the list of in-game players for the next spectator target. If
+     * there is no available target, TPs player to their spawn.
+     * @param game
+     * @return The spectator target
+     */
     public NovsPlayer nextSpectatorTarget(Game game) {
-        //System.out.println(bukkitPlayer.getName()+" is switching spectator targets");
+    	ChatFormat.printDebug(bukkitPlayer.getName()+" is switching spectator targets");
         ArrayList<NovsPlayer> inGamePlayers = game.getGamePlayers();
+        inGamePlayers.remove(this);	//Remove this player from the options of spectator targets
         int index = inGamePlayers.indexOf(spectatorTarget);
-        int nextIndex = index + 1;
-        if(nextIndex == 0) {
-            System.out.println("WARNING: Could not find target in nextSpectatorTarget for player "+bukkitPlayer.getName());
+        int nextIndex = index + 1; //If spectatorTarget is null, nextIndex will be 0
+        
+        NovsPlayer target = null;
+        boolean foundValidTarget = false;
+        int watchdog = 0;
+        while(foundValidTarget == false) {
+        	if(nextIndex >= inGamePlayers.size()) {
+                nextIndex = 0;
+            }
+        	NovsPlayer potentialTarget = inGamePlayers.get(nextIndex);
+        	if(potentialTarget.isDead()==false) {
+        		target = potentialTarget;
+        		foundValidTarget = true;
+        	}
+        	if(watchdog >= inGamePlayers.size()){
+        		ChatFormat.printDebug("Could not find valid spectator target");
+        		break;
+        	}
+        	watchdog++;
+        	nextIndex++;
         }
-        //System.out.println("...Old target was "+spectatorTarget.getBukkitPlayer().getName());
-        //Modify player index
-        if(nextIndex >= inGamePlayers.size()) {
-            nextIndex = 0;
-        }
-        NovsPlayer target = inGamePlayers.get(nextIndex);
-        if(target != null) {
-            //System.out.println("...New target is "+target.getBukkitPlayer().getName());
-            spectatorTarget = target;
-            //target.getSpectatorObservers().add(observer);
-            bukkitPlayer.setSpectatorTarget(target.getBukkitPlayer());
-            bukkitPlayer.sendMessage("Spectating "+target.getBukkitPlayer().getName());
+        
+        if(foundValidTarget) {
+        	ChatFormat.printDebug("...New target is "+target.getBukkitPlayer().getName());
+        	this.setSpectatorTarget(target);
         } else {
-            System.out.println("WARNING: nextSpectatorTarget used a null target for player "+bukkitPlayer.getName());
+        	bukkitPlayer.teleport(game.getWorld().getTeamSpawnLoc(team));
+        	ChatFormat.printDebug("WARNING: nextSpectatorTarget could not find a valid target for player "+bukkitPlayer.getName());
         }
 
         return target;

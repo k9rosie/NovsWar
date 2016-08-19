@@ -4,6 +4,8 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.event.NovsWarNewGameEvent;
 import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.util.ChatFormat;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
@@ -58,9 +60,9 @@ public class GameHandler {
     }
 
     public void updateInfoSigns() {
-    	novswar.printDebug("Updating info signs...");
+    	ChatFormat.printDebug("Updating info signs...");
         for (Sign sign : novswar.getNovsWorldCache().getActiveSigns()) {
-        	novswar.printDebug(sign.getLocation().toString());
+        	ChatFormat.printDebug(sign.getLocation().toString());
             sign.setLine(1, game.getWorld().getName());
             sign.setLine(2, game.getGamemode().getGamemodeName());
             sign.setLine(3, game.getGamePlayers().size() + " players");
