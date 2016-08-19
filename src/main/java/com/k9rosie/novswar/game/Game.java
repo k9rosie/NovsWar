@@ -435,10 +435,12 @@ public class Game {
         player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
         //If there is an attacker, set spectator target.
         if (spectatorTarget != null) {
+        	ChatFormat.printDebug("...There is an attacker");
         	player.setSpectatorTarget(spectatorTarget);
         	spectatorTarget.getSpectatorObservers().add(player);
         } else {
         	//Check if there are available spectator targets
+        	ChatFormat.printDebug("...There is NO attacker");
         	NovsPlayer noAttackerTarget = player.nextSpectatorTarget(this);
         	if(noAttackerTarget != null) {
         		noAttackerTarget.getSpectatorObservers().add(player);
@@ -464,6 +466,10 @@ public class Game {
         if (player.isDead()) {
             NovsTeam team = player.getTeam();
             player.setDeath(false);
+            //Remove this player from their target's observer list
+            if(player.getSpectatorTarget().getSpectatorObservers().remove(player)==false) {
+            	ChatFormat.printDebug("Failed to remove "+player.getBukkitPlayer().getName()+" from observer list");
+            }
             player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(team));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
             //Invoke Event
