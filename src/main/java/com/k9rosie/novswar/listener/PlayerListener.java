@@ -341,7 +341,6 @@ public class PlayerListener implements Listener {
             event.getTo().setDirection(event.getFrom().getDirection());
             return;
         }
-        onPlayerEnterLeaveRegion(event);
         
         for (NovsRegion region : currentGameWorld.getRegions().values()) {
         	
@@ -363,12 +362,14 @@ public class PlayerListener implements Listener {
                 	NovsPlayer attacker = player.getAssistAttacker(null);
                 	//if attacker is null, there are no damagers
                 	game.killPlayer(player, attacker, false);
+                	event.setCancelled(true);
                 	break;
                 default :
                 	break;
                 } 
             } 
         }
+        onPlayerEnterLeaveRegion(event);
     }
     
     /**

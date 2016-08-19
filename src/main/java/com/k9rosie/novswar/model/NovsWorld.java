@@ -54,7 +54,7 @@ public class NovsWorld {
      */
     public void saveBattlefieldBlocks() {
     	for (NovsRegion region : regions.values()) {
-    		if(region.getRegionType().equals(RegionType.BATTLEFIELD)) {
+    		if(region.getRegionType().equals(RegionType.BATTLEFIELD) || region.getRegionType().equals(RegionType.INTERMISSION_GATE)) {
     			region.saveBlocks();
     		}
     	}

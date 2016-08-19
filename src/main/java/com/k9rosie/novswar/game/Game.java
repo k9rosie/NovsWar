@@ -91,7 +91,7 @@ public class Game {
         }
 
         scoreboard.initialize();
-        
+        world.respawnBattlefields();
         NovsWarNewGameEvent event = new NovsWarNewGameEvent(this);
         Bukkit.getPluginManager().callEvent(event);
 
@@ -135,7 +135,6 @@ public class Game {
 
     public void preGame() {
         gameState = GameState.PRE_GAME;
-        world.respawnBattlefields();
         int gameTime = novsWar.getNovsConfigCache().getConfig("core").getInt("core.game.pre_game_timer");
         gameTimer.stopTimer();
         gameTimer.setTime(gameTime);
