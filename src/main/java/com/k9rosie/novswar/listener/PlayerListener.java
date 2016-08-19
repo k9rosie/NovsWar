@@ -83,8 +83,7 @@ public class PlayerListener implements Listener {
             if(player.isGlobalChat()) {
                 if (player.isDead()) {
                     event.setFormat("§7*DEAD* " + team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
-                }
-                if (player.isSpectating()) {
+                } else if (player.isSpectating()) {
                     event.setFormat("§7*SPECTATING* " + team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
                 } else {
                     event.setFormat(team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
