@@ -244,8 +244,10 @@ public class NovsPlayer {
                 ChatUtil.printDebug("...New target is "+target.getBukkitPlayer().getName());
 	        	this.setSpectatorTarget(target);
 	        } else {
-	        	bukkitPlayer.teleport(game.getWorld().getTeamSpawnLoc(team));
-                ChatUtil.printDebug("WARNING: nextSpectatorTarget could not find a valid target for player "+bukkitPlayer.getName());
+	        	if(isSpectating == false) {
+	        		bukkitPlayer.teleport(game.getWorld().getTeamSpawnLoc(team));
+	        		ChatUtil.printDebug("WARNING: nextSpectatorTarget could not find a valid target for player "+bukkitPlayer.getName());
+	        	}
 	        }
     	} else {
             ChatUtil.printDebug("WARNING: Attempted to call nextSpectatorTarget on an alive/non-spectating player");

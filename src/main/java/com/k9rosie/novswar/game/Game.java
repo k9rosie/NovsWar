@@ -494,7 +494,7 @@ public class Game {
         
         boolean canJoinInProgress = novsWar.getNovsConfigCache().getConfig("core").getBoolean("core.game.join_in_progress");
 
-        if (!canJoinInProgress && gameState.equals(GameState.DURING_GAME)) {
+        if (!canJoinInProgress && (gameState.equals(GameState.DURING_GAME) || gameState.equals(GameState.POST_GAME))) {
             ChatUtil.sendNotice(player, Messages.CANNOT_JOIN_GAME.toString());
             return;
         }
