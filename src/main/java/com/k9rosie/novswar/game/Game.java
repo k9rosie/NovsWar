@@ -185,12 +185,24 @@ public class Game {
         if (!event.isCancelled()) {
             gameState = GameState.POST_GAME;
             //Respawns all dead players and tp's alive players to their team spawns
-            for(NovsPlayer player : getGamePlayers()) {
-            	if(player.isDead()) {
-            		respawn(player);
-            	} else {
-            		player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(player.getTeam()));
-            	}
+            for(NovsPlayer player : novsWar.getNovsPlayerCache().getPlayers().values()) {
+            	//Check if the player is in-game (not on default lobby team)
+            	NovsTeam defaultTeam = novsWar.getNovsTeamCache().getDefaultTeam();
+            	if(player.getTeam().equals(defaultTeam)==false) {
+            		if(player.isDead()) {
+                		respawn(player);
+                	} else {
+                		player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(player.getTeam()));
+                	}
+                } else {
+                	//Player is on default team
+                	if(player.isSpectating()) {
+                    	//Return the player to the lobby
+                    	player.setSpectating(false); //must occur BEFORE gamemode change
+                    	player.getBukkitPlayer().teleport(novsWar.getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+                        player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
+                    }
+                }
             }
             //Determine winning teams
             ArrayList<NovsTeam> winners = winningTeams();
