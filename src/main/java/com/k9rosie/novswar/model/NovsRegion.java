@@ -1,6 +1,8 @@
 package com.k9rosie.novswar.model;
 
+import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.util.RegionType;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;

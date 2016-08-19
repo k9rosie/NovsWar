@@ -59,7 +59,6 @@ public class Game {
     }
 
     public void initialize() {
-        world.saveRegionBlocks();
     	//Create default team
         NovsTeam defaultTeam = novsWar.getNovsTeamCache().getDefaultTeam();
         Team defaultScoreboardTeam = scoreboard.createScoreboardTeam(defaultTeam);
