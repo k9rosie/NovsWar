@@ -81,7 +81,14 @@ public class PlayerListener implements Listener {
             NovsTeam team = player.getTeam();
             
             if(player.isGlobalChat()) {
-            	event.setFormat(team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
+                if (player.isDead()) {
+                    event.setFormat("§7*DEAD* " + team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
+                }
+                if (player.isSpectating()) {
+                    event.setFormat("§7*SPECTATING* " + team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
+                } else {
+                    event.setFormat(team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
+                }
             } else {
             	//Team chat only
             	event.setCancelled(true);

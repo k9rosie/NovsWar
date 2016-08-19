@@ -213,7 +213,7 @@ public class NovsPlayer {
     public NovsPlayer nextSpectatorTarget(Game game) {
     	NovsPlayer target = null;
     	if(isDead || isSpectating) {
-	    	ChatFormat.printDebug(bukkitPlayer.getName()+" is switching spectator targets");
+	    	ChatUtil.printDebug(bukkitPlayer.getName()+" is switching spectator targets");
 	        ArrayList<NovsPlayer> inGamePlayers = game.getGamePlayers();
 	        inGamePlayers.remove(this);	//Remove this player from the options of spectator targets
 	        int index = inGamePlayers.indexOf(spectatorTarget);
@@ -231,7 +231,7 @@ public class NovsPlayer {
 	        		foundValidTarget = true;
 	        	}
 	        	if(watchdog >= inGamePlayers.size()){
-	        		ChatFormat.printDebug("Could not find valid spectator target");
+                    ChatUtil.printDebug("Could not find valid spectator target");
 	        		break;
 	        	}
 	        	watchdog++;
@@ -239,14 +239,14 @@ public class NovsPlayer {
 	        }
 
 	        if(foundValidTarget) {
-	        	ChatFormat.printDebug("...New target is "+target.getBukkitPlayer().getName());
+                ChatUtil.printDebug("...New target is "+target.getBukkitPlayer().getName());
 	        	this.setSpectatorTarget(target);
 	        } else {
 	        	bukkitPlayer.teleport(game.getWorld().getTeamSpawnLoc(team));
-	        	ChatFormat.printDebug("WARNING: nextSpectatorTarget could not find a valid target for player "+bukkitPlayer.getName());
+                ChatUtil.printDebug("WARNING: nextSpectatorTarget could not find a valid target for player "+bukkitPlayer.getName());
 	        }
     	} else {
-    		ChatFormat.printDebug("WARNING: Attempted to call nextSpectatorTarget on an alive/non-spectating player");
+            ChatUtil.printDebug("WARNING: Attempted to call nextSpectatorTarget on an alive/non-spectating player");
     	}
         return target;
     }
