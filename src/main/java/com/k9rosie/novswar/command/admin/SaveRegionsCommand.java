@@ -31,6 +31,8 @@ public class SaveRegionsCommand extends NovsCommand {
             }
 
             getNovsWar().getNovsWorldCache().saveRegions();
+            getNovsWar().getNovsConfigCache().saveConfigs();
+            world.saveBattlefieldBlocks();
 
             ChatUtil.sendNotice(bukkitPlayer, "Saved regions in this world.");
         }
