@@ -181,11 +181,12 @@ public class NovsPlayer {
         return regionNameBuffer;
     }
     
-    public void setSpectatorTarget(NovsPlayer player) {
-    	ChatUtil.printDebug("Setting "+this.getBukkitPlayer().getName()+"'s target to "+player.getBukkitPlayer().getName());
-    	spectatorTarget = player;
-    	bukkitPlayer.setSpectatorTarget(player.getBukkitPlayer());
-    	ChatUtil.sendNotice(this, "Spectating "+player.getBukkitPlayer().getName());
+    public void setSpectatorTarget(NovsPlayer target) {
+    	ChatUtil.printDebug("Setting "+this.getBukkitPlayer().getName()+"'s target to "+target.getBukkitPlayer().getName());
+    	spectatorTarget = target;
+    	bukkitPlayer.teleport(target.getBukkitPlayer().getLocation());
+    	bukkitPlayer.setSpectatorTarget(target.getBukkitPlayer());
+    	ChatUtil.sendNotice(this, "Spectating "+target.getBukkitPlayer().getName());
     }
     
     public ArrayList<NovsPlayer> getSpectatorObservers() {
@@ -220,24 +221,25 @@ public class NovsPlayer {
 	        int nextIndex = index + 1; //If spectatorTarget is null, nextIndex will be 0
 
 	        boolean foundValidTarget = false;
-	        int watchdog = 0;
-	        while(foundValidTarget == false) {
-	        	if(nextIndex >= inGamePlayers.size()) {
-	                nextIndex = 0;
-	            }
-	        	NovsPlayer potentialTarget = inGamePlayers.get(nextIndex);
-	        	if(potentialTarget.isDead()==false) {
-	        		target = potentialTarget;
-	        		foundValidTarget = true;
-	        	}
-	        	if(watchdog >= inGamePlayers.size()){
-                    ChatUtil.printDebug("Could not find valid spectator target");
-	        		break;
-	        	}
-	        	watchdog++;
-	        	nextIndex++;
+	        if(inGamePlayers.size() > 0) {
+		        int watchdog = 0;
+		        while(foundValidTarget == false) {
+		        	if(nextIndex >= inGamePlayers.size()) {
+		                nextIndex = 0;
+		            }
+		        	NovsPlayer potentialTarget = inGamePlayers.get(nextIndex);
+		        	if(potentialTarget.isDead()==false) {
+		        		target = potentialTarget;
+		        		foundValidTarget = true;
+		        	}
+		        	if(watchdog >= inGamePlayers.size()){
+	                    ChatUtil.printDebug("Could not find valid spectator target");
+		        		break;
+		        	}
+		        	watchdog++;
+		        	nextIndex++;
+		        }
 	        }
-
 	        if(foundValidTarget) {
                 ChatUtil.printDebug("...New target is "+target.getBukkitPlayer().getName());
 	        	this.setSpectatorTarget(target);
