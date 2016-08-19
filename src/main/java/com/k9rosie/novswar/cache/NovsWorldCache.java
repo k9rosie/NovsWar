@@ -175,6 +175,8 @@ public class NovsWorldCache {
 
             world.getRegions().put(regionName, region);
         }
+        //world.saveRegionBlocks();
+        world.saveBattlefieldBlocks();
     }
 
     public HashSet<NovsRegion> getRegionsInLocation(Location location) {
