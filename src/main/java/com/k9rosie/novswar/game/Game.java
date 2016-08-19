@@ -479,8 +479,11 @@ public class Game {
             NovsTeam team = player.getTeam();
             player.setDeath(false);
             //Remove this player from their target's observer list
-            if(player.getSpectatorTarget().getSpectatorObservers().remove(player)==false) {
-            	ChatUtil.printDebug("Failed to remove "+player.getBukkitPlayer().getName()+" from observer list");
+            NovsPlayer target = player.getSpectatorTarget();
+            if(target != null) {
+            	if (target.getSpectatorObservers().remove(player)==false) {
+            		ChatUtil.printDebug("Failed to remove "+player.getBukkitPlayer().getName()+" from observer list");
+            	}
             }
             player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(team));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
