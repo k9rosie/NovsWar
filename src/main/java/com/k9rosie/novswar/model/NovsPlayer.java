@@ -245,6 +245,7 @@ public class NovsPlayer {
 	        	this.setSpectatorTarget(target);
 	        } else {
 	        	if(isSpectating == false) {
+	        		this.setSpectatorTarget(null);
 	        		bukkitPlayer.teleport(game.getWorld().getTeamSpawnLoc(team));
 	        		ChatUtil.printDebug("WARNING: nextSpectatorTarget could not find a valid target for player "+bukkitPlayer.getName());
 	        	}
