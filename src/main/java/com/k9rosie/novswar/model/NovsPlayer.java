@@ -183,11 +183,11 @@ public class NovsPlayer {
         return regionNameBuffer;
     }
     
-    public void setSpectatorTarget(NovsPlayer player) {
-    	ChatFormat.printDebug("Setting "+this.getBukkitPlayer().getName()+"'s target to "+player.getBukkitPlayer().getName());
-    	spectatorTarget = player;
-    	bukkitPlayer.setSpectatorTarget(player.getBukkitPlayer());
-    	ChatFormat.sendNotice(this, "Spectating "+player.getBukkitPlayer().getName());
+    public void setSpectatorTarget(NovsPlayer target) {
+    	ChatFormat.printDebug("Setting "+this.getBukkitPlayer().getName()+"'s target to "+target.getBukkitPlayer().getName());
+    	spectatorTarget = target;
+    	bukkitPlayer.setSpectatorTarget(target.getBukkitPlayer());
+    	ChatFormat.sendNotice(this, "Spectating "+target.getBukkitPlayer().getName());
     }
     
     public ArrayList<NovsPlayer> getSpectatorObservers() {
@@ -213,40 +213,43 @@ public class NovsPlayer {
      * @return The spectator target
      */
     public NovsPlayer nextSpectatorTarget(Game game) {
-    	ChatFormat.printDebug(bukkitPlayer.getName()+" is switching spectator targets");
-        ArrayList<NovsPlayer> inGamePlayers = game.getGamePlayers();
-        inGamePlayers.remove(this);	//Remove this player from the options of spectator targets
-        int index = inGamePlayers.indexOf(spectatorTarget);
-        int nextIndex = index + 1; //If spectatorTarget is null, nextIndex will be 0
-        
-        NovsPlayer target = null;
-        boolean foundValidTarget = false;
-        int watchdog = 0;
-        while(foundValidTarget == false) {
-        	if(nextIndex >= inGamePlayers.size()) {
-                nextIndex = 0;
-            }
-        	NovsPlayer potentialTarget = inGamePlayers.get(nextIndex);
-        	if(potentialTarget.isDead()==false) {
-        		target = potentialTarget;
-        		foundValidTarget = true;
-        	}
-        	if(watchdog >= inGamePlayers.size()){
-        		ChatFormat.printDebug("Could not find valid spectator target");
-        		break;
-        	}
-        	watchdog++;
-        	nextIndex++;
-        }
-        
-        if(foundValidTarget) {
-        	ChatFormat.printDebug("...New target is "+target.getBukkitPlayer().getName());
-        	this.setSpectatorTarget(target);
-        } else {
-        	bukkitPlayer.teleport(game.getWorld().getTeamSpawnLoc(team));
-        	ChatFormat.printDebug("WARNING: nextSpectatorTarget could not find a valid target for player "+bukkitPlayer.getName());
-        }
+    	NovsPlayer target = null;
+    	if(isDead || isSpectating) {
+	    	ChatFormat.printDebug(bukkitPlayer.getName()+" is switching spectator targets");
+	        ArrayList<NovsPlayer> inGamePlayers = game.getGamePlayers();
+	        inGamePlayers.remove(this);	//Remove this player from the options of spectator targets
+	        int index = inGamePlayers.indexOf(spectatorTarget);
+	        int nextIndex = index + 1; //If spectatorTarget is null, nextIndex will be 0
 
+	        boolean foundValidTarget = false;
+	        int watchdog = 0;
+	        while(foundValidTarget == false) {
+	        	if(nextIndex >= inGamePlayers.size()) {
+	                nextIndex = 0;
+	            }
+	        	NovsPlayer potentialTarget = inGamePlayers.get(nextIndex);
+	        	if(potentialTarget.isDead()==false) {
+	        		target = potentialTarget;
+	        		foundValidTarget = true;
+	        	}
+	        	if(watchdog >= inGamePlayers.size()){
+	        		ChatFormat.printDebug("Could not find valid spectator target");
+	        		break;
+	        	}
+	        	watchdog++;
+	        	nextIndex++;
+	        }
+	        
+	        if(foundValidTarget) {
+	        	ChatFormat.printDebug("...New target is "+target.getBukkitPlayer().getName());
+	        	this.setSpectatorTarget(target);
+	        } else {
+	        	bukkitPlayer.teleport(game.getWorld().getTeamSpawnLoc(team));
+	        	ChatFormat.printDebug("WARNING: nextSpectatorTarget could not find a valid target for player "+bukkitPlayer.getName());
+	        }
+    	} else {
+    		ChatFormat.printDebug("WARNING: Attempted to call nextSpectatorTarget on an alive/non-spectating player");
+    	}
         return target;
     }
     
