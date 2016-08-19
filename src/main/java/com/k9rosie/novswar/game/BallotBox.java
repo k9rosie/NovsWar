@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.util.ChatUtil;
 
 public class BallotBox {
 	
@@ -70,7 +71,7 @@ public class BallotBox {
     		player.getBukkitPlayer().openInventory(ballotBox);
     		player.setVoted(false);
     	}
-    	Bukkit.broadcastMessage("Type '/nw vote' to vote for the next map");
+    	ChatUtil.sendBroadcast("Type '/nw vote' to vote for the next map");
 	}
 	
 	public void recordResult(int result) {
