@@ -182,11 +182,16 @@ public class NovsPlayer {
     }
     
     public void setSpectatorTarget(NovsPlayer target) {
-    	ChatUtil.printDebug("Setting "+this.getBukkitPlayer().getName()+"'s target to "+target.getBukkitPlayer().getName());
-    	spectatorTarget = target;
-    	bukkitPlayer.teleport(target.getBukkitPlayer().getLocation());
-    	bukkitPlayer.setSpectatorTarget(target.getBukkitPlayer());
-    	ChatUtil.sendNotice(this, "Spectating "+target.getBukkitPlayer().getName());
+    	if(target != null) {
+	    	ChatUtil.printDebug("Setting "+this.getBukkitPlayer().getName()+"'s target to "+target.getBukkitPlayer().getName());
+	    	spectatorTarget = target;
+	    	bukkitPlayer.teleport(target.getBukkitPlayer().getLocation());
+	    	bukkitPlayer.setSpectatorTarget(target.getBukkitPlayer());
+	    	ChatUtil.sendNotice(this, "Spectating "+target.getBukkitPlayer().getName());
+    	} else {
+    		spectatorTarget = null;
+    		bukkitPlayer.setSpectatorTarget(null);
+    	}
     }
     
     public ArrayList<NovsPlayer> getSpectatorObservers() {
