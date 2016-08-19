@@ -1,5 +1,6 @@
 package com.k9rosie.novswar.command.admin;
 
+import com.k9rosie.novswar.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -29,11 +30,11 @@ public class KickCommand extends NovsCommand {
             kickPlayer.getBukkitPlayer().teleport(getNovsWar().getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(defaultTeam));
             kickPlayer.getBukkitPlayer().setHealth(kickPlayer.getBukkitPlayer().getMaxHealth());
             kickPlayer.getBukkitPlayer().setFoodLevel(20);
-            kickPlayer.getBukkitPlayer().sendMessage("You have been kicked to the lobby");
+            ChatUtil.sendNotice(kickPlayer.getBukkitPlayer(), "You have been kicked to the lobby");
             NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(kickPlayer, game);
             Bukkit.getPluginManager().callEvent(invokeEvent);
     	} else {
-    		player.getBukkitPlayer().sendMessage("Invalid arguments. Format: /nw admin kick <Player Name>");
+    		ChatUtil.sendError(player, "Invalid arguments. Format: /nw admin kick <Player Name>");
     	}
     }
 }

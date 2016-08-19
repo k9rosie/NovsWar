@@ -4,7 +4,7 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
-import com.k9rosie.novswar.util.ChatFormat;
+import com.k9rosie.novswar.util.ChatUtil;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -42,7 +42,7 @@ public class TeamCommand extends NovsCommand {
                 NovsPlayer target = getNovsWar().getNovsPlayerCache().getPlayerFromName(arg);
 
                 if (target == null) {
-                	ChatFormat.sendNotice(player, "That specific player/team couldn't be found");
+                	ChatUtil.sendNotice(player, "That specific player/team couldn't be found");
                     return;
                 } else {
                     printTeam(target);
@@ -54,13 +54,13 @@ public class TeamCommand extends NovsCommand {
     }
 
     public void printTeam(NovsTeam team) {
-        getSender().sendMessage(team.getColor()+team.getTeamName());
+        ChatUtil.sendNotice((Player) getSender(), team.getColor()+team.getTeamName());
         getSender().sendMessage(generatePlayerList(team));
     }
 
     public void printTeam(NovsPlayer player) {
         NovsTeam team = player.getTeam();
-        getSender().sendMessage(team.getColor()+team.getTeamName());
+        ChatUtil.sendNotice((Player) getSender(), team.getColor()+team.getTeamName());
         getSender().sendMessage(generatePlayerList(team));
     }
 

@@ -4,7 +4,7 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.command.CommandType;
 import com.k9rosie.novswar.model.NovsWorld;
-import com.k9rosie.novswar.util.ChatFormat;
+import com.k9rosie.novswar.util.ChatUtil;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -36,11 +36,11 @@ public class WorldListener implements Listener {
     		//Creating a NovsWar command sign
     		if(firstLine.equalsIgnoreCase("novswar")) {
         		if(CommandType.contains(event.getLine(1))) {
-        			event.getPlayer().sendMessage("Successfully created NovsWar sign!");
+        			ChatUtil.sendNotice(event.getPlayer(), "Successfully created NovsWar sign!");
             		event.setLine(0, "§2NovsWar");
             		event.getBlock().getState().update();
         		} else {
-        			event.getPlayer().sendMessage("Invalid command for NovsWar sign");
+					ChatUtil.sendError(event.getPlayer(), "Invalid command for NovsWar sign");
         		}
         	//Creating a round Info Sign
         	} else if(firstLine.equalsIgnoreCase("infosign")) {
@@ -53,10 +53,10 @@ public class WorldListener implements Listener {
         		}
         		//Verify that world is valid
         		if(world == null) {
-        			event.getPlayer().sendMessage("Could not create Info Sign, invalid world");
+					ChatUtil.sendError(event.getPlayer(), "Could not create Info Sign, invalid world");
         		} else {
         			world.getSigns().put(block.getLocation(), (Sign) block.getState());
-        			event.getPlayer().sendMessage("Created Info Sign in world "+block.getWorld());
+					ChatUtil.sendNotice(event.getPlayer(), "Created Info Sign in world "+block.getWorld());
 					novswar.getGameHandler().updateInfoSigns();
         		}
         	}
@@ -80,13 +80,13 @@ public class WorldListener implements Listener {
     		}
     		//Verify that world is valid
     		if(world != null) {
-    			ChatFormat.printDebug("A sign was broken. Here is the NovsSign map for world "+broken.getWorld());
-    			ChatFormat.printDebug(world.getSigns().toString());
+    			ChatUtil.printDebug("A sign was broken. Here is the NovsSign map for world "+broken.getWorld());
+    			ChatUtil.printDebug(world.getSigns().toString());
     			if(world.getSigns().remove(broken.getLocation().toString()) != null) {
-    				event.getPlayer().sendMessage("Removed Info Sign in world "+broken.getWorld());
-    				ChatFormat.printDebug("Found and removed NovsSign with key "+broken.getLocation().toString());
+    				ChatUtil.sendNotice(event.getPlayer(), "Removed Info Sign in world "+broken.getWorld());
+    				ChatUtil.printDebug("Found and removed NovsSign with key "+broken.getLocation().toString());
     			} else {
-    				ChatFormat.printDebug("Could not find NovsSign with key "+broken.getLocation().toString());
+    				ChatUtil.printDebug("Could not find NovsSign with key "+broken.getLocation().toString());
     			}
     		}
     	}

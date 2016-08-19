@@ -1,5 +1,6 @@
 package com.k9rosie.novswar.command.admin;
 
+import com.k9rosie.novswar.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -8,6 +9,7 @@ import com.k9rosie.novswar.command.NovsCommand;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.model.NovsWorld;
 import com.k9rosie.novswar.util.Messages;
+import org.bukkit.entity.Player;
 
 public class NextGameCommand extends NovsCommand{
 	
@@ -20,7 +22,7 @@ public class NextGameCommand extends NovsCommand{
 
     public void execute() {
     	if (getArgs().length > 3) {
-            getSender().sendMessage(Messages.INVALID_PARAMETERS.toString());
+            ChatUtil.sendError((Player) getSender(), Messages.INVALID_PARAMETERS.toString());
             return;
         }
     	
@@ -37,7 +39,7 @@ public class NextGameCommand extends NovsCommand{
         		for(NovsWorld option : getNovsWar().getNovsWorldCache().getWorlds().values()) {
         			message += (option.getBukkitWorld().getName() + " ");
         		}
-        		getSender().sendMessage("Invalid world name. Options are "+message);
+				ChatUtil.sendError((Player) getSender(), "Invalid world name. Options are "+message);
         	}
         	Bukkit.broadcastMessage("Forcing next game to "+world.getBukkitWorld().getName());
         	game.nextGame(world);

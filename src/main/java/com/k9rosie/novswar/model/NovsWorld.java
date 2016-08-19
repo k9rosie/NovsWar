@@ -1,6 +1,6 @@
 package com.k9rosie.novswar.model;
 
-import com.k9rosie.novswar.util.ChatFormat;
+import com.k9rosie.novswar.util.ChatUtil;
 import com.k9rosie.novswar.util.RegionType;
 
 import org.bukkit.Location;
@@ -8,7 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -67,7 +66,7 @@ public class NovsWorld {
     		loc = teamSpawns.get(team);
     	} else {
     		loc = bukkitWorld.getSpawnLocation();
-    		ChatFormat.printDebug("Oops! Tried to get team "+team.getTeamName()+" spawn but it wasn't in world "+name);
+    		ChatUtil.printDebug("Oops! Tried to get team "+team.getTeamName()+" spawn but it wasn't in world "+name);
     	}
     	return loc;
     }

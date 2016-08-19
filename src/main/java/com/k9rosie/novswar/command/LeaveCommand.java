@@ -10,7 +10,7 @@ import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
-import com.k9rosie.novswar.util.ChatFormat;
+import com.k9rosie.novswar.util.ChatUtil;
 
 public class LeaveCommand extends NovsCommand{
 	private Game game;
@@ -35,10 +35,10 @@ public class LeaveCommand extends NovsCommand{
                 NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(player, game);
                 Bukkit.getPluginManager().callEvent(invokeEvent);
         	} else {
-        		ChatFormat.sendNotice(player, "You must be on a team to leave");
+        		ChatUtil.sendNotice(player, "You must be on a team to leave");
         	}
         } else {
-        	ChatFormat.sendNotice(player, "You can only leave during the round");
+        	ChatUtil.sendNotice(player, "You can only leave during the round");
         }
     }
 }

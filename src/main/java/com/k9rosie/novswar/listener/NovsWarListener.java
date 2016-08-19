@@ -2,21 +2,17 @@ package com.k9rosie.novswar.listener;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
-import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
 import com.k9rosie.novswar.event.NovsWarJoinTeamEvent;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
 import com.k9rosie.novswar.event.NovsWarNewGameEvent;
 import com.k9rosie.novswar.event.NovsWarScoreModifyEvent;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
-import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsScore;
 import com.k9rosie.novswar.model.NovsTeam;
-import com.k9rosie.novswar.model.NovsWorld;
-import com.k9rosie.novswar.util.ChatFormat;
+import com.k9rosie.novswar.util.ChatUtil;
 
 import org.bukkit.Bukkit;
-import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -77,12 +73,12 @@ public class NovsWarListener implements Listener {
     		//Assess in-game players
     		if(game.getGameState().equals(GameState.PRE_GAME) || game.getGameState().equals(GameState.DURING_GAME)) {
     			if(inGamePlayerCount == 0) {
-    				ChatFormat.printDebug("There are no in-game players. Starting new round.");
+    				ChatUtil.printDebug("There are no in-game players. Starting new round.");
         			game.nextGame(game.getWorld());
         		} else {
-        			ChatFormat.printDebug("A player left the game");
+        			ChatUtil.printDebug("A player left the game");
             		if(game.checkPlayerCount()==false) { //if there are not enough players
-            			ChatFormat.printDebug("There are not enough players");
+            			ChatUtil.printDebug("There are not enough players");
             			switch (game.getGameState()) {
                     	case PRE_GAME :
                     		game.waitForPlayers();

@@ -7,7 +7,7 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
 import com.k9rosie.novswar.model.NovsPlayer;
-import com.k9rosie.novswar.util.ChatFormat;
+import com.k9rosie.novswar.util.ChatUtil;
 
 public class VoteCommand extends NovsCommand {
 
@@ -22,15 +22,15 @@ public class VoteCommand extends NovsCommand {
     	NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
     	if(game.getGameState().equals(GameState.POST_GAME)) {
 	        if(player.hasVoted() == false) {
-	        	ChatFormat.sendNotice(player, "Cast your Vote");
+	        	ChatUtil.sendNotice(player, "Cast your Vote");
 	    		player.getBukkitPlayer().openInventory(game.getBallotBox().getBallots());
 	        }
 	        else {
-	        	ChatFormat.sendNotice(player, "You have already voted");
+	        	ChatUtil.sendNotice(player, "You have already voted");
 	        }
     	}
     	else {
-    		ChatFormat.sendNotice(player, "You cannot vote now!");
+    		ChatUtil.sendNotice(player, "You cannot vote now!");
     	}
        
     }

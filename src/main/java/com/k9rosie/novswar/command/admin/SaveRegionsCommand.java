@@ -1,5 +1,6 @@
 package com.k9rosie.novswar.command.admin;
 
+import com.k9rosie.novswar.util.ChatUtil;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,7 +18,7 @@ public class SaveRegionsCommand extends NovsCommand {
 
     public void execute() {
         if (getArgs().length != 2) {
-            getSender().sendMessage(Messages.INVALID_PARAMETERS.toString());
+            ChatUtil.sendError((Player) getSender(), Messages.INVALID_PARAMETERS.toString());
             return;
         } else {
             Player bukkitPlayer = (Player) getSender();
@@ -25,13 +26,13 @@ public class SaveRegionsCommand extends NovsCommand {
             NovsWorld world = getNovsWar().getNovsWorldCache().getWorlds().get(bukkitWorld);
 
             if (world == null) {
-                bukkitPlayer.sendMessage("The world you're in isn't enabled in NovsWar.");
+                ChatUtil.sendError(bukkitPlayer, "The world you're in isn't enabled in NovsWar.");
                 return;
             }
 
             getNovsWar().getNovsWorldCache().saveRegions();
 
-            bukkitPlayer.sendMessage("Saved regions in this world.");
+            ChatUtil.sendNotice(bukkitPlayer, "Saved regions in this world.");
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.k9rosie.novswar.command.admin;
 
+import com.k9rosie.novswar.util.ChatUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -19,7 +20,7 @@ public class HelpAdminCommand extends NovsCommand {
         String message = "";
         for(AdminCommandType cmd : AdminCommandType.values()) {
         	message = "/nw admin "+cmd.toString().toLowerCase()+" "+cmd.arguments()+": "+cmd.description();
-        	player.getBukkitPlayer().sendMessage(message);
+            ChatUtil.sendNotice(player.getBukkitPlayer(), message);
         }
     }
 }

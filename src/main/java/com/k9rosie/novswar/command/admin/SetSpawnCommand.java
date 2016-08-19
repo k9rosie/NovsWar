@@ -4,6 +4,7 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.util.ChatUtil;
 import com.k9rosie.novswar.util.Messages;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -22,7 +23,7 @@ public class SetSpawnCommand extends NovsCommand {
     public void execute() {
         //nw admin setspawn red
         if (getArgs().length != 3) {
-            getSender().sendMessage(Messages.INVALID_PARAMETERS.toString());
+            ChatUtil.sendError((Player) getSender(), Messages.INVALID_PARAMETERS.toString());
             return;
         } else {
             Player bukkitPlayer = (Player) getSender();
@@ -42,19 +43,19 @@ public class SetSpawnCommand extends NovsCommand {
             	//The player is in the lobby world
             	world = getNovsWar().getNovsWorldCache().getLobbyWorld();
             	if(team == null || team.equals(getNovsWar().getNovsTeamCache().getDefaultTeam())==false) {
-            		bukkitPlayer.sendMessage("You can only set the default team's spawn in Lobby World");
+                    ChatUtil.sendError(bukkitPlayer, "You can only set the default team's spawn in Lobby World");
                     return;
             	}
             } else {
             	//The player is in a game world
             	world = getNovsWar().getNovsWorldCache().getWorlds().get(bukkitWorld);
             	if (team == null || getNovsWar().getGameHandler().getGame().getTeams().contains(team)==false) {
-                    bukkitPlayer.sendMessage("That team doesn't exist or is not enabled for this world.");
+                    ChatUtil.sendError(bukkitPlayer, "That team doesn't exist or is not enabled for this world.");
                     return;
                 }
             }
             if (world == null) {
-                bukkitPlayer.sendMessage("The world you're in isn't enabled in NovsWar.");
+                ChatUtil.sendError(bukkitPlayer, "The world you're in isn't enabled in NovsWar.");
                 return;
             }
             
@@ -65,7 +66,7 @@ public class SetSpawnCommand extends NovsCommand {
             float pitch = location.getPitch();
             float yaw = location.getYaw();
             world.getTeamSpawns().put(team, new Location(location.getWorld(), x, y, z, pitch, yaw));
-            bukkitPlayer.sendMessage(Messages.SPAWN_SET.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName()));
+            ChatUtil.sendNotice(bukkitPlayer, Messages.SPAWN_SET.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName()));
         }
     }
 }

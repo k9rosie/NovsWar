@@ -4,7 +4,7 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsStats;
 import com.k9rosie.novswar.model.NovsTeam;
-import com.k9rosie.novswar.util.ChatFormat;
+import com.k9rosie.novswar.util.ChatUtil;
 import com.k9rosie.novswar.util.Messages;
 
 import org.bukkit.Bukkit;
@@ -37,11 +37,11 @@ public class PlayerCommand extends NovsCommand {
             } else {
                 UUID uuid = NovsWar.getUUID(playerName);
                 if (uuid == null) {
-                	ChatFormat.sendNotice(player, Messages.PLAYER_DATA_NONEXISTENT.toString());
+                	ChatUtil.sendNotice(player, Messages.PLAYER_DATA_NONEXISTENT.toString());
                     return;
                 }
                 if (!getNovsWar().getDatabase().exists("stats", "player_uuid", uuid.toString())) {
-                	ChatFormat.sendNotice(player, Messages.PLAYER_DATA_NONEXISTENT.toString());
+                	ChatUtil.sendNotice(player, Messages.PLAYER_DATA_NONEXISTENT.toString());
                     return;
                 } else {
                     OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
@@ -49,7 +49,7 @@ public class PlayerCommand extends NovsCommand {
                 }
             }
         } else {
-        	ChatFormat.sendNotice(player, Messages.INVALID_PARAMETERS.toString());
+        	ChatUtil.sendNotice(player, Messages.INVALID_PARAMETERS.toString());
         }
     }
 
@@ -69,20 +69,20 @@ public class PlayerCommand extends NovsCommand {
         String date = format.format(lastPlayed);
         String[] statsString = {
                 "§a§o§lONLINE",
-                "§7Team: §f" + team.getColor() + team.getTeamName(),
-                "§7Kills: §f" + stats.getKills(),
-                "§7Deaths: §f" + stats.getDeaths(),
-                "§7KD Ratio: §f" + kd,
-                "§7Suicides: §f" + stats.getSuicides(),
-                "§7Arrow Kills: §f" + stats.getArrowKills(),
-                "§7Arrow Deaths: §f" + stats.getArrowDeaths(),
-                "§7Wins: §f" + stats.getWins(),
-                "§7Games Played: §f" + stats.getGamesPlayed(),
-                "§7Damage Given: §f" + stats.getDamageGiven(),
-                "§7Damage Taken: §f" + stats.getDamageTaken(),
-                "§7Connects: §f" + stats.getConnects(),
-                "§7Last Played: §f" + date,
-                "§7Logged In Since: §f" + loggedIn(stats.getLoggedIn())
+                "§7Team: §a" + team.getColor() + team.getTeamName(),
+                "§7Kills: §a" + stats.getKills(),
+                "§7Deaths: §a" + stats.getDeaths(),
+                "§7KD Ratio: §a" + kd,
+                "§7Suicides: §a" + stats.getSuicides(),
+                "§7Arrow Kills: §a" + stats.getArrowKills(),
+                "§7Arrow Deaths: §a" + stats.getArrowDeaths(),
+                "§7Wins: §a" + stats.getWins(),
+                "§7Games Played: §a" + stats.getGamesPlayed(),
+                "§7Damage Given: §a" + stats.getDamageGiven(),
+                "§7Damage Taken: §a" + stats.getDamageTaken(),
+                "§7Connects: §a" + stats.getConnects(),
+                "§7Last Played: §a" + date,
+                "§7Logged In Since: §a" + loggedIn(stats.getLoggedIn())
         };
         getSender().sendMessage("§aPlayer data for "+team.getColor()+bukkitPlayer.getDisplayName()+"§a:");
         getSender().sendMessage(statsString);
@@ -108,18 +108,18 @@ public class PlayerCommand extends NovsCommand {
             String date = format.format(lastPlayed);
             statsString = new String[] {
                     "§7§o§lOFFLINE",
-                    "§7Kills: §f" + results.getInt("kills"),
-                    "§7Deaths: §f" + results.getInt("deaths"),
-                    "§7KD Ratio: §f" + kd,
-                    "§7Suicides: §f" + results.getInt("suicides"),
-                    "§7Arrow Kills: §f" + results.getInt("arrow_kills"),
-                    "§7Arrow Deaths: §f" + results.getInt("arrow_deaths"),
-                    "§7Wins: §f" + results.getInt("wins"),
-                    "§7Games Played: §f" + results.getInt("games_played"),
-                    "§7Damage Given: §f" + results.getDouble("damage_given"),
-                    "§7Damage Taken: §f" + results.getInt("damage_taken"),
-                    "§7Connects: §f" + results.getInt("connects"),
-                    "§7Last Played: §f" + date
+                    "§7Kills: §a" + results.getInt("kills"),
+                    "§7Deaths: §a" + results.getInt("deaths"),
+                    "§7KD Ratio: §a" + kd,
+                    "§7Suicides: §a" + results.getInt("suicides"),
+                    "§7Arrow Kills: §a" + results.getInt("arrow_kills"),
+                    "§7Arrow Deaths: §a" + results.getInt("arrow_deaths"),
+                    "§7Wins: §a" + results.getInt("wins"),
+                    "§7Games Played: §a" + results.getInt("games_played"),
+                    "§7Damage Given: §a" + results.getDouble("damage_given"),
+                    "§7Damage Taken: §a" + results.getInt("damage_taken"),
+                    "§7Connects: §a" + results.getInt("connects"),
+                    "§7Last Played: §a" + date
             };
         } catch (SQLException e) {
             e.printStackTrace();
