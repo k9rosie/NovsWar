@@ -341,7 +341,8 @@ public class PlayerListener implements Listener {
             event.getTo().setDirection(event.getFrom().getDirection());
             return;
         }
-
+        onPlayerEnterLeaveRegion(event);
+        
         for (NovsRegion region : currentGameWorld.getRegions().values()) {
         	
         	//If a player moved into this region
@@ -368,7 +369,6 @@ public class PlayerListener implements Listener {
                 } 
             } 
         }
-        onPlayerEnterLeaveRegion(event);
     }
     
     /**

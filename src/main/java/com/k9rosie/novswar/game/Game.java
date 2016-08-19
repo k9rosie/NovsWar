@@ -443,6 +443,7 @@ public class Game {
             ChatUtil.printDebug("...There is NO attacker");
         	NovsPlayer noAttackerTarget = player.nextSpectatorTarget(this);
         	if(noAttackerTarget != null) {
+        		ChatUtil.printDebug("...Found spectator target, adding to their observer list");
         		noAttackerTarget.getSpectatorObservers().add(player);
         	}
         }
