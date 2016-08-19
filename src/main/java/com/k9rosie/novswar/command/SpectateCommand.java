@@ -2,7 +2,6 @@ package com.k9rosie.novswar.command;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,7 +11,7 @@ import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
-import com.k9rosie.novswar.util.ChatFormat;
+import com.k9rosie.novswar.util.ChatUtil;
 
 public class SpectateCommand extends NovsCommand{
 	private Game game;
@@ -43,14 +42,14 @@ public class SpectateCommand extends NovsCommand{
             		player.getBukkitPlayer().teleport(target.getBukkitPlayer().getLocation());
             		player.setSpectatorTarget(target);
             		target.getSpectatorObservers().add(player);
-            		ChatFormat.sendNotice(player, "Spectate next player with LSHIFT. F5 to change view.");
-            		ChatFormat.sendBroadcast(player.getBukkitPlayer().getName()+" is spectating the round!");
+            		ChatUtil.sendNotice(player, "Spectate next player with LSHIFT. F5 to change view.");
+            		ChatUtil.sendBroadcast(player.getBukkitPlayer().getName()+" is spectating the round!");
 
             	} else {
-            		ChatFormat.sendNotice(player, "You can only spectate during the round");
+            		ChatUtil.sendNotice(player, "You can only spectate during the round");
             	}
         	} else {
-        		ChatFormat.sendNotice(player, "You can only spectate while in the Lobby");
+        		ChatUtil.sendNotice(player, "You can only spectate while in the Lobby");
         	}
         }
     }

@@ -1,5 +1,6 @@
 package com.k9rosie.novswar.command.admin;
 
+import com.k9rosie.novswar.util.ChatUtil;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,7 +18,7 @@ public class DelRegionCommand extends NovsCommand {
 
     public void execute() {
         if (getArgs().length != 3) {
-            getSender().sendMessage(Messages.INVALID_PARAMETERS.toString());
+            ChatUtil.sendError((Player) getSender(), Messages.INVALID_PARAMETERS.toString());
             return;
         } else {
             Player bukkitPlayer = (Player) getSender();
@@ -25,16 +26,16 @@ public class DelRegionCommand extends NovsCommand {
             NovsWorld world = getNovsWar().getNovsWorldCache().getWorlds().get(bukkitWorld);
 
             if (world == null) {
-                bukkitPlayer.sendMessage("The world you're in isn't enabled in NovsWar.");
+                ChatUtil.sendError(bukkitPlayer, "The world you're in isn't enabled in NovsWar.");
                 return;
             }
 
             String regionName = getArgs()[2];
             if(world.getRegions().keySet().contains(regionName)) {
             	world.getRegions().remove(regionName);
-            	bukkitPlayer.sendMessage("Region "+regionName+" has been removed from "+world.getName());
+                ChatUtil.sendNotice(bukkitPlayer, "Region "+regionName+" has been removed from "+world.getName());
             } else {
-            	bukkitPlayer.sendMessage("Invalid region name");
+                ChatUtil.sendError(bukkitPlayer, "Invalid region name");
             }
         }
     }

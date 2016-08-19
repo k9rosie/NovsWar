@@ -5,14 +5,13 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.model.NovsRegion;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
-import com.k9rosie.novswar.util.ChatFormat;
+import com.k9rosie.novswar.util.ChatUtil;
 import com.k9rosie.novswar.util.RegionType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -110,7 +109,7 @@ public class NovsWorldCache {
                 NovsWorld novsWorld = new NovsWorld(name, world);
                 worlds.put(world, novsWorld);
         	} else {
-        		ChatFormat.printDebug("WARNING: World "+worldName+" is specified in enabled_worlds but is not defined in Worlds.yml");
+        		ChatUtil.printDebug("WARNING: World "+worldName+" is specified in enabled_worlds but is not defined in Worlds.yml");
         	}
         }
 
@@ -123,7 +122,7 @@ public class NovsWorldCache {
     private void loadRegions(NovsWorld world) {
         FileConfiguration regionsConfig = novswar.getNovsConfigCache().getConfig("regions");
         if (regionsConfig.get("regions."+world.getBukkitWorld().getName()) == null) {
-        	ChatFormat.printDebug("There is no region section for world "+world.getBukkitWorld().getName()+". NovsWar will create this section when regions are made.");
+        	ChatUtil.printDebug("There is no region section for world "+world.getBukkitWorld().getName()+". NovsWar will create this section when regions are made.");
             return;
         }
 
@@ -151,10 +150,10 @@ public class NovsWorldCache {
             if (location.getBlock().getState() instanceof Sign) {
                 Sign sign = (Sign) location.getBlock().getState();
                 world.getSigns().put(location, sign);
-                ChatFormat.printDebug("Loaded Info Sign at "+location.toString());
+                ChatUtil.printDebug("Loaded Info Sign at "+location.toString());
             } else {
-            	ChatFormat.printDebug("Oops! Tried to load an info sign at "+location.toString()+" but the block wasn't a sign!");
-            	ChatFormat.printDebug("The block is "+location.getBlock().getState().toString()+", "+location.getBlock().getState().getType());
+            	ChatUtil.printDebug("Oops! Tried to load an info sign at "+location.toString()+" but the block wasn't a sign!");
+            	ChatUtil.printDebug("The block is "+location.getBlock().getState().toString()+", "+location.getBlock().getState().getType());
             }
         }
 
@@ -173,7 +172,7 @@ public class NovsWorldCache {
                     new Location(world.getBukkitWorld(), cornerOneX, cornerOneY, cornerOneZ),
                     new Location(world.getBukkitWorld(), cornerTwoX, cornerTwoY, cornerTwoZ),
                     type);
-
+            region.saveBlocks();
             world.getRegions().put(regionName, region);
         }
         //world.saveRegionBlocks();

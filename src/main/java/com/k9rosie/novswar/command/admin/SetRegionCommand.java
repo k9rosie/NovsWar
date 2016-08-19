@@ -4,6 +4,7 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.util.ChatUtil;
 import com.k9rosie.novswar.util.Messages;
 import com.k9rosie.novswar.util.RegionType;
 import org.bukkit.World;
@@ -19,7 +20,7 @@ public class SetRegionCommand extends NovsCommand {
     public void execute() {
         //nw admin setregion regionOne battlefield
         if (getArgs().length != 4) {
-            getSender().sendMessage(Messages.INVALID_PARAMETERS.toString());
+            ChatUtil.sendError((Player) getSender(), Messages.INVALID_PARAMETERS.toString());
             return;
         } else {
             Player bukkitPlayer = (Player) getSender();
@@ -28,7 +29,7 @@ public class SetRegionCommand extends NovsCommand {
             NovsWorld world = getNovsWar().getNovsWorldCache().getWorlds().get(bukkitWorld);
 
             if (world == null) {
-                bukkitPlayer.sendMessage("The world you're in isn't enabled in NovsWar.");
+                ChatUtil.sendError(bukkitPlayer, "The world you're in isn't enabled in NovsWar.");
                 return;
             }
 
@@ -40,7 +41,7 @@ public class SetRegionCommand extends NovsCommand {
             	for(RegionType region : RegionType.values()) {
             		regionTypeList += (region.toString().toLowerCase()+" ");
             	}
-                bukkitPlayer.sendMessage("Invalid region type. Use "+regionTypeList);
+                ChatUtil.sendError(bukkitPlayer, "Invalid region type. Use "+regionTypeList);
                 return;
             }
 
@@ -48,7 +49,7 @@ public class SetRegionCommand extends NovsCommand {
             player.setRegionTypeBuffer(regionType);
             player.setSettingRegion(true);
 
-            bukkitPlayer.sendMessage("Setting corner one...");
+            ChatUtil.sendNotice(player, "Setting corner one...");
         }
 
 

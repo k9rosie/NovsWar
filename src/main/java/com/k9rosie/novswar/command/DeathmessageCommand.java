@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.model.NovsPlayer;
-import com.k9rosie.novswar.util.ChatFormat;
+import com.k9rosie.novswar.util.ChatUtil;
 
 public class DeathmessageCommand extends NovsCommand{
 
@@ -17,10 +17,10 @@ public class DeathmessageCommand extends NovsCommand{
     public void execute() {
     	NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
     	if(player.canSeeDeathMessages()) {
-    		ChatFormat.sendNotice(player, "Death messages disabled");
+    		ChatUtil.sendNotice(player, "Death messages disabled");
     		player.setDeathMessages(false);
     	} else {
-    		ChatFormat.sendNotice(player, "Death messages enabled");
+    		ChatUtil.sendNotice(player, "Death messages enabled");
     		player.setDeathMessages(true);
     	}
     }

@@ -7,6 +7,7 @@ import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
 
+import com.k9rosie.novswar.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,7 +31,7 @@ public class SetTeamCommand extends NovsCommand {
     		NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(targetPlayer, game);
             Bukkit.getPluginManager().callEvent(invokeEvent);
     	} else {
-    		player.getBukkitPlayer().sendMessage("Invalid arguments. Format: /nw admin setteam <Player Name> <Team Name>");
+			ChatUtil.sendError(player, "Invalid arguments. Format: /nw admin setteam <Player Name> <Team Name>");
     	}
     }
 }

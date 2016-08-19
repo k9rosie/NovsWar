@@ -2,11 +2,13 @@ package com.k9rosie.novswar.command;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.admin.AdminCommand;
+import com.k9rosie.novswar.util.ChatUtil;
 import com.k9rosie.novswar.util.Messages;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class CommandHandler implements CommandExecutor {
 
@@ -63,11 +65,11 @@ public class CommandHandler implements CommandExecutor {
                     new ChatCommand(novsWar, sender, args).execute();
                     return true;
                 default:
-                	sender.sendMessage(Messages.COMMAND_NONEXISTENT.toString());
+                	ChatUtil.sendError((Player) sender, Messages.COMMAND_NONEXISTENT.toString());
                 	break;
         		}
         	} else {
-        		sender.sendMessage(Messages.NO_PERMISSION.toString());
+                ChatUtil.sendError((Player) sender, Messages.NO_PERMISSION.toString());
         	}
         }
         return false;
