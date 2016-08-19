@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.model.NovsPlayer;
+import com.k9rosie.novswar.util.ChatFormat;
 
 public class MapCommand extends NovsCommand{
 	private Game game;
@@ -17,6 +18,6 @@ public class MapCommand extends NovsCommand{
 
     public void execute() {
         NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
-        player.getBukkitPlayer().sendMessage("Map: "+game.getWorld().getName()+" playing "+game.getGamemode().getGamemodeName());
+        ChatFormat.sendNotice(player, "Map: "+game.getWorld().getName()+" playing "+game.getGamemode().getGamemodeName());
     }
 }

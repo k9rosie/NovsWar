@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.k9rosie.novswar.game.Game;
+import com.k9rosie.novswar.util.ChatFormat;
 import com.k9rosie.novswar.util.RegionType;
 
 import org.bukkit.Location;
@@ -56,8 +57,7 @@ public class NovsPlayer {
     	} else {
     		attackerMap.put(player, damage);
     	}
-    	//DEBUG
-    	System.out.println(player.getBukkitPlayer().getName()+" attacked "+bukkitPlayer.getName()+" with "+attackerMap.get(player)+" cumulitive damage.");
+    	ChatFormat.printDebug(player.getBukkitPlayer().getName()+" attacked "+bukkitPlayer.getName()+" with "+attackerMap.get(player)+" cumulitive damage.");
     }
     
     public void clearAttackers() {
@@ -184,10 +184,10 @@ public class NovsPlayer {
     }
     
     public void setSpectatorTarget(NovsPlayer player) {
-    	//System.out.println("Setting "+this.getBukkitPlayer().getName()+"'s target to "+player.getBukkitPlayer().getName());
+    	ChatFormat.printDebug("Setting "+this.getBukkitPlayer().getName()+"'s target to "+player.getBukkitPlayer().getName());
     	spectatorTarget = player;
     	bukkitPlayer.setSpectatorTarget(player.getBukkitPlayer());
-        bukkitPlayer.sendMessage("Spectating "+player.getBukkitPlayer().getName());
+    	ChatFormat.sendNotice(this, "Spectating "+player.getBukkitPlayer().getName());
     }
     
     public ArrayList<NovsPlayer> getSpectatorObservers() {
@@ -213,7 +213,7 @@ public class NovsPlayer {
      * @return The spectator target
      */
     public NovsPlayer nextSpectatorTarget(Game game) {
-        System.out.println(bukkitPlayer.getName()+" is switching spectator targets");
+    	ChatFormat.printDebug(bukkitPlayer.getName()+" is switching spectator targets");
         ArrayList<NovsPlayer> inGamePlayers = game.getGamePlayers();
         inGamePlayers.remove(this);	//Remove this player from the options of spectator targets
         int index = inGamePlayers.indexOf(spectatorTarget);
@@ -232,7 +232,7 @@ public class NovsPlayer {
         		foundValidTarget = true;
         	}
         	if(watchdog >= inGamePlayers.size()){
-        		System.out.println("Could not find valid spectator target");
+        		ChatFormat.printDebug("Could not find valid spectator target");
         		break;
         	}
         	watchdog++;
@@ -240,11 +240,11 @@ public class NovsPlayer {
         }
         
         if(foundValidTarget) {
-            System.out.println("...New target is "+target.getBukkitPlayer().getName());
+        	ChatFormat.printDebug("...New target is "+target.getBukkitPlayer().getName());
         	this.setSpectatorTarget(target);
         } else {
         	bukkitPlayer.teleport(game.getWorld().getTeamSpawnLoc(team));
-            System.out.println("WARNING: nextSpectatorTarget could not find a valid target for player "+bukkitPlayer.getName());
+        	ChatFormat.printDebug("WARNING: nextSpectatorTarget could not find a valid target for player "+bukkitPlayer.getName());
         }
 
         return target;

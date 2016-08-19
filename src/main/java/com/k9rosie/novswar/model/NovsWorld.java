@@ -1,5 +1,6 @@
 package com.k9rosie.novswar.model;
 
+import com.k9rosie.novswar.util.ChatFormat;
 import com.k9rosie.novswar.util.RegionType;
 
 import org.bukkit.Location;
@@ -66,7 +67,7 @@ public class NovsWorld {
     		loc = teamSpawns.get(team);
     	} else {
     		loc = bukkitWorld.getSpawnLocation();
-    		System.out.println("Oops! Tried to get team "+team.getTeamName()+" spawn but it wasn't in world "+name);
+    		ChatFormat.printDebug("Oops! Tried to get team "+team.getTeamName()+" spawn but it wasn't in world "+name);
     	}
     	return loc;
     }

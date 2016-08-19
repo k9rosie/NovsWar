@@ -1,6 +1,8 @@
 package com.k9rosie.novswar.model;
 
+import com.k9rosie.novswar.util.ChatFormat;
 import com.k9rosie.novswar.util.RegionType;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -154,40 +156,40 @@ public class NovsRegion {
         NovsBlock block = new NovsBlock(bukkitBlock.getLocation(), bukkitBlock.getState(), bukkitBlock.getType(), bukkitBlock.getState().getData());
 
         if (blockState instanceof InventoryHolder) {
-            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type InventoryHolder");
+        	ChatFormat.printDebug("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type InventoryHolder");
             InventoryHolder inventoryHolder = (InventoryHolder) blockState;
             block.setInventoryContents(inventoryHolder.getInventory().getContents());
         }
 
         if (blockState instanceof Sign) {
-            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Sign");
+        	ChatFormat.printDebug("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Sign");
             Sign sign = (Sign) blockState;
             block.setSignText(sign.getLines());
         }
 
         if (blockState instanceof Banner) {
-            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Banner");
+        	ChatFormat.printDebug("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Banner");
             Banner banner = (Banner) blockState;
             block.setBannerBaseColor(banner.getBaseColor());
             block.setBannerPatterns((ArrayList) banner.getPatterns());
         }
 
         if (blockState instanceof Furnace) {
-            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Furnace");
+        	ChatFormat.printDebug("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Furnace");
             Furnace furnace = (Furnace) blockState;
             block.setFurnaceBurnTime(furnace.getBurnTime());
             block.setFurnaceCookTime(furnace.getCookTime());
         }
 
         if (blockState instanceof BrewingStand) {
-            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type BrewingStand");
+        	ChatFormat.printDebug("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type BrewingStand");
             BrewingStand brewingStand = (BrewingStand) blockState;
             block.setBrewingStandBrewingTime(brewingStand.getBrewingTime());
             block.setBrewingStandFuelLevel(brewingStand.getFuelLevel());
         }
 
         if (blockState instanceof Beacon) {
-            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Beacon");
+        	ChatFormat.printDebug("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Beacon");
             Beacon beacon = (Beacon) blockState;
             if (beacon.getPrimaryEffect() != null) {
                 block.setBeaconPrimaryEffectType(beacon.getPrimaryEffect().getType());
@@ -198,26 +200,26 @@ public class NovsRegion {
         }
 
         if (blockState instanceof CreatureSpawner) {
-            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type CreatureSpawner");
+        	ChatFormat.printDebug("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type CreatureSpawner");
             CreatureSpawner creatureSpawner = (CreatureSpawner) blockState;
             block.setCreatureSpawnerDelay(creatureSpawner.getDelay());
             block.setCreatureSpawnerCreatureType(creatureSpawner.getSpawnedType());
         }
 
         if (blockState instanceof NoteBlock) {
-            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type NoteBlock");
+        	ChatFormat.printDebug("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type NoteBlock");
             NoteBlock noteBlock = (NoteBlock) blockState;
             block.setNoteBlockNote(noteBlock.getNote());
         }
 
         if (blockState instanceof Jukebox) {
-            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Jukebox");
+        	ChatFormat.printDebug("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Jukebox");
             Jukebox jukebox = (Jukebox) blockState;
             block.setJukeboxRecord(jukebox.getPlaying());
         }
 
         if (blockState instanceof Skull) {
-            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Skull");
+        	ChatFormat.printDebug("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type Skull");
             Skull skull = (Skull) blockState;
             block.setSkullOwningPlayer(skull.getOwningPlayer());
             block.setSkullRotation(skull.getRotation());
@@ -225,21 +227,21 @@ public class NovsRegion {
         }
 
         if (blockState instanceof CommandBlock) {
-            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type CommandBlock");
+        	ChatFormat.printDebug("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type CommandBlock");
             CommandBlock commandBlock = (CommandBlock) blockState;
             block.setCommandBlockCommand(commandBlock.getCommand());
             block.setCommandBlockName(commandBlock.getName());
         }
 
         if (blockState instanceof EndGateway) {
-            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type EndGateway");
+        	ChatFormat.printDebug("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type EndGateway");
             EndGateway endGateway = (EndGateway) blockState;
             block.setEndGatewayExactTeleport(endGateway.isExactTeleport());
             block.setEndGatewayExitLocation(endGateway.getExitLocation());
         }
 
         if (blockState instanceof FlowerPot) {
-            System.out.println("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type FlowerPot");
+        	ChatFormat.printDebug("Block at "+bukkitBlock.getX()+", "+bukkitBlock.getY()+", "+bukkitBlock.getZ()+" is of type FlowerPot");
             FlowerPot flowerPot = (FlowerPot) blockState;
             block.setFlowerPotContents(flowerPot.getContents());
         }

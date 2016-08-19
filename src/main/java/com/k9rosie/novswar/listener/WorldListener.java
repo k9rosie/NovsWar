@@ -4,6 +4,7 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.command.CommandType;
 import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.util.ChatFormat;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -79,13 +80,13 @@ public class WorldListener implements Listener {
     		}
     		//Verify that world is valid
     		if(world != null) {
-    			novswar.printDebug("A sign was broken. Here is the NovsSign map for world "+broken.getWorld());
-    			novswar.printDebug(world.getSigns().toString());
+    			ChatFormat.printDebug("A sign was broken. Here is the NovsSign map for world "+broken.getWorld());
+    			ChatFormat.printDebug(world.getSigns().toString());
     			if(world.getSigns().remove(broken.getLocation().toString()) != null) {
     				event.getPlayer().sendMessage("Removed Info Sign in world "+broken.getWorld());
-    				novswar.printDebug("Found and removed NovsSign with key "+broken.getLocation().toString());
+    				ChatFormat.printDebug("Found and removed NovsSign with key "+broken.getLocation().toString());
     			} else {
-    				novswar.printDebug("Could not find NovsSign with key "+broken.getLocation().toString());
+    				ChatFormat.printDebug("Could not find NovsSign with key "+broken.getLocation().toString());
     			}
     		}
     	}

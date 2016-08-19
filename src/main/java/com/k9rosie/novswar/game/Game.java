@@ -15,6 +15,7 @@ import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.util.ChatFormat;
 import com.k9rosie.novswar.util.Messages;
 import com.k9rosie.novswar.util.SendTitle;
 
@@ -121,7 +122,7 @@ public class Game {
                 }
                 if(nextMap == null) {
                     nextMap = world;
-                    novsWar.printDebug("There was a problem getting the next NovsWorld. Using previous world.");
+                    ChatFormat.printDebug("There was a problem getting the next NovsWorld. Using previous world.");
                 }
                 gameHandler.newGame(nextMap);
                 break;
@@ -150,12 +151,12 @@ public class Game {
         gameTimer.stopTimer();
         gameTimer.setTime(gameTime);
         gameTimer.startTimer();
-        Bukkit.broadcastMessage("Starting Round");
+        ChatFormat.sendBroadcast("Starting Round");
     }
 
     public void pauseGame() {
     	paused = true;
-        Bukkit.broadcastMessage("Pausing Round");
+    	ChatFormat.sendBroadcast("Pausing Round");
         world.closeIntermissionGates();
         for(NovsPlayer player : getGamePlayers()) {
         	if(player.isDead()) {
@@ -173,7 +174,7 @@ public class Game {
             return;
         }
         gameTimer.startTimer();
-        Bukkit.broadcastMessage("Resuming Round");
+        ChatFormat.sendBroadcast("Resuming Round");
         world.openIntermissionGates();
     }
 
@@ -417,10 +418,10 @@ public class Game {
         player.getBukkitPlayer().getWorld().playEffect(player.getBukkitPlayer().getLocation(), Effect.SMOKE, 30, 2);
         player.getBukkitPlayer().getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_WITCH_DEATH, 5, 0.5f);
         
-        novsWar.printDebug("..."+player.getBukkitPlayer().getName()+" died and has observers: ");
+        ChatFormat.printDebug("..."+player.getBukkitPlayer().getName()+" died and has observers: ");
         //Set each observer for this player to a new target
         for(NovsPlayer observer : player.getSpectatorObservers()) {
-        	novsWar.printDebug("    "+observer.getBukkitPlayer().getName());
+        	ChatFormat.printDebug("    "+observer.getBukkitPlayer().getName());
         	NovsPlayer newTarget = observer.nextSpectatorTarget(this); //sets the observer's target to another player
         	if(newTarget != null) {
         		newTarget.getSpectatorObservers().add(observer);
@@ -473,7 +474,7 @@ public class Game {
         boolean canJoinInProgress = novsWar.getNovsConfigCache().getConfig("core").getBoolean("core.game.join_in_progress");
 
         if (!canJoinInProgress && gameState.equals(GameState.DURING_GAME)) {
-            player.getBukkitPlayer().sendMessage(Messages.CANNOT_JOIN_GAME.toString());
+            ChatFormat.sendNotice(player, Messages.CANNOT_JOIN_GAME.toString());
             return;
         }
         assignPlayerTeam(player);
@@ -492,7 +493,7 @@ public class Game {
         } else {
         	int minimum = novsWar.getNovsConfigCache().getConfig("core").getInt("core.game.minimum_players");
         	String message = Messages.NOT_ENOUGH_PLAYERS.toString().replace("%minimum%", Integer.toString(minimum));
-            Bukkit.broadcastMessage(message);
+            ChatFormat.sendBroadcast(message);
         }
 
         if (paused) {
@@ -531,19 +532,18 @@ public class Game {
         Bukkit.getServer().getPluginManager().callEvent(event);
     	
         if(event.isCancelled()==false) {
-        	
+        	String message;
         	if(enabledTeams.contains(team)) {
         		player.setTeam(team);
         		//novsWar.printDebug("Assigning team "+team.getTeamName()+" location "+world.getTeamSpawns().get(team).toString());
                 player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(team));
                 player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
                 player.getBukkitPlayer().setFoodLevel(20);
-                String message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
-                player.getBukkitPlayer().sendMessage(message);
+                message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
         	} else {
-        		String message = Messages.CANNOT_JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
-        		player.getBukkitPlayer().sendMessage(message);
+        		message = Messages.CANNOT_JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
         	}
+        	ChatFormat.sendNotice(player,  message);
         }
     }
     

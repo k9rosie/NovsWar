@@ -5,6 +5,7 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.model.NovsRegion;
 import com.k9rosie.novswar.model.NovsTeam;
 import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.util.ChatFormat;
 import com.k9rosie.novswar.util.RegionType;
 
 import org.bukkit.Bukkit;
@@ -109,7 +110,7 @@ public class NovsWorldCache {
                 NovsWorld novsWorld = new NovsWorld(name, world);
                 worlds.put(world, novsWorld);
         	} else {
-        		System.out.println("WARNING: World "+worldName+" is specified in enabled_worlds but is not defined in Worlds.yml");
+        		ChatFormat.printDebug("WARNING: World "+worldName+" is specified in enabled_worlds but is not defined in Worlds.yml");
         	}
         }
 
@@ -122,7 +123,7 @@ public class NovsWorldCache {
     private void loadRegions(NovsWorld world) {
         FileConfiguration regionsConfig = novswar.getNovsConfigCache().getConfig("regions");
         if (regionsConfig.get("regions."+world.getBukkitWorld().getName()) == null) {
-        	System.out.println("There is no region section for world "+world.getBukkitWorld().getName()+". NovsWar will create this section when regions are made.");
+        	ChatFormat.printDebug("There is no region section for world "+world.getBukkitWorld().getName()+". NovsWar will create this section when regions are made.");
             return;
         }
 
@@ -150,10 +151,10 @@ public class NovsWorldCache {
             if (location.getBlock().getState() instanceof Sign) {
                 Sign sign = (Sign) location.getBlock().getState();
                 world.getSigns().put(location, sign);
-                novswar.printDebug("Loaded Info Sign at "+location.toString());
+                ChatFormat.printDebug("Loaded Info Sign at "+location.toString());
             } else {
-            	novswar.printDebug("Oops! Tried to load an info sign at "+location.toString()+" but the block wasn't a sign!");
-            	novswar.printDebug("The block is "+location.getBlock().getState().toString()+", "+location.getBlock().getState().getType());
+            	ChatFormat.printDebug("Oops! Tried to load an info sign at "+location.toString()+" but the block wasn't a sign!");
+            	ChatFormat.printDebug("The block is "+location.getBlock().getState().toString()+", "+location.getBlock().getState().getType());
             }
         }
 

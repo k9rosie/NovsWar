@@ -12,6 +12,7 @@ import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
 import com.k9rosie.novswar.model.NovsPlayer;
 import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.util.ChatFormat;
 
 public class SpectateCommand extends NovsCommand{
 	private Game game;
@@ -42,14 +43,14 @@ public class SpectateCommand extends NovsCommand{
             		player.getBukkitPlayer().teleport(target.getBukkitPlayer().getLocation());
             		player.setSpectatorTarget(target);
             		target.getSpectatorObservers().add(player);
-            		player.getBukkitPlayer().sendMessage("Spectate next player with LSHIFT. F5 to change view.");
-            		Bukkit.broadcastMessage(player.getBukkitPlayer().getName()+" is spectating the round!");
+            		ChatFormat.sendNotice(player, "Spectate next player with LSHIFT. F5 to change view.");
+            		ChatFormat.sendBroadcast(player.getBukkitPlayer().getName()+" is spectating the round!");
 
             	} else {
-            		player.getBukkitPlayer().sendMessage("You can only spectate during the round");
+            		ChatFormat.sendNotice(player, "You can only spectate during the round");
             	}
         	} else {
-        		player.getBukkitPlayer().sendMessage("You can only spectate while in the Lobby");
+        		ChatFormat.sendNotice(player, "You can only spectate while in the Lobby");
         	}
         }
     }
