@@ -65,7 +65,7 @@ public class NovsWarListener implements Listener {
     	Game game = event.getGame();
     	if(event.isCancelled() == false) {
     		//Count the number of players still in-game
-    		int inGamePlayerCount = novswar.getGameHandler().getGame().getGamePlayers().size();
+    		int inGamePlayerCount = novswar.getNovsPlayerCache().getGamePlayers().size();
     		
     		//Update all NovsInfoSigns with in-game player count information	
     		novswar.getGameHandler().updateInfoSigns();

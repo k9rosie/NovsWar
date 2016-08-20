@@ -37,4 +37,14 @@ public class NovsPlayerCache {
         }
         return null;
     }
+    
+    public ArrayList<NovsPlayer> getGamePlayers() {
+        ArrayList<NovsPlayer> inGamePlayers = new ArrayList<NovsPlayer>();
+        for(NovsPlayer aPlayer : players.values()) {
+            if(aPlayer.getTeam().equals(novswar.getNovsTeamCache().getDefaultTeam())==false) {
+                inGamePlayers.add(aPlayer);
+            }
+        }
+        return inGamePlayers;
+    }
 }

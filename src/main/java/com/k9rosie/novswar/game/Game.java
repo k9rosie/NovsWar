@@ -20,6 +20,7 @@ import com.k9rosie.novswar.util.Messages;
 import com.k9rosie.novswar.util.SendTitle;
 
 import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Team;
@@ -155,7 +156,7 @@ public class Game {
     	paused = true;
     	ChatUtil.sendBroadcast("Pausing Round");
         world.closeIntermissionGates();
-        for(NovsPlayer player : getGamePlayers()) {
+        for(NovsPlayer player : novsWar.getNovsPlayerCache().getGamePlayers()) {
         	if(player.isDead()) {
         		respawn(player);
         	} else {
@@ -390,19 +391,15 @@ public class Game {
             deathMessage = deathMessage.replace("%player_tcolor%", victim.getTeam().getColor().toString())
             		.replace("%player%", victim.getBukkitPlayer().getDisplayName());
         }
-        
         //Print death message to all players
         for (NovsPlayer p : novsWar.getNovsPlayerCache().getPlayers().values()) {
             if (p.canSeeDeathMessages()) {
                 p.getBukkitPlayer().sendMessage(deathMessage);
             }
         }
-        
     	//Evaluate assists
         NovsPlayer assistAttacker = victim.getAssistAttacker(attacker);
-
         victim.clearAttackers();
-        
         //Schedule death spectating
         scheduleDeath(victim, attacker, gamemode.getDeathTime());
         //Event calls
@@ -436,10 +433,7 @@ public class Game {
         //Set each observer for this player to a new target
         for(NovsPlayer observer : player.getSpectatorObservers()) {
         	ChatUtil.printDebug("    "+observer.getBukkitPlayer().getName());
-        	NovsPlayer newTarget = observer.nextSpectatorTarget(this); //sets the observer's target to another player
-        	if(newTarget != null) {
-        		newTarget.getSpectatorObservers().add(observer);
-        	}
+        	nextSpectatorTarget(observer);
         }
         //Clear this player's observer list
         player.getSpectatorObservers().clear();
@@ -447,16 +441,11 @@ public class Game {
         //If there is an attacker, set spectator target.
         if (spectatorTarget != null) {
         	ChatUtil.printDebug("...There is an attacker");
-        	player.setSpectatorTarget(spectatorTarget);
-        	spectatorTarget.getSpectatorObservers().add(player);
+        	setSpectatorTarget(player, spectatorTarget);
         } else {
         	//Check if there are available spectator targets
             ChatUtil.printDebug("...There is NO attacker");
-        	NovsPlayer noAttackerTarget = player.nextSpectatorTarget(this);
-        	if(noAttackerTarget != null) {
-        		ChatUtil.printDebug("...Found spectator target, adding to their observer list");
-        		noAttackerTarget.getSpectatorObservers().add(player);
-        	}
+            nextSpectatorTarget(player);
         }
         DeathTimer timer = new DeathTimer(this, seconds, player);
         timer.startTimer();
@@ -479,9 +468,9 @@ public class Game {
             NovsTeam team = player.getTeam();
             player.setDeath(false);
             //Remove this player from their target's observer list
-            NovsPlayer target = player.getSpectatorTarget();
-            if(target != null) {
-            	if (target.getSpectatorObservers().remove(player)==false) {
+            Player currentTarget = (Player) player.getBukkitPlayer().getSpectatorTarget();
+            if(currentTarget != null) {
+            	if (novsWar.getNovsPlayerCache().getPlayers().get(currentTarget).getSpectatorObservers().remove(player)==false) {
             		ChatUtil.printDebug("Failed to remove "+player.getBukkitPlayer().getName()+" from observer list");
             	}
             }
@@ -606,7 +595,11 @@ public class Game {
     public NovsWorld getWorld() {
     	return world;
     }
-
+    
+    public boolean isPaused() {
+        return paused;
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * Sends all in-game players to their spawns and balances the teams
      */
@@ -616,7 +609,7 @@ public class Game {
         messageTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(novsWar.getPlugin(), new Runnable() {
             public void run() {
                 ArrayList<NovsPlayer> autobalancePlayers = new ArrayList<NovsPlayer>();
-                for(NovsPlayer player : getGamePlayers()) {
+                for(NovsPlayer player : novsWar.getNovsPlayerCache().getGamePlayers()) {
                     SendTitle.sendTitle(player.getBukkitPlayer(), 0, 2000, 0, " ", "Team Auto-Balance in "+messageTime+"...");
                     autobalancePlayers.add(player);
                 }
@@ -653,7 +646,7 @@ public class Game {
             rotationMap.put(novsWar.getNovsTeamCache().getTeams().get(sourceIndex), novsWar.getNovsTeamCache().getTeams().get(targetIndex));
         }
         //Switch teams for each player in-game
-        for(NovsPlayer player : getGamePlayers()) {
+        for(NovsPlayer player : novsWar.getNovsPlayerCache().getGamePlayers()) {
             NovsTeam newTeam = rotationMap.get(player.getTeam());
             player.setTeam(newTeam);
             player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(newTeam));
@@ -662,17 +655,85 @@ public class Game {
         }
     }
 
-    public ArrayList<NovsPlayer> getGamePlayers() {
-        ArrayList<NovsPlayer> inGamePlayers = new ArrayList<NovsPlayer>();
-        for(NovsPlayer aPlayer : novsWar.getNovsPlayerCache().getPlayers().values()) {
-            if(aPlayer.getTeam().equals(novsWar.getNovsTeamCache().getDefaultTeam())==false) {
-                inGamePlayers.add(aPlayer);
-            }
-        }
-        return inGamePlayers;
-    }
+    
 
-    public boolean isPaused() {
-        return paused;
+///////////////////////////////////////////////////////////////////////////////////////
+    
+    public void setSpectatorTarget(NovsPlayer observer, NovsPlayer target) {
+    	if(target != null) {
+	    	ChatUtil.printDebug("Setting "+observer.getBukkitPlayer().getName()+"'s target to "+target.getBukkitPlayer().getName());
+	    	observer.getBukkitPlayer().teleport(target.getBukkitPlayer().getLocation());
+	    	observer.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
+	    	target.getSpectatorObservers().add(observer);
+	    	ChatUtil.sendNotice(observer, "Spectating "+target.getBukkitPlayer().getName());
+    	} else {
+    		ChatUtil.printDebug(observer.getBukkitPlayer().getName()+" is setting an invalid target");
+    		//Reset spectator target
+    		observer.getBukkitPlayer().setSpectatorTarget(null);
+    		if(observer.isSpectating()) {
+    			//player is spectating, return them to lobby
+    			quitSpectating(observer);
+    		} else {
+    			//Player is dead, tp them to their spawn
+    			observer.getBukkitPlayer().teleport(world.getTeamSpawnLoc(observer.getTeam()));
+    		}
+    	}
+    }
+    
+    public void nextSpectatorTarget(NovsPlayer observer) {
+    	NovsPlayer target = null;
+    	if(observer.isDead() || observer.isSpectating()) {
+    		
+	    	ChatUtil.printDebug(observer.getBukkitPlayer().getName()+" is switching spectator targets");
+	    	
+	    	NovsPlayer currentTarget = novsWar.getNovsPlayerCache().getPlayers().get(observer.getBukkitPlayer().getSpectatorTarget());
+	    	ArrayList<NovsPlayer> inGamePlayers = novsWar.getNovsPlayerCache().getGamePlayers();
+	        inGamePlayers.remove(observer);	//Remove this player from the options of spectator targets
+	        int index = inGamePlayers.indexOf(currentTarget); //if currentTarget is null, index will get -1
+	        int nextIndex = index + 1; //If currentTarget is null, nextIndex will be 0
+
+	        boolean foundValidTarget = false;
+	        if(inGamePlayers.size() > 0) {
+		        int watchdog = 0;
+		        while(foundValidTarget == false) {
+		        	if(nextIndex >= inGamePlayers.size()) {
+		                nextIndex = 0;
+		            }
+		        	NovsPlayer potentialTarget = inGamePlayers.get(nextIndex);
+		        	if(potentialTarget.isDead()==false) {
+		        		target = potentialTarget;
+		        		foundValidTarget = true;
+		        	}
+		        	if(watchdog >= inGamePlayers.size()){
+	                    ChatUtil.printDebug("Could not find valid spectator target");
+		        		break;
+		        	}
+		        	watchdog++;
+		        	nextIndex++;
+		        }
+	        }
+	        
+	        if(foundValidTarget) {
+                ChatUtil.printDebug("...New target is "+target.getBukkitPlayer().getName());
+	        } else {	
+	        	ChatUtil.printDebug("WARNING: nextSpectatorTarget could not find a valid target for player "+observer.getBukkitPlayer().getName());
+	        }
+	        setSpectatorTarget(observer, target);
+	        
+    	} else {
+            ChatUtil.printDebug("WARNING: Attempted to call nextSpectatorTarget on an alive/non-spectating player");
+    	}
+    }
+    
+    public void quitSpectating(NovsPlayer spectator) {
+    	if(spectator.isSpectating()) {
+    		spectator.setSpectating(false); //must occur BEFORE gamemode change
+    		spectator.getBukkitPlayer().teleport(novsWar.getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(novsWar.getNovsTeamCache().getDefaultTeam()));
+    		spectator.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
+            ChatUtil.sendBroadcast(spectator.getBukkitPlayer().getName()+" stopped spectating.");
+    	} else {
+    		ChatUtil.printDebug("WARNING: Attempted to call quitSpectating on a non-spectating player");
+    	}
+    	
     }
 }

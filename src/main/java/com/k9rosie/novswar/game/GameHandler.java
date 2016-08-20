@@ -64,7 +64,7 @@ public class GameHandler {
         	ChatUtil.printDebug(sign.getLocation().toString());
             sign.setLine(1, game.getWorld().getName());
             sign.setLine(2, game.getGamemode().getGamemodeName());
-            sign.setLine(3, game.getGamePlayers().size() + " players");
+            sign.setLine(3, novswar.getNovsPlayerCache().getGamePlayers().size() + " players");
             sign.update();
         }
     }

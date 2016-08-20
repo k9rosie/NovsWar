@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 public class NovsPlayer {
 
     private Player bukkitPlayer;
-    private NovsPlayer spectatorTarget;
+    //private NovsPlayer spectatorTarget;
     private ArrayList<NovsPlayer> spectatorObservers;
     private NovsStats stats;
     private NovsTeam team;
@@ -45,7 +45,7 @@ public class NovsPlayer {
         hasVoted = false;
         isShiftToggled = true;
         isGlobalChat = true;
-        spectatorTarget = null;
+        //spectatorTarget = null;
         spectatorObservers = new ArrayList<NovsPlayer>();
     }
     
@@ -180,7 +180,7 @@ public class NovsPlayer {
     public String getRegionNameBuffer() {
         return regionNameBuffer;
     }
-    
+    /*
     public void setSpectatorTarget(NovsPlayer target) {
     	if(target != null) {
 	    	ChatUtil.printDebug("Setting "+this.getBukkitPlayer().getName()+"'s target to "+target.getBukkitPlayer().getName());
@@ -191,16 +191,21 @@ public class NovsPlayer {
     	} else {
     		spectatorTarget = null;
     		bukkitPlayer.setSpectatorTarget(null);
+    		bukkitPlayer.teleport(game.getWorld().getTeamSpawnLoc(team));
     	}
-    }
+    }*/
     
     public ArrayList<NovsPlayer> getSpectatorObservers() {
     	return spectatorObservers;
     }
-    
+    /*
     public NovsPlayer getSpectatorTarget() {
     	return spectatorTarget;
     }
+    
+    public void setSpectatorTarget(NovsPlayer target) {
+    	spectatorTarget = target;
+    }*/
     
     public boolean isShiftToggled() {
     	return isShiftToggled;
@@ -215,7 +220,7 @@ public class NovsPlayer {
      * there is no available target, TPs player to their spawn.
      * @param game
      * @return The spectator target
-     */
+     *//*
     public NovsPlayer nextSpectatorTarget(Game game) {
     	NovsPlayer target = null;
     	if(isDead || isSpectating) {
@@ -253,12 +258,13 @@ public class NovsPlayer {
 	        		this.setSpectatorTarget(null);
 	        		bukkitPlayer.teleport(game.getWorld().getTeamSpawnLoc(team));
 	        		ChatUtil.printDebug("WARNING: nextSpectatorTarget could not find a valid target for player "+bukkitPlayer.getName());
+	        	} else {
+	        		
 	        	}
 	        }
     	} else {
             ChatUtil.printDebug("WARNING: Attempted to call nextSpectatorTarget on an alive/non-spectating player");
     	}
         return target;
-    }
-    
+    }*/
 }

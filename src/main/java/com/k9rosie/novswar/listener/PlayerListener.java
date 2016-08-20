@@ -388,6 +388,7 @@ public class PlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerToggleSneakEvent(PlayerToggleSneakEvent event) {
+    	Game game = novswar.getGameHandler().getGame();
         NovsPlayer player = novsPlayerCache.getPlayers().get(event.getPlayer());
 
         if (player.isDead() || player.isSpectating()) {
@@ -398,13 +399,9 @@ public class PlayerListener implements Listener {
         		//Switch spectator targets
         		player.setShiftToggled(false);
         		//Remove this player from their current target's observer list
-        		player.getSpectatorTarget().getSpectatorObservers().remove(player);
+        		novswar.getNovsPlayerCache().getPlayers().get(player.getBukkitPlayer().getSpectatorTarget()).getSpectatorObservers().remove(player);
         		//Set this player's next spectator target, if available
-        		NovsPlayer newTarget = player.nextSpectatorTarget(novswar.getGameHandler().getGame());
-        		if(newTarget != null) {
-        			//If there is a new target, add this player to their observer list
-        			newTarget.getSpectatorObservers().add(player);
-        		}
+        		game.nextSpectatorTarget(player);
         	} else {
         		player.setShiftToggled(true);
         	}
