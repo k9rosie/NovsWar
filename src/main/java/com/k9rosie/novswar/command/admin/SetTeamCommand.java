@@ -27,7 +27,7 @@ public class SetTeamCommand extends NovsCommand {
     	NovsTeam targetTeam = getNovsWar().getNovsTeamCache().getTeam(getArgs()[3]);
     	if(targetPlayer != null && targetTeam != null) {
     		System.out.println("Setting player "+targetPlayer.getBukkitPlayer().getName()+" to team "+targetTeam.getTeamName());
-    		game.forcePlayerTeam(targetPlayer, targetTeam);
+    		getNovsWar().getNovsTeamCache().forcePlayerTeam(targetPlayer, targetTeam);
     		NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(targetPlayer, game);
             Bukkit.getPluginManager().callEvent(invokeEvent);
     	} else {

@@ -4,7 +4,6 @@ package com.k9rosie.novswar.game;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.event.NovsWarEndGameEvent;
 import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
-import com.k9rosie.novswar.event.NovsWarJoinTeamEvent;
 import com.k9rosie.novswar.event.NovsWarNewGameEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerAssistEvent;
 import com.k9rosie.novswar.event.NovsWarPlayerDeathEvent;
@@ -41,8 +40,6 @@ public class Game {
     private BallotBox ballotBox;
     
     private int rounds;
-    private int messageTime;
-    private int messageTask;
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
         this.gameHandler = gameHandler;
@@ -75,12 +72,9 @@ public class Game {
                 }
             }
         }
-
         for (NovsTeam team : enabledTeams) {
         	team.getNovsScore().setScore(0);	//Resets all team's scores
         }
-
-
         for (NovsPlayer player : novsWar.getNovsPlayerCache().getPlayers().values()) {
         	player.setTeam(defaultTeam); // NovsPlayer now has private NovsTeam var
         	player.setSpectating(false); //remove from spectator mode
@@ -90,7 +84,6 @@ public class Game {
             player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
             player.getBukkitPlayer().setFoodLevel(20);
         }
-
         scoreboard.initialize();
         world.respawnBattlefields();
         NovsWarNewGameEvent event = new NovsWarNewGameEvent(this);
@@ -124,6 +117,8 @@ public class Game {
                     ChatUtil.printDebug("There was a problem getting the next NovsWorld. Using previous world.");
                 }
                 gameHandler.newGame(nextMap);
+                break;
+            default:
                 break;
             }
     }
@@ -271,7 +266,7 @@ public class Game {
                     	for (NovsTeam team : enabledTeams) {
                         	team.getNovsScore().setScore(0);	//Resets all team's scores
                         }
-                    	rotateTeams();
+                    	novsWar.getNovsTeamCache().rotateTeams();
                     	preGame();
                     } 
                 }
@@ -325,11 +320,9 @@ public class Game {
     		gameStateString = "";
     		break;
         }
-
         if (paused) {
             gameStateString = ChatColor.GRAY + "Game Paused ";
         }
-
         if (gameTimer.getSeconds() < 10) {
             secondsString = "0" + Integer.toString(gameTimer.getSeconds());
         } else if (gameTimer.getSeconds() <= 0) {
@@ -490,7 +483,7 @@ public class Game {
             ChatUtil.sendNotice(player, Messages.CANNOT_JOIN_GAME.toString());
             return;
         }
-        assignPlayerTeam(player);
+        novsWar.getNovsTeamCache().assignPlayerTeam(player);
         //Invoke event
         NovsWarJoinGameEvent event = new NovsWarJoinGameEvent(this, player);
         Bukkit.getServer().getPluginManager().callEvent(event);
@@ -514,52 +507,6 @@ public class Game {
         }
     }
     
-    public void assignPlayerTeam(NovsPlayer player) {
-    	// novsloadout has its own way of sorting players, only run this code if it isnt enabled
-        if (!Bukkit.getPluginManager().isPluginEnabled("NovsLoadout")) {
-        	//Determine which team has fewer players
-        	NovsTeam smallestTeam = enabledTeams.get(0);
-        	int smallest = smallestTeam.getPlayers().size();
-            for (NovsTeam team : enabledTeams) {
-            	if(team.getPlayers().size() <= smallest) {
-            		smallest = team.getPlayers().size();
-            		smallestTeam = team;
-            	}
-            }
-            forcePlayerTeam(player, smallestTeam);
-            
-        } else {
-        	
-        	//TODO Call NovsLoadout's sorting algorithm
-        	
-        }
-    }
-    
-    /**
-     * Sets a players team, health, hunger and teleports them to their team's spawn
-     * @param player
-     * @param team
-     */
-    public void forcePlayerTeam(NovsPlayer player, NovsTeam team) {
-    	NovsWarJoinTeamEvent event = new NovsWarJoinTeamEvent(this, player, team);
-        Bukkit.getServer().getPluginManager().callEvent(event);
-    	
-        if(event.isCancelled()==false) {
-        	String message;
-        	if(enabledTeams.contains(team)) {
-        		player.setTeam(team);
-        		//novsWar.printDebug("Assigning team "+team.getTeamName()+" location "+world.getTeamSpawns().get(team).toString());
-                player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(team));
-                player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
-                player.getBukkitPlayer().setFoodLevel(20);
-                message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
-        	} else {
-        		message = Messages.CANNOT_JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
-        	}
-        	ChatUtil.sendNotice(player,  message);
-        }
-    }
-    
     public void nextGame(NovsWorld world) {
     	if(gameTimer.getTaskID() != 0) { //if there is a running timer
 			System.out.println("Stopped timer");
@@ -567,98 +514,13 @@ public class Game {
 		}
 		gameHandler.newGame(world);
     }
-
-    public GameScoreboard getScoreboard() {
-        return scoreboard;
-    }
-
-    public GameHandler getGameHandler() {
-        return gameHandler;
-    }
-
-    public BallotBox getBallotBox() {
-    	return ballotBox;
-    }
     
-    public ArrayList<NovsTeam> getTeams() {
-    	return enabledTeams;
-    }
-
-    public Gamemode getGamemode() {
-        return gamemode;
-    }
-    
-    public GameState getGameState() {
-    	return gameState;
-    }
-    
-    public NovsWorld getWorld() {
-    	return world;
-    }
-    
-    public boolean isPaused() {
-        return paused;
-    }
-/////////////////////////////////////////////////////////////////////////////////////////////////
     /**
-     * Sends all in-game players to their spawns and balances the teams
+     * Sets the spectator target of observer. If there is an invalid target, dead players tp back
+     * to their spawns and spectators are forced out of spectate mode.
+     * @param observer
+     * @param target
      */
-    public void balanceTeams() {
-        pauseGame();
-        messageTime = 5;
-        messageTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(novsWar.getPlugin(), new Runnable() {
-            public void run() {
-                ArrayList<NovsPlayer> autobalancePlayers = new ArrayList<NovsPlayer>();
-                for(NovsPlayer player : novsWar.getNovsPlayerCache().getGamePlayers()) {
-                    SendTitle.sendTitle(player.getBukkitPlayer(), 0, 2000, 0, " ", "Team Auto-Balance in "+messageTime+"...");
-                    autobalancePlayers.add(player);
-                }
-                messageTime--;
-                if(messageTime <= 0) {
-                    Bukkit.getScheduler().cancelTask(messageTask);
-                    //Set every player's team to default
-                    for(NovsPlayer player : autobalancePlayers) {
-                        SendTitle.sendTitle(player.getBukkitPlayer(), 0, 0, 0, " ", "");
-                        player.setTeam(novsWar.getNovsTeamCache().getDefaultTeam());
-                    }
-                    //re-do the team sorting algorithm
-                    for(NovsPlayer player : autobalancePlayers) {
-                        assignPlayerTeam(player);
-                    }
-                    unpauseGame();
-                }
-            }
-        }, 0, 20);
-    }
-
-    /**
-     * Assigns all in-game players to the next team index in the NovsTeam array list
-     */
-    public void rotateTeams() {
-        HashMap<NovsTeam, NovsTeam> rotationMap = new HashMap<NovsTeam, NovsTeam>(); //key = source, value = target
-        int targetIndex = 0;
-        //Generate map for team switching
-        for(int sourceIndex = 0; sourceIndex < novsWar.getNovsTeamCache().getTeams().size(); sourceIndex++) {
-            targetIndex = sourceIndex + 1;
-            if(targetIndex >= novsWar.getNovsTeamCache().getTeams().size()) {
-                targetIndex = 0;
-            }
-            rotationMap.put(novsWar.getNovsTeamCache().getTeams().get(sourceIndex), novsWar.getNovsTeamCache().getTeams().get(targetIndex));
-        }
-        //Switch teams for each player in-game
-        for(NovsPlayer player : novsWar.getNovsPlayerCache().getGamePlayers()) {
-            NovsTeam newTeam = rotationMap.get(player.getTeam());
-            player.setTeam(newTeam);
-            player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(newTeam));
-            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
-            player.getBukkitPlayer().setFoodLevel(20);
-        }
-    }
-
-    
-
-///////////////////////////////////////////////////////////////////////////////////////
-    
     public void setSpectatorTarget(NovsPlayer observer, NovsPlayer target) {
     	if(target != null) {
 	    	ChatUtil.printDebug("Setting "+observer.getBukkitPlayer().getName()+"'s target to "+target.getBukkitPlayer().getName());
@@ -680,12 +542,14 @@ public class Game {
     	}
     }
     
+    /**
+     * Iterates through all in-game players and sets the spectator target to the new player.
+     * @param observer
+     */
     public void nextSpectatorTarget(NovsPlayer observer) {
     	NovsPlayer target = null;
     	if(observer.isDead() || observer.isSpectating()) {
-    		
 	    	ChatUtil.printDebug(observer.getBukkitPlayer().getName()+" is switching spectator targets");
-	    	
 	    	NovsPlayer currentTarget = novsWar.getNovsPlayerCache().getPlayers().get(observer.getBukkitPlayer().getSpectatorTarget());
 	    	ArrayList<NovsPlayer> inGamePlayers = novsWar.getNovsPlayerCache().getGamePlayers();
 	        inGamePlayers.remove(observer);	//Remove this player from the options of spectator targets
@@ -725,6 +589,10 @@ public class Game {
     	}
     }
     
+    /**
+     * Removes a lobby player from spectate mode
+     * @param spectator
+     */
     public void quitSpectating(NovsPlayer spectator) {
     	if(spectator.isSpectating()) {
     		spectator.setSpectating(false); //must occur BEFORE gamemode change
@@ -734,6 +602,39 @@ public class Game {
     	} else {
     		ChatUtil.printDebug("WARNING: Attempted to call quitSpectating on a non-spectating player");
     	}
-    	
+    }
+    
+    //Getters
+    
+    public GameScoreboard getScoreboard() {
+        return scoreboard;
+    }
+
+    public GameHandler getGameHandler() {
+        return gameHandler;
+    }
+
+    public BallotBox getBallotBox() {
+    	return ballotBox;
+    }
+    
+    public ArrayList<NovsTeam> getTeams() {
+    	return enabledTeams;
+    }
+
+    public Gamemode getGamemode() {
+        return gamemode;
+    }
+    
+    public GameState getGameState() {
+    	return gameState;
+    }
+    
+    public NovsWorld getWorld() {
+    	return world;
+    }
+    
+    public boolean isPaused() {
+        return paused;
     }
 }

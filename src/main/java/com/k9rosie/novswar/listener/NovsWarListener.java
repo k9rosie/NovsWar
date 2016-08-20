@@ -107,7 +107,7 @@ public class NovsWarListener implements Listener {
             					}
             				}
             				if(imbalanceFound) {
-            					novswar.getGameHandler().getGame().balanceTeams();
+            					novswar.getNovsTeamCache().balanceTeams();
             				}
             			}
             		}
