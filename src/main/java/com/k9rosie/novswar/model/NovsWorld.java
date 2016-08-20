@@ -42,17 +42,11 @@ public class NovsWorld {
     public HashMap<NovsTeam, Location> getTeamSpawns() {
         return teamSpawns;
     }
-    /*
-    public void saveRegionBlocks() {
-        for (NovsRegion region : regions.values()) {
-            region.saveBlocks();
-        }
-    }*/
     
     /**
-     * Saves all blocks only in Battlefield regions
+     * Saves all blocks in Battlefield and Intermission Gate regions
      */
-    public void saveBattlefieldBlocks() {
+    public void saveRegionBlocks() {
     	for (NovsRegion region : regions.values()) {
     		if(region.getRegionType().equals(RegionType.BATTLEFIELD) || region.getRegionType().equals(RegionType.INTERMISSION_GATE)) {
     			region.saveBlocks();
