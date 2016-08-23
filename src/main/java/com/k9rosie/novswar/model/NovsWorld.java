@@ -58,6 +58,7 @@ public class NovsWorld {
     	Location loc;
     	if(teamSpawns.containsKey(team)) {
     		loc = teamSpawns.get(team);
+    		ChatUtil.printDebug("Got location "+loc.toString()+" in world "+name);
     	} else {
     		loc = bukkitWorld.getSpawnLocation();
     		ChatUtil.printDebug("Oops! Tried to get team "+team.getTeamName()+" spawn but it wasn't in world "+name);

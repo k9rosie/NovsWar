@@ -59,13 +59,13 @@ public class SetSpawnCommand extends NovsCommand {
                 return;
             }
             
-            Location location = bukkitPlayer.getLocation();
-            double x = location.getX();
-            double y = location.getY();
-            double z = location.getZ();
-            float pitch = location.getPitch();
-            float yaw = location.getYaw();
-            world.getTeamSpawns().put(team, new Location(location.getWorld(), x, y, z, pitch, yaw));
+            //Location location = bukkitPlayer.getLocation();
+            //double x = location.getX();
+            //double y = location.getY();
+            //double z = location.getZ();
+            //float pitch = location.getPitch();
+            //float yaw = location.getYaw();
+            world.getTeamSpawns().put(team, bukkitPlayer.getLocation());//new Location(location.getWorld(), x, y, z, pitch, yaw));
             ChatUtil.sendNotice(bukkitPlayer, Messages.SPAWN_SET.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName()));
         }
     }
