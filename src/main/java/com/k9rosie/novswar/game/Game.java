@@ -607,12 +607,13 @@ public class Game {
     
     public void updateInfoSigns() {
     	ChatUtil.printDebug("Updating info signs...");
+    	int required = novsWar.getNovsConfigCache().getConfig("core").getInt("core.game.minimum_players");
         for (Sign sign : novsWar.getNovsWorldCache().getActiveSigns()) {
         	ChatUtil.printDebug(sign.getLocation().toString());
-            sign.setLine(0,  "§2InfoSign");
+            sign.setLine(0,  "§2Map Info");
         	sign.setLine(1, world.getName());
             sign.setLine(2, gamemode.getGamemodeName());
-            sign.setLine(3, novsWar.getNovsPlayerCache().getGamePlayers().size() + " players");
+            sign.setLine(3, novsWar.getNovsPlayerCache().getGamePlayers().size() + "/"+required+" players");
             sign.update(true);
         }
     }
