@@ -85,10 +85,6 @@ public class TeamManager {
             }
             forcePlayerTeam(player, smallestTeam);
             
-        } else {
-        	
-        	//TODO Call NovsLoadout's sorting algorithm
-        	
         }
     }
     

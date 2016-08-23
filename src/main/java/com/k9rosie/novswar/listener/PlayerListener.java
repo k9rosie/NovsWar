@@ -5,7 +5,7 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.command.CommandType;
-import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
+import com.k9rosie.novswar.event.NovsWarJoinServerEvent;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
 import com.k9rosie.novswar.event.NovsWarRegionEnterEvent;
 import com.k9rosie.novswar.event.NovsWarRegionExitEvent;
@@ -65,7 +65,7 @@ public class PlayerListener implements Listener {
 
         player.getStats().incrementConnects();
         ChatUtil.printDebug("Player count: " + novswar.getNovsPlayerCache().getPlayers().values().size());
-        NovsWarJoinGameEvent invokeEvent = new NovsWarJoinGameEvent(game, player);
+        NovsWarJoinServerEvent invokeEvent = new NovsWarJoinServerEvent(player);
         Bukkit.getPluginManager().callEvent(invokeEvent);
     }
 

@@ -484,10 +484,12 @@ public class Game {
             ChatUtil.sendNotice(player, Messages.CANNOT_JOIN_GAME.toString());
             return;
         }
-        novsWar.getNovsTeamCache().assignPlayerTeam(player);
         //Invoke event
         NovsWarJoinGameEvent event = new NovsWarJoinGameEvent(this, player);
         Bukkit.getServer().getPluginManager().callEvent(event);
+        if(event.isCancelled()==false) {
+        	novsWar.getNovsTeamCache().assignPlayerTeam(player);
+        }
         
         if (checkPlayerCount()) {
         	switch (gameState) {
