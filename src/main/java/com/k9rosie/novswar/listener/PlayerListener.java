@@ -336,11 +336,11 @@ public class PlayerListener implements Listener {
         NovsPlayer player = novsPlayerCache.getPlayers().get(bukkitPlayer);
         NovsWorld currentGameWorld = novswar.getGameHandler().getGame().getWorld();
         Game game = novswar.getGameHandler().getGame();
-
+        /*
         if (player.isDead() && (bukkitPlayer.getSpectatorTarget() == null)) {
             event.getTo().setDirection(event.getFrom().getDirection());
             return;
-        }
+        }*/
         
         for (NovsRegion region : currentGameWorld.getRegions().values()) {
         	

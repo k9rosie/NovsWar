@@ -57,7 +57,7 @@ public class WorldListener implements Listener {
         		} else {
         			world.getSigns().put(block.getLocation(), (Sign) block.getState());
 					ChatUtil.sendNotice(event.getPlayer(), "Created Info Sign in world "+block.getWorld());
-					novswar.getGameHandler().updateInfoSigns();
+					novswar.getGameHandler().getGame().updateInfoSigns();
         		}
         	}
     	}

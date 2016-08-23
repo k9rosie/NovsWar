@@ -58,15 +58,4 @@ public class GameHandler {
         return scoreboardManager;
     }
 
-    public void updateInfoSigns() {
-    	ChatUtil.printDebug("Updating info signs...");
-        for (Sign sign : novswar.getNovsWorldCache().getActiveSigns()) {
-        	ChatUtil.printDebug(sign.getLocation().toString());
-            sign.setLine(0,  "§2InfoSign");
-        	sign.setLine(1, game.getWorld().getName());
-            sign.setLine(2, game.getGamemode().getGamemodeName());
-            sign.setLine(3, novswar.getNovsPlayerCache().getGamePlayers().size() + " players");
-            sign.update(true);
-        }
-    }
 }
