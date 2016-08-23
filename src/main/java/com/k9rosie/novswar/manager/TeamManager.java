@@ -99,23 +99,20 @@ public class TeamManager {
      */
     public void forcePlayerTeam(NovsPlayer player, NovsTeam team) {
     	Game game = novswar.getGameHandler().getGame();
+    	String message;
+    	if(game.getTeams().contains(team)) {
+    		player.setTeam(team);
+    		//novsWar.printDebug("Assigning team "+team.getTeamName()+" location "+world.getTeamSpawns().get(team).toString());
+            player.getBukkitPlayer().teleport(game.getWorld().getTeamSpawnLoc(team));
+            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+            player.getBukkitPlayer().setFoodLevel(20);
+            message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
+    	} else {
+    		message = Messages.CANNOT_JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
+    	}
+    	ChatUtil.sendNotice(player,  message);
     	NovsWarJoinTeamEvent event = new NovsWarJoinTeamEvent(game, player, team);
         Bukkit.getServer().getPluginManager().callEvent(event);
-    	
-        if(event.isCancelled()==false) {
-        	String message;
-        	if(game.getTeams().contains(team)) {
-        		player.setTeam(team);
-        		//novsWar.printDebug("Assigning team "+team.getTeamName()+" location "+world.getTeamSpawns().get(team).toString());
-                player.getBukkitPlayer().teleport(game.getWorld().getTeamSpawnLoc(team));
-                player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
-                player.getBukkitPlayer().setFoodLevel(20);
-                message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
-        	} else {
-        		message = Messages.CANNOT_JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
-        	}
-        	ChatUtil.sendNotice(player,  message);
-        }
     }
     
     /**
