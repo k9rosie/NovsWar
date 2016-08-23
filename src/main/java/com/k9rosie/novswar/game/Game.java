@@ -82,6 +82,7 @@ public class Game {
         	player.getSpectatorObservers().clear(); //clear spectators
             player.getBukkitPlayer().teleport(novsWar.getNovsWorldCache().getLobbyWorld().getTeamSpawnLoc(defaultTeam));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
+            player.getBukkitPlayer().setHealth(19);//force a health change to update the health status objective
             player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
             player.getBukkitPlayer().setFoodLevel(20);
         }

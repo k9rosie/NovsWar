@@ -20,6 +20,7 @@ import com.k9rosie.novswar.util.RegionType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
@@ -62,6 +63,10 @@ public class PlayerListener implements Listener {
         novswar.getNovsTeamCache().getDefaultTeam().getScoreboardTeam().addEntry(player.getBukkitPlayer().getDisplayName());
         bukkitPlayer.setScoreboard(game.getScoreboard().getBukkitScoreboard());
         bukkitPlayer.teleport(novswar.getNovsWorldCache().getLobbyWorld().getTeamSpawnLoc(defaultTeam));
+        bukkitPlayer.setGameMode(GameMode.SURVIVAL);
+        bukkitPlayer.setHealth(19);
+        bukkitPlayer.setHealth(bukkitPlayer.getMaxHealth());
+        bukkitPlayer.setFoodLevel(20);
 
         player.getStats().incrementConnects();
         ChatUtil.printDebug("Player count: " + novswar.getNovsPlayerCache().getPlayers().values().size());

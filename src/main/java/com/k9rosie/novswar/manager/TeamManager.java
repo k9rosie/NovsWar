@@ -100,6 +100,7 @@ public class TeamManager {
     		player.setTeam(team);
     		//novsWar.printDebug("Assigning team "+team.getTeamName()+" location "+world.getTeamSpawns().get(team).toString());
             player.getBukkitPlayer().teleport(game.getWorld().getTeamSpawnLoc(team));
+            player.getBukkitPlayer().setHealth(19);//force a health change to update health objective
             player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
             player.getBukkitPlayer().setFoodLevel(20);
             message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
