@@ -1,15 +1,15 @@
 package com.k9rosie.novswar;
 
-import com.k9rosie.novswar.cache.NovsPlayerCache;
-import com.k9rosie.novswar.cache.NovsTeamCache;
+import com.k9rosie.novswar.manager.PlayerManager;
+import com.k9rosie.novswar.manager.TeamManager;
 import com.k9rosie.novswar.command.CommandHandler;
-import com.k9rosie.novswar.cache.NovsConfigCache;
+import com.k9rosie.novswar.manager.ConfigManager;
 import com.k9rosie.novswar.database.DatabaseThread;
 import com.k9rosie.novswar.database.NovswarDB;
 import com.k9rosie.novswar.event.NovsWarInitializationEvent;
 import com.k9rosie.novswar.game.GameHandler;
 import com.k9rosie.novswar.gamemode.Gamemode;
-import com.k9rosie.novswar.cache.NovsWorldCache;
+import com.k9rosie.novswar.manager.WorldManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -24,10 +24,10 @@ public class NovsWar {
 	private NovsWarPlugin plugin;
 	private static NovsWar instance;
 	
-	private NovsConfigCache novsConfigCache;
-	private NovsTeamCache novsTeamCache;
-	private NovsPlayerCache novsPlayerCache;
-	private NovsWorldCache novsWorldCache;
+	private ConfigManager novsConfigCache;
+	private TeamManager novsTeamCache;
+	private PlayerManager novsPlayerCache;
+	private WorldManager novsWorldCache;
 	private DatabaseThread databaseThread;
 	private CommandHandler commandHandler;
 	private GameHandler gameHandler;
@@ -38,10 +38,10 @@ public class NovsWar {
 		this.plugin = plugin;
 		instance = this;
 		
-		novsConfigCache = new NovsConfigCache(this);
-		novsTeamCache = new NovsTeamCache(this);
-		novsPlayerCache = new NovsPlayerCache(this);
-		novsWorldCache = new NovsWorldCache(this);
+		novsConfigCache = new ConfigManager(this);
+		novsTeamCache = new TeamManager(this);
+		novsPlayerCache = new PlayerManager(this);
+		novsWorldCache = new WorldManager(this);
 		databaseThread = new DatabaseThread(this);
 		commandHandler = new CommandHandler(this);
 		gameHandler = new GameHandler(this);
@@ -68,19 +68,19 @@ public class NovsWar {
 		return plugin;
 	}
 
-	public NovsConfigCache getNovsConfigCache() {
+	public ConfigManager getNovsConfigCache() {
 		return novsConfigCache;
 	}
 	
-	public NovsTeamCache getNovsTeamCache() {
+	public TeamManager getNovsTeamCache() {
 		return novsTeamCache;
 	}
 
-	public NovsWorldCache getNovsWorldCache() {
+	public WorldManager getNovsWorldCache() {
 		return novsWorldCache;
 	}
 
-	public NovsPlayerCache getNovsPlayerCache() {
+	public PlayerManager getNovsPlayerCache() {
 		return novsPlayerCache;
 	}
     

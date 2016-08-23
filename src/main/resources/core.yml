@@ -14,7 +14,7 @@ core:
     # the prefix for database tables
     prefix: nw_
 
-    # the amount of time in seconds the server will wait before flushing the cache
+    # the amount of time in seconds the server will wait before flushing the manager
     flush_interval: 60
 
     # mysql settings

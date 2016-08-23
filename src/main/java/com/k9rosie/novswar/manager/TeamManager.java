@@ -1,4 +1,4 @@
-package com.k9rosie.novswar.cache;
+package com.k9rosie.novswar.manager;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.event.NovsWarJoinTeamEvent;
@@ -16,7 +16,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.*;
 
-public class NovsTeamCache {
+public class TeamManager {
 
     private NovsWar novswar;
     private ArrayList<NovsTeam> teams;
@@ -24,7 +24,7 @@ public class NovsTeamCache {
     private int messageTime;
     private int messageTask;
 
-    public NovsTeamCache(NovsWar novswar) {
+    public TeamManager(NovsWar novswar) {
         this.novswar = novswar;
         teams = new ArrayList<NovsTeam>();
         messageTime = 0;

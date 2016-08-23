@@ -3,7 +3,7 @@ package com.k9rosie.novswar.listener;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
-import com.k9rosie.novswar.cache.NovsPlayerCache;
+import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.command.CommandType;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
 import com.k9rosie.novswar.event.NovsWarRegionEnterEvent;
@@ -39,7 +39,7 @@ import org.bukkit.inventory.ItemStack;
 public class PlayerListener implements Listener {
 
     private NovsWar novswar;
-    private NovsPlayerCache novsPlayerCache;
+    private PlayerManager novsPlayerCache;
 
     public PlayerListener(NovsWarPlugin plugin) {
         novswar = plugin.getNovswarInstance();
