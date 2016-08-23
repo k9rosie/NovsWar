@@ -44,7 +44,7 @@ public class NovsWarListener implements Listener {
     public void onNovsWarNewGame(NovsWarNewGameEvent event) {
     	//Update all NovsInfoSigns with new round information	
     	ChatUtil.printDebug("NovsWar New Game event!");
-		novswar.getGameHandler().updateInfoSigns();
+		//novswar.getGameHandler().updateInfoSigns();
     }
     
     /**

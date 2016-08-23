@@ -88,7 +88,7 @@ public class Game {
         world.respawnBattlefields();
         NovsWarNewGameEvent event = new NovsWarNewGameEvent(this);
         Bukkit.getPluginManager().callEvent(event);
-
+        novsWar.getGameHandler().updateInfoSigns();
         waitForPlayers();
     }
 
