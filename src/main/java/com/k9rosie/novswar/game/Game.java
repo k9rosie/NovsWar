@@ -19,6 +19,7 @@ import com.k9rosie.novswar.util.Messages;
 import com.k9rosie.novswar.util.SendTitle;
 
 import org.bukkit.*;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -88,7 +89,7 @@ public class Game {
         world.respawnBattlefields();
         NovsWarNewGameEvent event = new NovsWarNewGameEvent(this);
         Bukkit.getPluginManager().callEvent(event);
-        novsWar.getGameHandler().updateInfoSigns();
+        updateInfoSigns();
         waitForPlayers();
     }
 
@@ -602,6 +603,18 @@ public class Game {
     	} else {
     		ChatUtil.printDebug("WARNING: Attempted to call quitSpectating on a non-spectating player");
     	}
+    }
+    
+    public void updateInfoSigns() {
+    	ChatUtil.printDebug("Updating info signs...");
+        for (Sign sign : novsWar.getNovsWorldCache().getActiveSigns()) {
+        	ChatUtil.printDebug(sign.getLocation().toString());
+            sign.setLine(0,  "§2InfoSign");
+        	sign.setLine(1, world.getName());
+            sign.setLine(2, gamemode.getGamemodeName());
+            sign.setLine(3, novsWar.getNovsPlayerCache().getGamePlayers().size() + " players");
+            sign.update(true);
+        }
     }
     
     //Getters

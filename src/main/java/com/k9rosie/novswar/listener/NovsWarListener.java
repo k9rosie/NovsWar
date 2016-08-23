@@ -55,7 +55,7 @@ public class NovsWarListener implements Listener {
     public void onNovsWarJoinTeam(NovsWarJoinTeamEvent event) {
     	//Update all NovsInfoSigns with in-game player count information	
     	ChatUtil.printDebug("NovsWar Join Team event!");
-    	novswar.getGameHandler().updateInfoSigns();
+    	event.getGame().updateInfoSigns();
     }
     
     /**
@@ -71,7 +71,7 @@ public class NovsWarListener implements Listener {
     		int inGamePlayerCount = novswar.getNovsPlayerCache().getGamePlayers().size();
     		
     		//Update all NovsInfoSigns with in-game player count information	
-    		novswar.getGameHandler().updateInfoSigns();
+    		event.getGame().updateInfoSigns();
 
     		//Assess in-game players
     		if(game.getGameState().equals(GameState.PRE_GAME) || game.getGameState().equals(GameState.DURING_GAME)) {
