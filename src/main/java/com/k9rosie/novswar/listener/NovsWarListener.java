@@ -43,6 +43,7 @@ public class NovsWarListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onNovsWarNewGame(NovsWarNewGameEvent event) {
     	//Update all NovsInfoSigns with new round information	
+    	ChatUtil.printDebug("NovsWar New Game event!");
 		novswar.getGameHandler().updateInfoSigns();
     }
     
@@ -53,6 +54,7 @@ public class NovsWarListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onNovsWarJoinTeam(NovsWarJoinTeamEvent event) {
     	//Update all NovsInfoSigns with in-game player count information	
+    	ChatUtil.printDebug("NovsWar Join Team event!");
     	novswar.getGameHandler().updateInfoSigns();
     }
     
@@ -64,6 +66,7 @@ public class NovsWarListener implements Listener {
     public void onNovsWarLeaveTeamModify(NovsWarLeaveTeamEvent event) {
     	Game game = event.getGame();
     	if(event.isCancelled() == false) {
+    		ChatUtil.printDebug("NovsWar Leave Team event!");
     		//Count the number of players still in-game
     		int inGamePlayerCount = novswar.getNovsPlayerCache().getGamePlayers().size();
     		
