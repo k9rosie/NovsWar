@@ -20,7 +20,6 @@ public class TeamManager {
 
     private NovsWar novswar;
     private ArrayList<NovsTeam> teams;
-    private NovsTeam defaultTeam;
     private int messageTime;
     private int messageTask;
 

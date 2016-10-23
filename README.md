@@ -1,4 +1,4 @@
-# NovsWar [![Build Status](https://jenkins.k9rosie.com/buildStatus/icon?job=novswar)](https://jenkins.k9rosie.com/job/novswar/)
+# NovsWar [![Build Status](https://travis-ci.org/novswar/novswar.svg?branch=master)](https://travis-ci.org/novswar/novswar)
 
 a monolithic Bukkit plugin for team-based player-versus-player combat.
 currently under development.
