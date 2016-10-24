@@ -418,12 +418,16 @@ public class Game {
         player.setDeath(true);
         player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
         player.getBukkitPlayer().setFoodLevel(20);
+
         for(PotionEffect effect : player.getBukkitPlayer().getActivePotionEffects()) {
         	player.getBukkitPlayer().removePotionEffect(effect.getType());
         }
         player.getBukkitPlayer().getWorld().playEffect(player.getBukkitPlayer().getLocation(), Effect.SMOKE, 30, 2);
         player.getBukkitPlayer().getWorld().playSound(player.getBukkitPlayer().getLocation(), Sound.ENTITY_WITCH_DEATH, 5, 0.5f);
-        
+
+        player.getBukkitPlayer().setWalkSpeed(0f);
+        player.getBukkitPlayer().setFlySpeed(0f);
+
         ChatUtil.printDebug("..."+player.getBukkitPlayer().getName()+" died and has observers: ");
         //Set each observer for this player to a new target
         for(NovsPlayer observer : player.getSpectatorObservers()) {
@@ -471,6 +475,8 @@ public class Game {
             }
             player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(team));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
+            player.getBukkitPlayer().setWalkSpeed(0.2f);
+            player.getBukkitPlayer().setFlySpeed(0.2f);
             //Invoke Event
             NovsWarPlayerRespawnEvent invokeEvent = new NovsWarPlayerRespawnEvent(player, this);
 	        Bukkit.getPluginManager().callEvent(invokeEvent);
@@ -654,4 +660,6 @@ public class Game {
     public boolean isPaused() {
         return paused;
     }
+
+    public HashMap<NovsPlayer, DeathTimer> getDeathTimers() { return deathTimers; }
 }

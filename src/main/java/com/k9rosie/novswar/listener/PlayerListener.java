@@ -3,6 +3,7 @@ package com.k9rosie.novswar.listener;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
+import com.k9rosie.novswar.game.DeathTimer;
 import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.command.CommandType;
 import com.k9rosie.novswar.event.NovsWarJoinServerEvent;
@@ -18,6 +19,7 @@ import com.k9rosie.novswar.model.NovsWorld;
 import com.k9rosie.novswar.util.ChatUtil;
 import com.k9rosie.novswar.util.RegionType;
 
+import com.k9rosie.novswar.util.SendTitle;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -67,7 +69,7 @@ public class PlayerListener implements Listener {
         bukkitPlayer.setHealth(19);
         bukkitPlayer.setHealth(bukkitPlayer.getMaxHealth());
         bukkitPlayer.setFoodLevel(20);
-
+        SendTitle.sendTitle(bukkitPlayer, 0, 2000, 0, " ", ""); // clear any title messages they may have
         player.getStats().incrementConnects();
         ChatUtil.printDebug("Player count: " + novswar.getNovsPlayerCache().getPlayers().values().size());
         NovsWarJoinServerEvent invokeEvent = new NovsWarJoinServerEvent(player);
@@ -116,12 +118,21 @@ public class PlayerListener implements Listener {
         Player bukkitPlayer = event.getPlayer();
         NovsPlayer player = novsPlayerCache.getPlayers().get(bukkitPlayer);
 
+        player.getBukkitPlayer().setWalkSpeed(0.2f);
+        player.getBukkitPlayer().setFlySpeed(0.2f);
+
         novswar.getDatabase().flushPlayerData(player);
         novsPlayerCache.getPlayers().remove(bukkitPlayer);
         if(player.getTeam().equals(novswar.getNovsTeamCache().getDefaultTeam())==false) {
         	//If player is on a team, invoke event
         	NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(player, game);
             Bukkit.getPluginManager().callEvent(invokeEvent);
+        }
+
+        if (game.getDeathTimers().containsKey(player)) { // if, for some reason, a death timer exists for a player when they exit the game
+            DeathTimer deathTimer = game.getDeathTimers().get(player);
+            deathTimer.stopTimer();
+            game.getDeathTimers().remove(player);
         }
         //System.out.println("Player count: " + novswar.getNovsPlayerCache().getPlayers().values().size());
     }
