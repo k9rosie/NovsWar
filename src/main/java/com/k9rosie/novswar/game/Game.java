@@ -74,7 +74,12 @@ public class Game {
             }
         }
         for (NovsTeam team : enabledTeams) {
-        	team.getNovsScore().setScore(0);	//Resets all team's scores
+            switch (gamemode.getScoreType()) {
+                case ASCENDING:
+                    team.getNovsScore().setScore(0);
+                case DESCENDING:
+                    team.getNovsScore().setScore(gamemode.getMaxScore());
+            }
         }
         for (NovsPlayer player : novsWar.getNovsPlayerCache().getPlayers().values()) {
         	player.setTeam(defaultTeam); // NovsPlayer now has private NovsTeam var
