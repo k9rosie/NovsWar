@@ -414,7 +414,7 @@ public class Game {
 	        Bukkit.getPluginManager().callEvent(invokeEvent);
         } else { //if there isn't an attacker, increment suicides
         	victim.getStats().incrementSuicides();
-        	NovsWarPlayerDeathEvent invokeEvent = new NovsWarPlayerDeathEvent(victim, victim.getTeam(), this);
+        	NovsWarPlayerDeathEvent invokeEvent = new NovsWarPlayerDeathEvent(victim, victim.getTeam(), true, this);
 	        Bukkit.getPluginManager().callEvent(invokeEvent);
         }
         if(assistAttacker != null) {

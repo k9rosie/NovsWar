@@ -377,11 +377,16 @@ public class PlayerListener implements Listener {
                 	}
                 	break;
                 case DEATH_REGION :
-                	//Determine the player that has done the most damage
-                	NovsPlayer attacker = player.getAssistAttacker(null);
-                	//if attacker is null, there are no damagers
-                	game.killPlayer(player, attacker, false);
-                	event.setCancelled(true);
+                    if (game.getGameState() == GameState.DURING_GAME) {
+                        //Determine the player that has done the most damage
+                        NovsPlayer attacker = player.getAssistAttacker(null);
+                        //if attacker is null, there are no damagers
+                        game.killPlayer(player, attacker, false);
+                        event.setCancelled(true);
+                    } else {
+                        player.getBukkitPlayer().teleport(game.getWorld().getTeamSpawnLoc(player.getTeam()));
+                        event.setCancelled(true);
+                    }
                 	break;
                 default :
                 	break;

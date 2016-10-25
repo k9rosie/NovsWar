@@ -9,7 +9,7 @@ public class NovsWarPlayerKillEvent extends NovsWarPlayerDeathEvent {
     private NovsTeam attackerTeam;
 
     public NovsWarPlayerKillEvent(NovsPlayer victim, NovsPlayer attacker, NovsTeam victimTeam, NovsTeam attackerTeam, Game game) {
-        super(victim, victimTeam, game);
+        super(victim, victimTeam, false, game);
         this.attacker = attacker;
         this.attackerTeam = attackerTeam;
     }

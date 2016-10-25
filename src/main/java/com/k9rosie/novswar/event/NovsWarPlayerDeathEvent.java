@@ -13,11 +13,13 @@ public class NovsWarPlayerDeathEvent extends Event {
     private NovsTeam victimTeam;
     private Game game;
     private boolean cancelled;
+    private boolean suicide;
 
-    public NovsWarPlayerDeathEvent(NovsPlayer victim, NovsTeam victimTeam, Game game) {
+    public NovsWarPlayerDeathEvent(NovsPlayer victim, NovsTeam victimTeam, boolean suicide, Game game) {
         this.game = game;
         this.victim = victim;
         this.victimTeam = victimTeam;
+        this.suicide = true;
         cancelled = false;
     }
 
@@ -28,6 +30,8 @@ public class NovsWarPlayerDeathEvent extends Event {
     public NovsTeam getVictimTeam() {
         return victimTeam;
     }
+
+    public boolean isSuicide() { return suicide; }
 
     public Game getGame() {
         return game;
