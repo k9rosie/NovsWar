@@ -8,10 +8,6 @@ version = '1.0.0-SNAPSHOT'
 
 repositories {
   maven {
-    credentials {
-      username System.env.NEXUS_CREDENTIALS_USERNAME
-      password System.env.NEXUS_CREDENTIALS_PASSWORD
-    }
     url "https://nexus.k9rosie.com/content/groups/public"
   }
 }

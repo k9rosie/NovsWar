@@ -271,7 +271,12 @@ public class Game {
                 		//Start a new round
                     	rounds--;
                     	for (NovsTeam team : enabledTeams) {
-                        	team.getNovsScore().setScore(0);	//Resets all team's scores
+                            switch (gamemode.getScoreType()) {
+                                case ASCENDING:
+                                    team.getNovsScore().setScore(0);
+                                case DESCENDING:
+                                    team.getNovsScore().setScore(gamemode.getMaxScore());
+                            }
                         }
                     	novsWar.getNovsTeamCache().rotateTeams();
                     	preGame();
@@ -405,7 +410,7 @@ public class Game {
         //Event calls
         ChatUtil.printDebug("...Calling events");
         if(attacker != null) { //if there is an attacker, invoke kill event
-	        NovsWarPlayerKillEvent invokeEvent = new NovsWarPlayerKillEvent(attacker, victim, attacker.getTeam(), victim.getTeam(), this);
+	        NovsWarPlayerKillEvent invokeEvent = new NovsWarPlayerKillEvent(victim, attacker, victim.getTeam(), attacker.getTeam(), this);
 	        Bukkit.getPluginManager().callEvent(invokeEvent);
         } else { //if there isn't an attacker, increment suicides
         	victim.getStats().incrementSuicides();

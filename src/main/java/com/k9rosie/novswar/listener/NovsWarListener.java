@@ -31,20 +31,22 @@ public class NovsWarListener implements Listener {
         NovsScore score = event.getNovsScore();
         Game game = novswar.getGameHandler().getGame();
         int maxScore = game.getGamemode().getMaxScore();
-		switch (game.getGamemode().getScoreType()) {
-            case ASCENDING:
-                if (score.getScore() >= maxScore) {
-                    game.endGame();
-                }
-            case DESCENDING:
-                if (score.getScore() <= 0) {
-                    game.endGame();
-                }
-            default:
-                if (score.getScore() >= maxScore) {
-                    game.endGame();
-                }
-        }
+		if (game.getGameState().equals(GameState.DURING_GAME)) {
+			switch (game.getGamemode().getScoreType()) {
+				case ASCENDING:
+					if (score.getScore() >= maxScore) {
+						game.endGame();
+					}
+				case DESCENDING:
+					if (score.getScore() <= 0) {
+						game.endGame();
+					}
+				default:
+					if (score.getScore() >= maxScore) {
+						game.endGame();
+					}
+			}
+		}
 
     }
     
