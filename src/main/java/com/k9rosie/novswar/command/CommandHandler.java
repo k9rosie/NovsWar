@@ -29,6 +29,7 @@ public class CommandHandler implements CommandExecutor {
         if (args.length >= 1) {
         	//Get command type. If args[0] is not a command, defaults to HELP
         	CommandType commandArg = CommandType.getCommand(args[0]);
+            sender.sendMessage(commandArg.permission());
         	if (sender.hasPermission(commandArg.permission())) {
         		switch (commandArg) {
                 case ADMIN:
