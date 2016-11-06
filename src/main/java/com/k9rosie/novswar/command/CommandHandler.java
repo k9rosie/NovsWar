@@ -5,6 +5,7 @@ import com.k9rosie.novswar.command.admin.AdminCommand;
 import com.k9rosie.novswar.util.ChatUtil;
 import com.k9rosie.novswar.util.Messages;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,9 +20,16 @@ public class CommandHandler implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!(sender instanceof Player)) {
+            Bukkit.getLogger().info("You need to be a player to issue commands.");
+            return false;
+        }
         if (args.length == 0) {
             if (sender.hasPermission("novswar.command")) {
                 new BaseCommand(novsWar, sender).execute();
+                return true;
+            } else {
+                ChatUtil.sendError((Player) sender, Messages.NO_PERMISSION.toString());
                 return true;
             }
         }
@@ -29,7 +37,6 @@ public class CommandHandler implements CommandExecutor {
         if (args.length >= 1) {
         	//Get command type. If args[0] is not a command, defaults to HELP
         	CommandType commandArg = CommandType.getCommand(args[0]);
-            sender.sendMessage(commandArg.permission());
         	if (sender.hasPermission(commandArg.permission())) {
         		switch (commandArg) {
                 case ADMIN:
@@ -71,6 +78,7 @@ public class CommandHandler implements CommandExecutor {
         		}
         	} else {
                 ChatUtil.sendError((Player) sender, Messages.NO_PERMISSION.toString());
+                return true;
         	}
         }
         return false;

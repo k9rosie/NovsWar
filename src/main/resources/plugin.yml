@@ -10,3 +10,73 @@ commands:
     description: Base NovsWar command
     usage: /<command> [options]
     permission: novswar.command
+permissions:
+  novswar.*:
+    description: Gives access to all Novswar permissions
+    children:
+      novswar.command: true
+    default: op
+
+  novswar.command:
+    description: Gives access to base Novswar permission
+    default: true
+
+  novswar.command.*:
+    description: Gives access to all Novswar commands
+    default: op
+    children:
+      novswar.command.help: true
+      novswar.command.join: true
+      novswar.command.leave: true
+      novswar.command.map: true
+      novswar.command.player: true
+      novswar.command.spectate: true
+      novswar.command.team: true
+      novswar.command.vote: true
+      novswar.command.deathmessage: true
+      novswar.command.chat: true
+      novswar.command.admin: true
+
+  novswar.command.help:
+    description: Help command
+    default: true
+
+  novswar.command.join:
+    description: Join command
+    default: true
+
+  novswar.command.leave:
+    description: Leave command
+    default: true
+
+  novswar.command.map:
+    description: Map command
+    default: true
+
+  novswar.command.player:
+    description: Player command
+    default: true
+
+  novswar.command.spectate:
+    description: Spectate command
+    default: true
+
+  novswar.command.team:
+    description: Team command
+    default: true
+
+  novswar.command.vote:
+    description: Vote command
+    default: true
+
+  novswar.command.deathmessage:
+    description: Death message command
+    default: true
+
+  novswar.command.chat:
+    description: Chat command
+    default: true
+
+  novswar.command.admin:
+    description: Base admin command
+    default: op
