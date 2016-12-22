@@ -25,6 +25,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -67,7 +68,7 @@ public class PlayerListener implements Listener {
         bukkitPlayer.teleport(novswar.getNovsWorldCache().getLobbyWorld().getTeamSpawnLoc(defaultTeam));
         bukkitPlayer.setGameMode(GameMode.SURVIVAL);
         bukkitPlayer.setHealth(19);
-        bukkitPlayer.setHealth(bukkitPlayer.getMaxHealth());
+        bukkitPlayer.setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         bukkitPlayer.setFoodLevel(20);
         SendTitle.sendTitle(bukkitPlayer, 0, 2000, 0, " ", ""); // clear any title messages they may have
         player.getStats().incrementConnects();

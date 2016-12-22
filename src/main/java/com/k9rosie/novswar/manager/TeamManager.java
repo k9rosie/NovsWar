@@ -12,6 +12,7 @@ import com.k9rosie.novswar.util.SendTitle;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.*;
@@ -100,7 +101,7 @@ public class TeamManager {
     		//novsWar.printDebug("Assigning team "+team.getTeamName()+" location "+world.getTeamSpawns().get(team).toString());
             player.getBukkitPlayer().teleport(game.getWorld().getTeamSpawnLoc(team));
             player.getBukkitPlayer().setHealth(19);//force a health change to update health objective
-            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             player.getBukkitPlayer().setFoodLevel(20);
             message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
     	} else {
@@ -163,7 +164,7 @@ public class TeamManager {
             NovsTeam newTeam = rotationMap.get(player.getTeam());
             player.setTeam(newTeam);
             player.getBukkitPlayer().teleport(game.getWorld().getTeamSpawnLoc(newTeam));
-            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             player.getBukkitPlayer().setFoodLevel(20);
         }
     }

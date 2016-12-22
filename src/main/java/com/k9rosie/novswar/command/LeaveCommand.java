@@ -1,6 +1,7 @@
 package com.k9rosie.novswar.command;
 
 import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -30,7 +31,7 @@ public class LeaveCommand extends NovsCommand{
         	if(player.getTeam().equals(defaultTeam)==false) {
         		player.setTeam(defaultTeam);
         		player.getBukkitPlayer().teleport(getNovsWar().getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(defaultTeam));
-                player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+                player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                 player.getBukkitPlayer().setFoodLevel(20);
                 NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(player, game);
                 Bukkit.getPluginManager().callEvent(invokeEvent);

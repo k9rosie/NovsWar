@@ -8,7 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import com.k9rosie.novswar.NovsWar;
 
 public class ConfigManager {
-	
+
 	private NovsWar novswar;
 	private HashMap<String, NovsConfig> configCache;
 	

@@ -19,6 +19,7 @@ import com.k9rosie.novswar.util.Messages;
 import com.k9rosie.novswar.util.SendTitle;
 
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -88,7 +89,7 @@ public class Game {
             player.getBukkitPlayer().teleport(novsWar.getNovsWorldCache().getLobbyWorld().getTeamSpawnLoc(defaultTeam));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
             player.getBukkitPlayer().setHealth(19);//force a health change to update the health status objective
-            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+            player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             player.getBukkitPlayer().setFoodLevel(20);
         }
         scoreboard.initialize();
@@ -426,7 +427,7 @@ public class Game {
     private void scheduleDeath(NovsPlayer player, NovsPlayer spectatorTarget, int seconds) {
         //Player bukkitPlayer = player.getBukkitPlayer();
         player.setDeath(true);
-        player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getMaxHealth());
+        player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         player.getBukkitPlayer().setFoodLevel(20);
 
         for(PotionEffect effect : player.getBukkitPlayer().getActivePotionEffects()) {
