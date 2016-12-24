@@ -34,12 +34,14 @@ public class DatabaseThread implements Runnable {
                         e.printStackTrace();
                     }
 
+                    System.out.println("Flushing database..");
                     flushDatabase();
+                    System.out.println("Database flushed.");
                 }
             }
         });
 
-        databaseFlusher.run();
+        databaseFlusher.start();
     }
 
     public void createDatabase() {
