@@ -533,6 +533,7 @@ public class Game {
 			System.out.println("Stopped timer");
 			gameTimer.stopTimer();
 		}
+        world.closeIntermissionGates();
 		gameHandler.newGame(world);
     }
     
