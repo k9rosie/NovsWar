@@ -502,6 +502,12 @@ public class Game {
             ChatUtil.sendNotice(player, Messages.CANNOT_JOIN_GAME.toString());
             return;
         }
+
+        if (!player.getTeam().equals(novsWar.getNovsTeamCache().getDefaultTeam())) {
+            ChatUtil.sendNotice(player, "You're already in the game.");
+            return;
+        }
+
         //Invoke event
         NovsWarJoinGameEvent event = new NovsWarJoinGameEvent(this, player);
         Bukkit.getServer().getPluginManager().callEvent(event);
@@ -533,7 +539,7 @@ public class Game {
 			System.out.println("Stopped timer");
 			gameTimer.stopTimer();
 		}
-        world.closeIntermissionGates();
+        this.world.closeIntermissionGates();
 		gameHandler.newGame(world);
     }
     

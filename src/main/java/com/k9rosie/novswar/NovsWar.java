@@ -3,7 +3,7 @@ package com.k9rosie.novswar;
 import com.k9rosie.novswar.manager.PlayerManager;
 import com.k9rosie.novswar.manager.TeamManager;
 import com.k9rosie.novswar.command.CommandHandler;
-import com.k9rosie.novswar.manager.ConfigManager;
+import com.k9rosie.novswar.config.ConfigManager;
 import com.k9rosie.novswar.database.DatabaseThread;
 import com.k9rosie.novswar.database.NovswarDB;
 import com.k9rosie.novswar.event.NovsWarInitializationEvent;
@@ -34,6 +34,8 @@ public class NovsWar {
 
 	public HashMap<String, Gamemode> gamemodes;
 
+	private boolean debug;
+
 	public NovsWar(NovsWarPlugin plugin) {
 		this.plugin = plugin;
 		instance = this;
@@ -47,6 +49,8 @@ public class NovsWar {
 		gameHandler = new GameHandler(this);
 
 		gamemodes = new HashMap<String, Gamemode>();
+
+        debug = false;
 	}
 	
 	public void initialize() {

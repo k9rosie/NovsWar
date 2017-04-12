@@ -1,25 +1,24 @@
-package com.k9rosie.novswar.manager;
+package com.k9rosie.novswar.config;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
-import com.k9rosie.novswar.model.NovsConfig;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.k9rosie.novswar.NovsWar;
 
 public class ConfigManager {
 
-	private NovsWar novswar;
-	private HashMap<String, NovsConfig> configCache;
+	NovsWar novswar;
+	private ArrayList<NovsConfig> configCache;
 	
 	public ConfigManager(NovsWar novswar) {
 		this.novswar = novswar;
-        configCache = new HashMap<String, NovsConfig>();
+        configCache = new ArrayList<>();
 	}
 	
 	public void initialize() {
-		addConfig("core", new NovsConfig("core.yml"));
-		addConfig("teams", new NovsConfig("teams.yml"));
+		addConfig(new CoreConfig());
+		addConfig(new TeamsConfig());
 		addConfig("worlds", new NovsConfig("worlds.yml"));
 		addConfig("regions", new NovsConfig("regions.yml"));
 		addConfig("messages", new NovsConfig("messages.yml"));
@@ -29,24 +28,21 @@ public class ConfigManager {
 		return configCache.get(key).getConfig();
 	}
 	
-	public void addConfig(String key, NovsConfig config) {
+	public void addConfig(NovsConfig config) {
 		config.saveDefaultConfig();
 		config.reloadConfig();
-		configCache.put(key, config);
+		configCache.add(config);
 	}
 	
-	public HashMap<String, NovsConfig> getConfigCache() {
-		return configCache;
-	}
-	
+    //TODO: use this method when adding a /nw reload command
 	public void reloadConfigs() {
-		for (NovsConfig config : configCache.values()) {
+		for (NovsConfig config : configCache) {
 			config.reloadConfig();
 		}
 	}
 	
 	public void saveConfigs() {
-		for (NovsConfig config : configCache.values()) {
+		for (NovsConfig config : configCache) {
 			config.saveConfig();
 		}
 	}

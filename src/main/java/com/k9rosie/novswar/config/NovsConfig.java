@@ -1,4 +1,4 @@
-package com.k9rosie.novswar.model;
+package com.k9rosie.novswar.config;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,15 +11,15 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 
-public class NovsConfig {
+public abstract class NovsConfig {
 	private File file;
-	private String name;
+	private String fileName;
 	private FileConfiguration config;
 	
 	private NovsWarPlugin plugin;
 	
-	public NovsConfig(String name) {
-		this.name = name;
+	public NovsConfig(String fileName) {
+		this.fileName = fileName;
 		plugin = NovsWar.getInstance().getPlugin();
 	}
 	
@@ -28,7 +28,7 @@ public class NovsConfig {
 		
 		// look for defaults in jar
 		try {
-			Reader defaultConfigStream = new InputStreamReader(plugin.getResource(name), "UTF8");
+			Reader defaultConfigStream = new InputStreamReader(plugin.getResource(fileName), "UTF8");
 			
 			if (defaultConfigStream != null) {
 				YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(defaultConfigStream);
@@ -42,6 +42,7 @@ public class NovsConfig {
 	public FileConfiguration getConfig() {
 		if (config == null) {
 			reloadConfig();
+			reloadData();
 		}
 		
 		return config;
@@ -60,11 +61,13 @@ public class NovsConfig {
 	
 	public void saveDefaultConfig() {
 	    if (file == null) {
-	        file = new File(plugin.getDataFolder(), name);
+	        file = new File(plugin.getDataFolder(), fileName);
 	    }
 	    
 	    if (!file.exists()) {
-	    	plugin.saveResource(name, false);
+	    	plugin.saveResource(fileName, false);
 	    }
 	}
+
+    public abstract void reloadData();
 }
