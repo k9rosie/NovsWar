@@ -1,11 +1,9 @@
 package com.k9rosie.novswar.event;
 
-import com.k9rosie.novswar.model.NovsScore;
-import com.k9rosie.novswar.model.NovsTeam;
-import org.bukkit.event.Cancellable;
+import com.k9rosie.novswar.team.NovsScore;
+import com.k9rosie.novswar.team.NovsTeam;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.bukkit.scoreboard.Score;
 
 public class NovsWarScoreModifyEvent extends Event {
     private static final HandlerList handlers = new HandlerList();

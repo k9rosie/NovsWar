@@ -10,8 +10,8 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
 import com.k9rosie.novswar.game.Game;
-import com.k9rosie.novswar.model.NovsPlayer;
-import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.player.NovsPlayer;
+import com.k9rosie.novswar.team.NovsTeam;
 
 public class KickCommand extends NovsCommand {
 	private Game game;
@@ -22,13 +22,13 @@ public class KickCommand extends NovsCommand {
     }
 
     public void execute() {
-    	NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
-    	NovsPlayer kickPlayer = getNovsWar().getNovsPlayerCache().getPlayerFromName(getArgs()[2]);
-    	NovsTeam defaultTeam = getNovsWar().getNovsTeamCache().getDefaultTeam();
+    	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
+    	NovsPlayer kickPlayer = getNovsWar().getPlayerManager().getPlayerFromName(getArgs()[2]);
+    	NovsTeam defaultTeam = getNovsWar().getTeamManager().getDefaultTeam();
     	
     	if(kickPlayer != null) {
     		kickPlayer.setTeam(defaultTeam);
-            kickPlayer.getBukkitPlayer().teleport(getNovsWar().getNovsWorldCache().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+            kickPlayer.getBukkitPlayer().teleport(getNovsWar().getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
             kickPlayer.getBukkitPlayer().setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             kickPlayer.getBukkitPlayer().setFoodLevel(20);
             ChatUtil.sendNotice(kickPlayer.getBukkitPlayer(), "You have been kicked to the lobby");

@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
-import com.k9rosie.novswar.model.NovsPlayer;
+import com.k9rosie.novswar.player.NovsPlayer;
 
 public class HelpAdminCommand extends NovsCommand {
 	
@@ -15,7 +15,7 @@ public class HelpAdminCommand extends NovsCommand {
     }
 
     public void execute() {
-        NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
+        NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
         
         String message = "";
         for(AdminCommandType cmd : AdminCommandType.values()) {

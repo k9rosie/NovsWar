@@ -1,14 +1,10 @@
 package com.k9rosie.novswar.game;
 
-import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.team.NovsTeam;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class GameScoreboard {
 

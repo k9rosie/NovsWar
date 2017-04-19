@@ -1,8 +1,8 @@
 package com.k9rosie.novswar.event;
 
 import com.k9rosie.novswar.game.Game;
-import com.k9rosie.novswar.model.NovsPlayer;
-import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.player.NovsPlayer;
+import com.k9rosie.novswar.team.NovsTeam;
 
 public class NovsWarPlayerKillEvent extends NovsWarPlayerDeathEvent {
     private NovsPlayer attacker;

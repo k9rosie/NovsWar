@@ -1,4 +1,4 @@
-package com.k9rosie.novswar.model;
+package com.k9rosie.novswar.world;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.util.ChatUtil;
@@ -88,13 +88,11 @@ public class NovsBlock {
         }
                 BlockState blockState = location.getBlock().getState();
                 if (blockState instanceof InventoryHolder) {
-                	ChatUtil.printDebug("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type InventoryHolder. Respawning...");
                     InventoryHolder inventoryHolder = (InventoryHolder) blockState;
                     inventoryHolder.getInventory().setContents(inventoryContents);
                 }
 
                 if (blockState instanceof Sign) {
-                	ChatUtil.printDebug("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type Sign. Respawning...");
                     Sign sign = (Sign) blockState;
                     for (int i = 0; i < signText.length; i++) {
                         sign.setLine(i, signText[i]);
@@ -102,54 +100,46 @@ public class NovsBlock {
                 }
 
                 if (blockState instanceof Banner) {
-                	ChatUtil.printDebug("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type Banner. Respawning...");
                     Banner banner = (Banner) blockState;
                     banner.setBaseColor(bannerBaseColor);
                     banner.setPatterns(bannerPatterns);
                 }
 
                 if (blockState instanceof Furnace) {
-                	ChatUtil.printDebug("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type Furnace. Respawning...");
                     Furnace furnace = (Furnace) blockState;
                     furnace.setBurnTime(furnaceBurnTime);
                     furnace.setCookTime(furnaceCookTime);
                 }
 
                 if (blockState instanceof BrewingStand) {
-                	ChatUtil.printDebug("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type BrewingStand. Respawning...");
                     BrewingStand brewingStand = (BrewingStand) blockState;
                     brewingStand.setBrewingTime(brewingStandBrewingTime);
                     brewingStand.setFuelLevel(brewingStandFuelLevel);
                 }
 
                 if (blockState instanceof Beacon) {
-                	ChatUtil.printDebug("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type Beacon. Respawning...");
                     Beacon beacon = (Beacon) blockState;
                     beacon.setPrimaryEffect(beaconPrimaryEffectType);
                     beacon.setSecondaryEffect(beaconSecondaryEffectType);
                 }
 
                 if (blockState instanceof CreatureSpawner) {
-                	ChatUtil.printDebug("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type CreatureSpawner. Respawning...");
                     CreatureSpawner creatureSpawner = (CreatureSpawner) blockState;
                     creatureSpawner.setDelay(creatureSpawnerDelay);
                     creatureSpawner.setSpawnedType(creatureSpawnerCreatureType);
                 }
 
                 if (blockState instanceof NoteBlock) {
-                	ChatUtil.printDebug("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type NoteBlock. Respawning...");
                     NoteBlock noteBlock = (NoteBlock) blockState;
                     noteBlock.setNote(noteBlockNote);
                 }
 
                 if (blockState instanceof Jukebox) {
-                	ChatUtil.printDebug("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type Jukebox. Respawning...");
                     Jukebox jukebox = (Jukebox) blockState;
                     jukebox.setPlaying(jukeboxRecord);
                 }
 
                 if (blockState instanceof Skull) {
-                	ChatUtil.printDebug("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type Skull. Respawning...");
                     Skull skull = (Skull) blockState;
                     skull.setOwningPlayer(skullOwningPlayer);
                     skull.setRotation(skullRotation);
@@ -157,21 +147,18 @@ public class NovsBlock {
                 }
 
                 if (blockState instanceof CommandBlock) {
-                	ChatUtil.printDebug("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type CommandBlock. Respawning...");
                     CommandBlock commandBlock = (CommandBlock) blockState;
                     commandBlock.setCommand(commandBlockCommand);
                     commandBlock.setName(commandBlockName);
                 }
 
                 if (blockState instanceof EndGateway) {
-                	ChatUtil.printDebug("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type EndGateway. Respawning...");
                     EndGateway endGateway = (EndGateway) blockState;
                     endGateway.setExactTeleport(endGatewayExactTeleport);
                     endGateway.setExitLocation(endGatewayExitLocation);
                 }
 
                 if (blockState instanceof FlowerPot) {
-                	ChatUtil.printDebug("Block at "+location.getBlock().getX()+", "+location.getBlock().getY()+", "+location.getBlock().getZ()+" is of type FlowerPot. Respawning...");
                     FlowerPot flowerPot = (FlowerPot) blockState;
                     flowerPot.setContents(flowerPotContents);
                 }

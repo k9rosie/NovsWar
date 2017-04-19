@@ -1,11 +1,10 @@
 package com.k9rosie.novswar.command;
 
 import com.k9rosie.novswar.NovsWar;
-import com.k9rosie.novswar.model.NovsPlayer;
-import com.k9rosie.novswar.model.NovsStats;
-import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.player.NovsPlayer;
+import com.k9rosie.novswar.player.NovsStats;
+import com.k9rosie.novswar.team.NovsTeam;
 import com.k9rosie.novswar.util.ChatUtil;
-import com.k9rosie.novswar.util.Messages;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -26,13 +25,13 @@ public class PlayerCommand extends NovsCommand {
     }
 
     public void execute() {
-    	NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
+    	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
         if (getArgs().length == 1) {
             printStats(player);
         } else if (getArgs().length == 2) {
             String playerName = getArgs()[1];
             if (NovsWar.isOnline(playerName)) {
-                NovsPlayer target = getNovsWar().getNovsPlayerCache().getPlayerFromName(playerName);
+                NovsPlayer target = getNovsWar().getPlayerManager().getPlayerFromName(playerName);
                 printStats(target);
             } else {
                 UUID uuid = NovsWar.getUUID(playerName);

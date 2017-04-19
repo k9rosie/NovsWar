@@ -8,8 +8,8 @@ import com.k9rosie.novswar.event.NovsWarNewGameEvent;
 import com.k9rosie.novswar.event.NovsWarScoreModifyEvent;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
-import com.k9rosie.novswar.model.NovsScore;
-import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.team.NovsScore;
+import com.k9rosie.novswar.team.NovsTeam;
 import com.k9rosie.novswar.util.ChatUtil;
 
 import org.bukkit.Bukkit;
@@ -82,7 +82,7 @@ public class NovsWarListener implements Listener {
     	if(event.isCancelled() == false) {
     		ChatUtil.printDebug("NovsWar Leave Team event!");
     		//Count the number of players still in-game
-    		int inGamePlayerCount = novswar.getNovsPlayerCache().getGamePlayers().size();
+    		int inGamePlayerCount = novswar.getPlayerManager().getGamePlayers().size();
     		
     		//Update all NovsInfoSigns with in-game player count information	
     		event.getGame().updateInfoSigns();
@@ -108,15 +108,15 @@ public class NovsWarListener implements Listener {
                 			break;
                     	}
             		} else { //if there are enough players, check for imbalance
-            			int largestImbalance = novswar.getNovsConfigCache().getConfig("core").getInt("core.game.largest_team_imbalance");
+            			int largestImbalance = novswar.getConfigManager().getConfig("core").getInt("core.game.largest_team_imbalance");
             			if(largestImbalance <= 0) {
             				//re-balancing is disabled
             				return;
             			} else {
             				//Determine player counts for each team
             				boolean imbalanceFound = false;
-            				for(NovsTeam teamA : novswar.getNovsTeamCache().getTeams()) {
-            					for(NovsTeam teamB : novswar.getNovsTeamCache().getTeams()) {
+            				for(NovsTeam teamA : novswar.getTeamManager().getTeams()) {
+            					for(NovsTeam teamB : novswar.getTeamManager().getTeams()) {
             						if(!teamA.equals(teamB) && 
             						  Math.abs(teamA.getPlayers().size() - teamB.getPlayers().size()) >= largestImbalance) {
             							imbalanceFound = true;
@@ -124,7 +124,7 @@ public class NovsWarListener implements Listener {
             					}
             				}
             				if(imbalanceFound) {
-            					novswar.getNovsTeamCache().balanceTeams();
+            					novswar.getTeamManager().balanceTeams();
             				}
             			}
             		}

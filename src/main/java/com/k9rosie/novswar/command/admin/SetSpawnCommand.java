@@ -2,11 +2,9 @@ package com.k9rosie.novswar.command.admin;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
-import com.k9rosie.novswar.model.NovsTeam;
-import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.team.NovsTeam;
+import com.k9rosie.novswar.world.NovsWorld;
 import com.k9rosie.novswar.util.ChatUtil;
-import com.k9rosie.novswar.util.Messages;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 //import org.bukkit.configuration.file.FileConfiguration;
@@ -17,7 +15,7 @@ public class SetSpawnCommand extends NovsCommand {
 
     public SetSpawnCommand(NovsWar novsWar, CommandSender sender, String[] args) {
         super(novsWar, sender, args);
-        //regions = novsWar.getNovsConfigCache().getConfig("regions");
+        //regions = novsWar.getConfigManager().getConfig("regions");
     }
 
     public void execute() {
@@ -33,22 +31,22 @@ public class SetSpawnCommand extends NovsCommand {
             String teamName = getArgs()[2];
             NovsTeam team;
             if(teamName.equalsIgnoreCase("default")) {
-            	team = getNovsWar().getNovsTeamCache().getDefaultTeam();
+            	team = getNovsWar().getTeamManager().getDefaultTeam();
             } else {
-            	team = getNovsWar().getNovsTeamCache().getTeam(teamName);
+            	team = getNovsWar().getTeamManager().getTeam(teamName);
             }
             
             //Check which world the sender is in
-            if(bukkitWorld.equals(getNovsWar().getNovsWorldCache().getLobbyWorld().getBukkitWorld())) {
+            if(bukkitWorld.equals(getNovsWar().getWorldManager().getLobbyWorld().getBukkitWorld())) {
             	//The player is in the lobby world
-            	world = getNovsWar().getNovsWorldCache().getLobbyWorld();
-            	if(team == null || team.equals(getNovsWar().getNovsTeamCache().getDefaultTeam())==false) {
+            	world = getNovsWar().getWorldManager().getLobbyWorld();
+            	if(team == null || team.equals(getNovsWar().getTeamManager().getDefaultTeam())==false) {
                     ChatUtil.sendError(bukkitPlayer, "You can only set the default team's spawn in Lobby World");
                     return;
             	}
             } else {
             	//The player is in a game world
-            	world = getNovsWar().getNovsWorldCache().getWorlds().get(bukkitWorld);
+            	world = getNovsWar().getWorldManager().getWorlds().get(bukkitWorld);
             	if (team == null || getNovsWar().getGameHandler().getGame().getTeams().contains(team)==false) {
                     ChatUtil.sendError(bukkitPlayer, "That team doesn't exist or is not enabled for this world.");
                     return;

@@ -7,8 +7,7 @@ import org.bukkit.command.CommandSender;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
 import com.k9rosie.novswar.game.Game;
-import com.k9rosie.novswar.model.NovsWorld;
-import com.k9rosie.novswar.util.Messages;
+import com.k9rosie.novswar.world.NovsWorld;
 import org.bukkit.entity.Player;
 
 public class NextGameCommand extends NovsCommand{
@@ -31,12 +30,12 @@ public class NextGameCommand extends NovsCommand{
         	game.nextGame(game.getBallotBox().nextWorld(game.getWorld()));
     		
     	} else {
-    		NovsWorld world = getNovsWar().getNovsWorldCache().getWorldFromName(getArgs()[2]);
+    		NovsWorld world = getNovsWar().getWorldManager().getWorldFromName(getArgs()[2]);
     		
         	if(world == null) {
         		String message = "";
         		
-        		for(NovsWorld option : getNovsWar().getNovsWorldCache().getWorlds().values()) {
+        		for(NovsWorld option : getNovsWar().getWorldManager().getWorlds().values()) {
         			message += (option.getBukkitWorld().getName() + " ");
         		}
 				ChatUtil.sendError((Player) getSender(), "Invalid world name. Options are "+message);

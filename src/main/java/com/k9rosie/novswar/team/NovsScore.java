@@ -1,4 +1,4 @@
-package com.k9rosie.novswar.model;
+package com.k9rosie.novswar.team;
 
 import com.k9rosie.novswar.event.NovsWarScoreModifyEvent;
 import org.bukkit.Bukkit;
@@ -19,7 +19,7 @@ public class NovsScore {
         this.score = score;
     }
 
-    public int getScore() {
+    public int value() {
         return score;
     }
 

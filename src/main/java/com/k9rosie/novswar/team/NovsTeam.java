@@ -1,20 +1,16 @@
-package com.k9rosie.novswar.model;
+package com.k9rosie.novswar.team;
 
-import com.k9rosie.novswar.NovsWar;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.Team;
-
-import java.util.HashSet;
 
 public class NovsTeam {
 
     private String teamName;
     private ChatColor color;
-    private Team scoreboardTeam;
     private boolean canBeDamaged;
     private boolean canAttack;
     private boolean friendlyFire;
-    private NovsScore score;
+    private TeamState teamState;
 
     public NovsTeam(String teamName, ChatColor color, boolean canBeDamaged, boolean canAttack, boolean friendlyFire) {
         this.teamName = teamName;
@@ -22,9 +18,16 @@ public class NovsTeam {
         this.canBeDamaged = canBeDamaged;
         this.canAttack = canAttack;
         this.friendlyFire = friendlyFire;
-        score = new NovsScore(this);
     }
-    
+
+    public void setTeamState(TeamState teamState) {
+        this.teamState = teamState;
+    }
+
+    public TeamState getTeamState() {
+        return teamState;
+    }
+
     public String getTeamName() {
         return teamName;
     }
@@ -63,28 +66,5 @@ public class NovsTeam {
 
     public boolean getFriendlyFire() {
         return friendlyFire;
-    }
-
-    public NovsScore getNovsScore() {
-        return score;
-    }
-
-    public void setScoreboardTeam(Team scoreboardTeam) {
-        this.scoreboardTeam = scoreboardTeam;
-    }
-
-    public Team getScoreboardTeam() {
-        return scoreboardTeam;
-    }
-
-    public HashSet<NovsPlayer> getPlayers() {
-        HashSet<NovsPlayer> teamMembers = new HashSet<NovsPlayer>();
-        for (NovsPlayer player : NovsWar.getInstance().getNovsPlayerCache().getPlayers().values()) {
-            if (player.getTeam().equals(this)) {
-                teamMembers.add(player);
-            }
-        }
-
-        return teamMembers;
     }
 }

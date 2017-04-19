@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
-import com.k9rosie.novswar.model.NovsPlayer;
-import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.player.NovsPlayer;
+import com.k9rosie.novswar.team.NovsTeam;
 import com.k9rosie.novswar.util.ChatUtil;
 
 public class SpectateCommand extends NovsCommand{
@@ -22,8 +22,8 @@ public class SpectateCommand extends NovsCommand{
     }
 
     public void execute() {
-        NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
-        NovsTeam defaultTeam = getNovsWar().getNovsTeamCache().getDefaultTeam();
+        NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
+        NovsTeam defaultTeam = getNovsWar().getTeamManager().getDefaultTeam();
         
         if(player.isSpectating()) {
         	//Return the player to the lobby
@@ -32,7 +32,7 @@ public class SpectateCommand extends NovsCommand{
         	if(player.getTeam().equals(defaultTeam)) {
         		//Begin spectating
             	if(game.getGameState().equals(GameState.DURING_GAME) || game.getGameState().equals(GameState.PRE_GAME)) {
-            		ArrayList<NovsPlayer> inGamePlayers = getNovsWar().getNovsPlayerCache().getGamePlayers();
+            		ArrayList<NovsPlayer> inGamePlayers = getNovsWar().getPlayerManager().getGamePlayers();
             		NovsPlayer target = inGamePlayers.get(0);
             		player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
             		player.setSpectating(true); //must occur AFTER gamemode change

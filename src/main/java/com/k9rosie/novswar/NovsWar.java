@@ -1,7 +1,7 @@
 package com.k9rosie.novswar;
 
-import com.k9rosie.novswar.manager.PlayerManager;
-import com.k9rosie.novswar.manager.TeamManager;
+import com.k9rosie.novswar.player.PlayerManager;
+import com.k9rosie.novswar.team.TeamManager;
 import com.k9rosie.novswar.command.CommandHandler;
 import com.k9rosie.novswar.config.ConfigManager;
 import com.k9rosie.novswar.database.DatabaseThread;
@@ -9,7 +9,7 @@ import com.k9rosie.novswar.database.NovswarDB;
 import com.k9rosie.novswar.event.NovsWarInitializationEvent;
 import com.k9rosie.novswar.game.GameHandler;
 import com.k9rosie.novswar.gamemode.Gamemode;
-import com.k9rosie.novswar.manager.WorldManager;
+import com.k9rosie.novswar.world.WorldManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -24,44 +24,48 @@ public class NovsWar {
 	private NovsWarPlugin plugin;
 	private static NovsWar instance;
 	
-	private ConfigManager novsConfigCache;
-	private TeamManager novsTeamCache;
-	private PlayerManager novsPlayerCache;
-	private WorldManager novsWorldCache;
+	private ConfigManager configManager;
+	private TeamManager teamManager;
+	private PlayerManager playerManager;
+	private WorldManager worldManager;
 	private DatabaseThread databaseThread;
 	private CommandHandler commandHandler;
 	private GameHandler gameHandler;
 
 	public HashMap<String, Gamemode> gamemodes;
 
-	private boolean debug;
+	private static boolean DEBUG;
 
 	public NovsWar(NovsWarPlugin plugin) {
 		this.plugin = plugin;
 		instance = this;
 		
-		novsConfigCache = new ConfigManager(this);
-		novsTeamCache = new TeamManager(this);
-		novsPlayerCache = new PlayerManager(this);
-		novsWorldCache = new WorldManager(this);
+		configManager = new ConfigManager(this);
+		teamManager = new TeamManager(this);
+		playerManager = new PlayerManager(this);
+		worldManager = new WorldManager(this);
 		databaseThread = new DatabaseThread(this);
 		commandHandler = new CommandHandler(this);
 		gameHandler = new GameHandler(this);
 
-		gamemodes = new HashMap<String, Gamemode>();
+		gamemodes = new HashMap<>();
 
-        debug = false;
+        DEBUG = false;
 	}
 	
 	public void initialize() {
 		NovsWarInitializationEvent event = new NovsWarInitializationEvent(this);
 		Bukkit.getPluginManager().callEvent(event);
 
-		novsConfigCache.initialize();
+		configManager.reloadConfigs();
 		databaseThread.getThread().start();
-		novsTeamCache.initialize();
-		novsWorldCache.initialize();
+		teamManager.initialize();
+
+		worldManager.loadWorlds();
+
 		gameHandler.initialize();
+
+        DEBUG = configManager.getCoreConfig().getDebug();
 	}
 	
 	public static NovsWar getInstance() {
@@ -72,20 +76,20 @@ public class NovsWar {
 		return plugin;
 	}
 
-	public ConfigManager getNovsConfigCache() {
-		return novsConfigCache;
+	public ConfigManager getConfigManager() {
+		return configManager;
 	}
 	
-	public TeamManager getNovsTeamCache() {
-		return novsTeamCache;
+	public TeamManager getTeamManager() {
+		return teamManager;
 	}
 
-	public WorldManager getNovsWorldCache() {
-		return novsWorldCache;
+	public WorldManager getWorldManager() {
+		return worldManager;
 	}
 
-	public PlayerManager getNovsPlayerCache() {
-		return novsPlayerCache;
+	public PlayerManager getPlayerManager() {
+		return playerManager;
 	}
     
 	public DatabaseThread getDatabaseThread() {
@@ -116,9 +120,17 @@ public class NovsWar {
 		Bukkit.getLogger().log(Level.INFO, message);
 	}
 
+	public static void error(String message) { Bukkit.getLogger().log(Level.SEVERE, message); }
+
 	public static void log(Level level, String message) {
 		Bukkit.getLogger().log(level, message);
 	}
+
+	public static void debug(String message) {
+	    if (DEBUG) {
+            Bukkit.getLogger().info(message);
+        }
+    }
 
 	public static boolean isOnline(String displayName) {
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -142,10 +154,4 @@ public class NovsWar {
 		}
 		return null;
 	}
-	/*//Replaced by ChatFormat.printDebug()
-	public void printDebug(String message) {
-		if(novsConfigCache.getConfig("core").getBoolean("core.debug")) {
-        	System.out.println("[DEBUG]: "+message);
-        }
-	}*/
 }

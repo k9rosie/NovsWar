@@ -1,8 +1,8 @@
 package com.k9rosie.novswar.database;
 
 import com.k9rosie.novswar.NovsWar;
-import com.k9rosie.novswar.model.NovsPlayer;
-import org.bukkit.configuration.file.FileConfiguration;
+import com.k9rosie.novswar.config.CoreConfig;
+import com.k9rosie.novswar.player.NovsPlayer;
 
 public class DatabaseThread implements Runnable {
     private final NovsWar novsWar;
@@ -24,7 +24,7 @@ public class DatabaseThread implements Runnable {
         database.initialize();
 
         Thread databaseFlusher = new Thread(new Runnable() {
-            int sleep = novsWar.getNovsConfigCache().getConfig("core").getInt("core.database.flush_interval");
+            int sleep = novsWar.getConfigManager().getCoreConfig().getDatabaseFlushInterval();
             @Override
             public void run() {
                 while (true) {
@@ -34,9 +34,9 @@ public class DatabaseThread implements Runnable {
                         e.printStackTrace();
                     }
 
-                    System.out.println("Flushing database..");
+                    NovsWar.debug("Flushing database..");
                     flushDatabase();
-                    System.out.println("Database flushed.");
+                    NovsWar.debug("Database flushed.");
                 }
             }
         });
@@ -45,9 +45,9 @@ public class DatabaseThread implements Runnable {
     }
 
     public void createDatabase() {
-        FileConfiguration coreConfig = novsWar.getNovsConfigCache().getConfig("core");
-        String type = coreConfig.getString("core.database.connector");
-        String prefix = coreConfig.getString("core.database.prefix");
+        CoreConfig coreConfig = novsWar.getConfigManager().getCoreConfig();
+        String type = coreConfig.getDatabaseConnector();
+        String prefix = coreConfig.getDatabasePrefix();
 
         database = new NovswarDB(DatabaseType.matchType(type), prefix);
     }
@@ -61,7 +61,7 @@ public class DatabaseThread implements Runnable {
     }
 
     public void flushDatabase() {
-        for (NovsPlayer player : novsWar.getNovsPlayerCache().getPlayers().values()) {
+        for (NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
             database.flushPlayerData(player);
         }
     }

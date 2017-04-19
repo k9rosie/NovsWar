@@ -2,7 +2,7 @@ package com.k9rosie.novswar.command;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.game.Game;
-import com.k9rosie.novswar.model.NovsPlayer;
+import com.k9rosie.novswar.player.NovsPlayer;
 import com.k9rosie.novswar.util.ChatUtil;
 
 import org.bukkit.command.CommandSender;
@@ -18,7 +18,7 @@ public class JoinCommand extends NovsCommand {
     }
 
     public void execute() {
-        NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
+        NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
         if(player.isSpectating()) {
         	ChatUtil.sendNotice(player, "You cannot join while spectating");
         } else {

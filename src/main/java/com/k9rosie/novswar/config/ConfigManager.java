@@ -9,41 +9,54 @@ import com.k9rosie.novswar.NovsWar;
 public class ConfigManager {
 
 	NovsWar novswar;
-	private ArrayList<NovsConfig> configCache;
+	private CoreConfig coreConfig;
+	private TeamsConfig teamConfig;
+	private WorldsConfig worldsConfig;
+	private RegionsConfig regionsConfig;
+	private MessagesConfig messagesConfig;
 	
 	public ConfigManager(NovsWar novswar) {
 		this.novswar = novswar;
-        configCache = new ArrayList<>();
+		coreConfig = new CoreConfig(novswar.getPlugin());
+		teamConfig = new TeamsConfig(novswar.getPlugin());
+		worldsConfig = new WorldsConfig(novswar.getPlugin());
+		regionsConfig = new RegionsConfig(novswar.getPlugin());
+		messagesConfig = new MessagesConfig(novswar.getPlugin());
 	}
 	
-	public void initialize() {
-		addConfig(new CoreConfig());
-		addConfig(new TeamsConfig());
-		addConfig("worlds", new NovsConfig("worlds.yml"));
-		addConfig("regions", new NovsConfig("regions.yml"));
-		addConfig("messages", new NovsConfig("messages.yml"));
-	}
-	
-	public FileConfiguration getConfig(String key) {
-		return configCache.get(key).getConfig();
-	}
-	
-	public void addConfig(NovsConfig config) {
-		config.saveDefaultConfig();
-		config.reloadConfig();
-		configCache.add(config);
-	}
-	
-    //TODO: use this method when adding a /nw reload command
 	public void reloadConfigs() {
-		for (NovsConfig config : configCache) {
-			config.reloadConfig();
-		}
+        coreConfig.reloadConfig();
+        teamConfig.reloadConfig();
+        worldsConfig.reloadConfig();
+        regionsConfig.reloadConfig();
+        messagesConfig.reloadConfig();
 	}
 	
 	public void saveConfigs() {
-		for (NovsConfig config : configCache) {
-			config.saveConfig();
-		}
+        coreConfig.saveConfig();
+        teamConfig.saveConfig();
+        worldsConfig.saveConfig();
+        regionsConfig.saveConfig();
+        messagesConfig.saveConfig();
 	}
+
+    public CoreConfig getCoreConfig() {
+        return coreConfig;
+    }
+
+    public TeamsConfig getTeamConfig() {
+        return teamConfig;
+    }
+
+    public WorldsConfig getWorldsConfig() {
+        return worldsConfig;
+    }
+
+    public RegionsConfig getRegionsConfig() {
+        return regionsConfig;
+    }
+
+    public MessagesConfig getMessagesConfig() {
+        return messagesConfig;
+    }
 }

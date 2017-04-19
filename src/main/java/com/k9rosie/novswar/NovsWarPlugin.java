@@ -25,12 +25,12 @@ public class NovsWarPlugin extends JavaPlugin {
         getCommand("nw").setExecutor(novswar.getCommandHandler());
 
 		registerListeners();
-		getLogger().info("novswar enabled. written by k9rosie.");
+		getLogger().info("novswar enabled. written by xk9rosie.");
 	}
 	
 	public void onDisable() {
-		novswar.getNovsWorldCache().saveRegions();
-		novswar.getNovsConfigCache().saveConfigs();
+		novswar.getWorldManager().saveRegions();
+		novswar.getConfigManager().saveConfigs();
 		//TODO respawn battlefield in game world
 		novswar.getGameHandler().getGame().getWorld().respawnBattlefields();
 		novswar.getGameHandler().getGame().getWorld().closeIntermissionGates();

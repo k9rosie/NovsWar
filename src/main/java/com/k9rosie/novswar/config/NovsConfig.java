@@ -18,9 +18,9 @@ public abstract class NovsConfig {
 	
 	private NovsWarPlugin plugin;
 	
-	public NovsConfig(String fileName) {
+	public NovsConfig(NovsWarPlugin plugin, String fileName) {
 		this.fileName = fileName;
-		plugin = NovsWar.getInstance().getPlugin();
+		this.plugin = plugin;
 	}
 	
 	public void reloadConfig() {

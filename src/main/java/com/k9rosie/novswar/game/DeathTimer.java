@@ -1,7 +1,7 @@
 package com.k9rosie.novswar.game;
 
 import com.k9rosie.novswar.NovsWar;
-import com.k9rosie.novswar.model.NovsPlayer;
+import com.k9rosie.novswar.player.NovsPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitScheduler;
 

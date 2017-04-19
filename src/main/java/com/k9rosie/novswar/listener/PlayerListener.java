@@ -4,7 +4,7 @@ package com.k9rosie.novswar.listener;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.game.DeathTimer;
-import com.k9rosie.novswar.manager.PlayerManager;
+import com.k9rosie.novswar.player.PlayerManager;
 import com.k9rosie.novswar.command.CommandType;
 import com.k9rosie.novswar.event.NovsWarJoinServerEvent;
 import com.k9rosie.novswar.event.NovsWarLeaveTeamEvent;
@@ -12,12 +12,12 @@ import com.k9rosie.novswar.event.NovsWarRegionEnterEvent;
 import com.k9rosie.novswar.event.NovsWarRegionExitEvent;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
-import com.k9rosie.novswar.model.NovsPlayer;
-import com.k9rosie.novswar.model.NovsRegion;
-import com.k9rosie.novswar.model.NovsTeam;
-import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.player.NovsPlayer;
+import com.k9rosie.novswar.world.CuboidType;
+import com.k9rosie.novswar.world.NovsCuboid;
+import com.k9rosie.novswar.team.NovsTeam;
+import com.k9rosie.novswar.world.NovsWorld;
 import com.k9rosie.novswar.util.ChatUtil;
-import com.k9rosie.novswar.util.RegionType;
 
 import com.k9rosie.novswar.util.SendTitle;
 import org.bukkit.Bukkit;
@@ -48,7 +48,7 @@ public class PlayerListener implements Listener {
 
     public PlayerListener(NovsWarPlugin plugin) {
         novswar = plugin.getNovswarInstance();
-        novsPlayerCache = novswar.getNovsPlayerCache();
+        novsPlayerCache = novswar.getPlayerManager();
     }
 
     /**
@@ -60,19 +60,19 @@ public class PlayerListener implements Listener {
     	Game game = novswar.getGameHandler().getGame();
         Player bukkitPlayer = event.getPlayer();
         NovsPlayer player = novsPlayerCache.createNovsPlayer(bukkitPlayer); //handles assignment to default team
-        NovsTeam defaultTeam = novswar.getNovsTeamCache().getDefaultTeam();
+        NovsTeam defaultTeam = novswar.getTeamManager().getDefaultTeam();
 
         novswar.getDatabase().fetchPlayerData(player);
-        novswar.getNovsTeamCache().getDefaultTeam().getScoreboardTeam().addEntry(player.getBukkitPlayer().getDisplayName());
+        novswar.getTeamManager().getDefaultTeam().getScoreboardTeam().addEntry(player.getBukkitPlayer().getDisplayName());
         bukkitPlayer.setScoreboard(game.getScoreboard().getBukkitScoreboard());
-        bukkitPlayer.teleport(novswar.getNovsWorldCache().getLobbyWorld().getTeamSpawnLoc(defaultTeam));
+        bukkitPlayer.teleport(novswar.getWorldManager().getLobbyWorld().getTeamSpawnLoc(defaultTeam));
         bukkitPlayer.setGameMode(GameMode.SURVIVAL);
         bukkitPlayer.setHealth(19);
         bukkitPlayer.setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         bukkitPlayer.setFoodLevel(20);
         SendTitle.sendTitle(bukkitPlayer, 0, 2000, 0, " ", ""); // clear any title messages they may have
         player.getStats().incrementConnects();
-        ChatUtil.printDebug("Player count: " + novswar.getNovsPlayerCache().getPlayers().values().size());
+        ChatUtil.printDebug("Player count: " + novswar.getPlayerManager().getPlayers().values().size());
         NovsWarJoinServerEvent invokeEvent = new NovsWarJoinServerEvent(player);
         Bukkit.getPluginManager().callEvent(invokeEvent);
     }
@@ -124,7 +124,7 @@ public class PlayerListener implements Listener {
 
         novswar.getDatabase().flushPlayerData(player);
         novsPlayerCache.getPlayers().remove(bukkitPlayer);
-        if(player.getTeam().equals(novswar.getNovsTeamCache().getDefaultTeam())==false) {
+        if(player.getTeam().equals(novswar.getTeamManager().getDefaultTeam())==false) {
         	//If player is on a team, invoke event
         	NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(player, game);
             Bukkit.getPluginManager().callEvent(invokeEvent);
@@ -135,7 +135,7 @@ public class PlayerListener implements Listener {
             deathTimer.stopTimer();
             game.getDeathTimers().remove(player);
         }
-        //System.out.println("Player count: " + novswar.getNovsPlayerCache().getPlayers().values().size());
+        //System.out.println("Player count: " + novswar.getPlayerManager().getPlayers().values().size());
     }
 
     /**
@@ -267,7 +267,7 @@ public class PlayerListener implements Listener {
             }
             Location location = event.getClickedBlock().getLocation();
 
-            if (novswar.getNovsWorldCache().getWorlds().get(bukkitPlayer.getWorld()) == null) {
+            if (novswar.getWorldManager().getWorlds().get(bukkitPlayer.getWorld()) == null) {
             	ChatUtil.sendNotice(player, "The world you're in isn't enabled in NovsWar.");
                 event.setCancelled(true);
                 return;
@@ -277,15 +277,15 @@ public class PlayerListener implements Listener {
                 player.setCornerOneBuffer(location);
                 ChatUtil.sendNotice(player, "Setting corner two...");
             } else if (player.getCornerOneBuffer() != null) {
-                NovsWorld world = novswar.getNovsWorldCache().getWorlds().get(bukkitPlayer.getWorld());
-                NovsRegion region = new NovsRegion(world,
-                        player.getCornerOneBuffer(), location, player.getRegionTypeBuffer());
+                NovsWorld world = novswar.getWorldManager().getWorlds().get(bukkitPlayer.getWorld());
+                NovsCuboid region = new NovsCuboid(world,
+                        player.getCornerOneBuffer(), location, player.getCuboidTypeBuffer());
 
-                world.getRegions().put(player.getRegionNameBuffer(), region);
+                world.getCuboids().put(player.getRegionNameBuffer(), region);
 
-                ChatUtil.sendNotice(player, "Region set: "+player.getRegionTypeBuffer().toString());
+                ChatUtil.sendNotice(player, "Region set: "+player.getCuboidTypeBuffer().toString());
                 player.setCornerOneBuffer(null);
-                player.setRegionTypeBuffer(null);
+                player.setCuboidTypeBuffer(null);
                 player.setRegionNameBuffer(null);
                 player.setSettingRegion(false);
             }
@@ -328,7 +328,7 @@ public class PlayerListener implements Listener {
 		if(inventory != null && inventory.getName().equals(ballotBox.getName())) {
 			ChatUtil.printDebug("InventoryClickEvent! "+event.toString());
 			Player bukkitPlayer = (Player) event.getWhoClicked();
-			NovsPlayer player = novswar.getNovsPlayerCache().getPlayers().get(bukkitPlayer);
+			NovsPlayer player = novswar.getPlayerManager().getPlayers().get(bukkitPlayer);
 			int slot = event.getSlot();
 			ItemStack clicked = event.getCurrentItem();
 			//check that the click was on a BEDROCK voting item
@@ -362,13 +362,13 @@ public class PlayerListener implements Listener {
             return;
         }*/
         
-        for (NovsRegion region : currentGameWorld.getRegions().values()) {
+        for (NovsCuboid region : currentGameWorld.getCuboids().values()) {
         	
         	//If a player moved into this region
             if (region.inRegion(event.getTo())) {
 
             	//Perform specific actions based on region type
-                switch(region.getRegionType()) {
+                switch(region.getCuboidType()) {
                 case TEAM_SPAWN :
                 	//Assume that players teleporting into the teamspawn do not trigger this code...
                 	if(region.inRegion(event.getFrom())==false) { //if the player is moving from outside the Team Spawn
@@ -424,7 +424,7 @@ public class PlayerListener implements Listener {
         		//Switch spectator targets
         		player.setShiftToggled(false);
         		//Remove this player from their current target's observer list
-        		novswar.getNovsPlayerCache().getPlayers().get(player.getBukkitPlayer().getSpectatorTarget()).getSpectatorObservers().remove(player);
+        		novswar.getPlayerManager().getPlayers().get(player.getBukkitPlayer().getSpectatorTarget()).getSpectatorObservers().remove(player);
         		//Set this player's next spectator target, if available
         		game.nextSpectatorTarget(player);
         	} else {
@@ -453,12 +453,12 @@ public class PlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerFoodLevelChange(FoodLevelChangeEvent event) {
-    	if(novswar.getNovsConfigCache().getConfig("core").getBoolean("core.game.enable_hunger") == false) {
+    	if(novswar.getConfigManager().getConfig("core").getBoolean("core.game.enable_hunger") == false) {
     		event.setCancelled(true);
     		//Keep saturation full if enabled
     		if(event.getEntity() instanceof Player) {
     			Player player = (Player)event.getEntity();
-    			if(novswar.getNovsConfigCache().getConfig("core").getBoolean("core.game.fast_health_regen") == true) {
+    			if(novswar.getConfigManager().getConfig("core").getBoolean("core.game.fast_health_regen") == true) {
     				player.setSaturation(20);
     			} else {
     				//keep saturation zero
@@ -474,7 +474,7 @@ public class PlayerListener implements Listener {
     	Game game = novswar.getGameHandler().getGame();
     	
     	if(event.isCancelled()==false) {
-    		for (NovsRegion region : currentGameWorld.getRegions().values()) {
+    		for (NovsCuboid region : currentGameWorld.getCuboids().values()) {
     			//If a player moved into this region
                 if (region.inRegion(event.getTo())) {
                 	
@@ -483,8 +483,8 @@ public class PlayerListener implements Listener {
                 		NovsWarRegionEnterEvent invokeEvent = new NovsWarRegionEnterEvent(game, player, region);
                         Bukkit.getServer().getPluginManager().callEvent(invokeEvent);
                         if(invokeEvent.isCancelled()==false) {
-                        	region.getPlayersInRegion().add(player);
-                        	ChatUtil.printDebug("Added "+player.getBukkitPlayer().getName()+" to region "+region.getRegionType());
+                        	region.getPlayersInCuboid().add(player);
+                        	ChatUtil.printDebug("Added "+player.getBukkitPlayer().getName()+" to region "+region.getCuboidType());
                         }
                 	}
                 	
@@ -494,8 +494,8 @@ public class PlayerListener implements Listener {
                 		NovsWarRegionExitEvent invokeEvent = new NovsWarRegionExitEvent(game, player, region);
                         Bukkit.getServer().getPluginManager().callEvent(invokeEvent);
                         if(invokeEvent.isCancelled()==false) {
-                        	region.getPlayersInRegion().remove(player);
-                        	ChatUtil.printDebug("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getRegionType());
+                        	region.getPlayersInCuboid().remove(player);
+                        	ChatUtil.printDebug("Removed "+player.getBukkitPlayer().getName()+" from region "+region.getCuboidType());
                         }
                 	}
                 }
@@ -512,9 +512,9 @@ public class PlayerListener implements Listener {
     	Game game = novswar.getGameHandler().getGame();
     	
     	boolean isPlayerInSpawn = false;
-        for(NovsRegion region : game.getWorld().getRegions().values()) {
-        	if(region.getRegionType().equals(RegionType.TEAM_SPAWN)) {
-        		if(region.getPlayersInRegion().contains(victim)) {
+        for(NovsCuboid region : game.getWorld().getCuboids().values()) {
+        	if(region.getCuboidType().equals(CuboidType.TEAM_SPAWN)) {
+        		if(region.getPlayersInCuboid().contains(victim)) {
         			isPlayerInSpawn = true;
             		//System.out.println(victim.getBukkitPlayer().getName()+" was attacked in spawn!");
         		}

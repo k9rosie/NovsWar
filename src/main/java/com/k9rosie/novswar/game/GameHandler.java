@@ -2,12 +2,10 @@ package com.k9rosie.novswar.game;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.gamemode.Gamemode;
-import com.k9rosie.novswar.model.NovsWorld;
-import com.k9rosie.novswar.util.ChatUtil;
+import com.k9rosie.novswar.world.NovsWorld;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.block.Sign;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 public class GameHandler {
@@ -22,16 +20,16 @@ public class GameHandler {
     }
 
     public void initialize() {
-        String firstWorld = novswar.getNovsConfigCache().getConfig("core").getStringList("core.world.enabled_worlds").get(0);
+        String firstWorld = novswar.getConfigManager().getConfig("core").getStringList("core.world.enabled_worlds").get(0);
         World initialBukkitWorld = novswar.getPlugin().getServer().getWorld(firstWorld);
-        NovsWorld initialWorld = novswar.getNovsWorldCache().getWorlds().get(initialBukkitWorld);
+        NovsWorld initialWorld = novswar.getWorldManager().getWorlds().get(initialBukkitWorld);
 
         newGame(initialWorld);
 
     }
 
     public void newGame(NovsWorld world) {
-        String gamemodeString = novswar.getNovsConfigCache().getConfig("worlds").getString("worlds."+world.getBukkitWorld().getName()+".gamemode");
+        String gamemodeString = novswar.getConfigManager().getConfig("worlds").getString("worlds."+world.getBukkitWorld().getName()+".gamemode");
         Gamemode gamemode = novswar.getGamemodes().get(gamemodeString);
 
         game = new Game(this, world, gamemode);

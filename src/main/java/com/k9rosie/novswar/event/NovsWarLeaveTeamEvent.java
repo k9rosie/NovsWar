@@ -4,7 +4,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import com.k9rosie.novswar.game.Game;
-import com.k9rosie.novswar.model.NovsPlayer;
+import com.k9rosie.novswar.player.NovsPlayer;
 
 public class NovsWarLeaveTeamEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();

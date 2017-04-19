@@ -2,8 +2,8 @@ package com.k9rosie.novswar.command;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.game.Game;
-import com.k9rosie.novswar.model.NovsPlayer;
-import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.player.NovsPlayer;
+import com.k9rosie.novswar.team.NovsTeam;
 import com.k9rosie.novswar.util.ChatUtil;
 
 import org.bukkit.ChatColor;
@@ -22,7 +22,7 @@ public class TeamCommand extends NovsCommand {
     }
 
     public void execute() {
-    	NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
+    	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
     	if (getArgs().length == 1) {
             NovsTeam team = player.getTeam();
             printTeam(team);
@@ -39,7 +39,7 @@ public class TeamCommand extends NovsCommand {
                 printTeam(team);
                 return;
             } else {
-                NovsPlayer target = getNovsWar().getNovsPlayerCache().getPlayerFromName(arg);
+                NovsPlayer target = getNovsWar().getPlayerManager().getPlayerFromName(arg);
 
                 if (target == null) {
                 	ChatUtil.sendNotice(player, "That specific player/team couldn't be found");
@@ -74,7 +74,7 @@ public class TeamCommand extends NovsCommand {
                 playersList.append(ChatColor.GRAY+", ");
             }
         }
-        /*if (team.equals(getNovsWar().getNovsTeamCache().getDefaultTeam())) {
+        /*if (team.equals(getNovsWar().getTeamManager().getDefaultTeam())) {
             playersArray = game.getNeutralTeamData().getPlayers().toArray();
         } else {
             playersArray = game.getTeamData().get(team).getPlayers().toArray();

@@ -1,5 +1,7 @@
 package com.k9rosie.novswar.config;
 
+import com.k9rosie.novswar.NovsWarPlugin;
+
 import java.util.List;
 
 public class CoreConfig extends NovsConfig {
@@ -9,7 +11,7 @@ public class CoreConfig extends NovsConfig {
     private String databasePrefix;
     private int databaseFlushInterval;
     private String databaseHostname;
-    private int databasePort;
+    private String databasePort;
     private String databaseName;
     private String databaseUsername;
     private String databasePassword;
@@ -30,8 +32,8 @@ public class CoreConfig extends NovsConfig {
 
     private boolean debug;
 
-    public CoreConfig() {
-        super("core.yml");
+    public CoreConfig(NovsWarPlugin plugin) {
+        super(plugin, "core.yml");
     }
 
     public String getDatabaseConnector() {
@@ -54,7 +56,7 @@ public class CoreConfig extends NovsConfig {
         return databaseHostname;
     }
 
-    public int getDatabasePort() {
+    public String getDatabasePort() {
         return databasePort;
     }
 
@@ -124,7 +126,7 @@ public class CoreConfig extends NovsConfig {
         databasePrefix = getConfig().getString("core.database.prefix");
         databaseFlushInterval = getConfig().getInt("core.database.flush_interval");
         databaseHostname = getConfig().getString("core.database.mysql.hostname");
-        databasePort = getConfig().getInt("core.database.mysql.port");
+        databasePort = getConfig().getString("core.database.mysql.port");
         databaseName = getConfig().getString("core.database.mysql.database");
         databaseUsername = getConfig().getString("core.database.mysql.username");
         databasePassword = getConfig().getString("core.database.mysql.password");

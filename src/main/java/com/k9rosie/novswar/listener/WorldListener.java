@@ -3,7 +3,7 @@ package com.k9rosie.novswar.listener;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
 import com.k9rosie.novswar.command.CommandType;
-import com.k9rosie.novswar.model.NovsWorld;
+import com.k9rosie.novswar.world.NovsWorld;
 import com.k9rosie.novswar.util.ChatUtil;
 
 import org.bukkit.block.Block;
@@ -46,10 +46,10 @@ public class WorldListener implements Listener {
         	} else if(firstLine.equalsIgnoreCase("infosign")) {
         		Block block = event.getBlock();
         		NovsWorld world;
-        		if(novswar.getNovsWorldCache().getLobbyWorld().getBukkitWorld().equals(block.getWorld())) {
-        			world = novswar.getNovsWorldCache().getLobbyWorld();
+        		if(novswar.getWorldManager().getLobbyWorld().getBukkitWorld().equals(block.getWorld())) {
+        			world = novswar.getWorldManager().getLobbyWorld();
         		} else {
-        			world = novswar.getNovsWorldCache().getWorlds().get(block.getWorld());
+        			world = novswar.getWorldManager().getWorlds().get(block.getWorld());
         		}
         		//Verify that world is valid
         		if(world == null) {
@@ -73,10 +73,10 @@ public class WorldListener implements Listener {
     	if(broken.getState() instanceof Sign) {
     		//Get the world where the break occurred
     		NovsWorld world;
-    		if(novswar.getNovsWorldCache().getLobbyWorld().getBukkitWorld().equals(broken.getWorld())) {
-    			world = novswar.getNovsWorldCache().getLobbyWorld();
+    		if(novswar.getWorldManager().getLobbyWorld().getBukkitWorld().equals(broken.getWorld())) {
+    			world = novswar.getWorldManager().getLobbyWorld();
     		} else {
-    			world = novswar.getNovsWorldCache().getWorlds().get(broken.getWorld());
+    			world = novswar.getWorldManager().getWorlds().get(broken.getWorld());
     		}
     		//Verify that world is valid
     		if(world != null) {

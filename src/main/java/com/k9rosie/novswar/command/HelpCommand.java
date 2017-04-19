@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.k9rosie.novswar.NovsWar;
-import com.k9rosie.novswar.model.NovsPlayer;
+import com.k9rosie.novswar.player.NovsPlayer;
 
 public class HelpCommand extends NovsCommand {
 
@@ -14,7 +14,7 @@ public class HelpCommand extends NovsCommand {
     }
 
     public void execute() {
-        NovsPlayer player = getNovsWar().getNovsPlayerCache().getPlayers().get((Player) getSender());
+        NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
         String message = "";
         ChatUtil.sendNotice(player, "Help: Command, Arguments, Description, Alias");
         for(CommandType cmd : CommandType.values()) {

@@ -1,6 +1,6 @@
-package com.k9rosie.novswar.model;
+package com.k9rosie.novswar.player;
 
-import com.k9rosie.novswar.NovsWar;
+import com.k9rosie.novswar.player.NovsPlayer;
 
 import java.sql.Timestamp;
 import java.util.Date;

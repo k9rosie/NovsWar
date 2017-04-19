@@ -6,7 +6,7 @@ public enum AdminCommandType {
 	KICK		("<player>",			"Kicks player from the round"),
 	NEXTGAME	("[bukkitWorld]",		"Force a new round on bukkitWorld"),
 	RESTART		("",					"Force a round restart on the same map"),
-	SETREGION	("<name> <RegionType>",	"Creates a new region"),
+	SETREGION	("<name> <CuboidType>",	"Creates a new region"),
 	SETSPAWN	("<team>",				"Sets the spawn location for team"),
 	SETTEAM		("<player> <team>",		"Forces the player to join team"),
 	LISTREGIONS ("",					"Lists the regions in this world"),

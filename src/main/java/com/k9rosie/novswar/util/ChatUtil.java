@@ -3,8 +3,7 @@ package com.k9rosie.novswar.util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-import com.k9rosie.novswar.NovsWar;
-import com.k9rosie.novswar.model.NovsPlayer;
+import com.k9rosie.novswar.player.NovsPlayer;
 import org.bukkit.entity.Player;
 
 public class ChatUtil {
@@ -12,13 +11,6 @@ public class ChatUtil {
 	private static ChatColor noticeColor = ChatColor.GRAY;
 	private static ChatColor errorColor = ChatColor.RED;
 	private static String novsWarTag = "§7[§6NovsWar§7]§f ";
-	
-	
-	public static void printDebug(String message) {
-		if(NovsWar.getInstance().getNovsConfigCache().getConfig("core").getBoolean("core.debug")) {
-        	System.out.println("[DEBUG]: "+message);
-        }
-	}
 	
 	public static void sendNotice(NovsPlayer player, String message) {
 		String notice = novsWarTag + noticeColor + message;

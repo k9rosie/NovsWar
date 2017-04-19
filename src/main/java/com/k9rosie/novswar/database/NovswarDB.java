@@ -1,7 +1,7 @@
 package com.k9rosie.novswar.database;
 
-import com.k9rosie.novswar.model.NovsPlayer;
-import com.k9rosie.novswar.model.NovsStats;
+import com.k9rosie.novswar.player.NovsPlayer;
+import com.k9rosie.novswar.player.NovsStats;
 import org.bukkit.entity.Player;
 
 import java.sql.ResultSet;
@@ -168,8 +168,10 @@ public class NovswarDB extends Database {
 
     public void createPlayerData(NovsPlayer player) {
         Player bukkitPlayer = player.getBukkitPlayer();
-        insert("players", new String[] {"uuid", "name"}, new String[] {bukkitPlayer.getUniqueId().toString(), bukkitPlayer.getDisplayName()});
-        insert("stats", new String[] {"player_uuid"}, new String[] {bukkitPlayer.getUniqueId().toString()});
+        String uuid = bukkitPlayer.getUniqueId().toString();
+        String displayName = bukkitPlayer.getDisplayName();
+        insert("players", new String[] {"uuid", "name"}, new String[] {uuid, displayName});
+        insert("stats", new String[] {"player_uuid"}, new String[] {uuid});
     }
 
     public void flushPlayerData(NovsPlayer player) {

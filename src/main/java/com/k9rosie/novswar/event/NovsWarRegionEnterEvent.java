@@ -4,17 +4,17 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import com.k9rosie.novswar.game.Game;
-import com.k9rosie.novswar.model.NovsPlayer;
-import com.k9rosie.novswar.model.NovsRegion;
+import com.k9rosie.novswar.player.NovsPlayer;
+import com.k9rosie.novswar.world.NovsCuboid;
 
 public class NovsWarRegionEnterEvent  extends Event {
 	private static final HandlerList handlers = new HandlerList();
 	private NovsPlayer player;
     private Game game;
-    private NovsRegion region;
+    private NovsCuboid region;
     private boolean cancelled;
     
-    public NovsWarRegionEnterEvent(Game game, NovsPlayer player, NovsRegion region) {
+    public NovsWarRegionEnterEvent(Game game, NovsPlayer player, NovsCuboid region) {
     	this.player = player;
         this.game = game;
         this.region = region;
@@ -29,7 +29,7 @@ public class NovsWarRegionEnterEvent  extends Event {
         return game;
     }
     
-    public NovsRegion getRegion() {
+    public NovsCuboid getRegion() {
     	return region;
     }
 

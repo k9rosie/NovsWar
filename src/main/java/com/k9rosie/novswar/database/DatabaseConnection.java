@@ -1,6 +1,7 @@
 package com.k9rosie.novswar.database;
 
 import com.k9rosie.novswar.NovsWar;
+import com.k9rosie.novswar.config.CoreConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -12,13 +13,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class DatabaseConnection {
+    private NovsWar novswar;
+
     private Connection connection;
     private Properties properties;
     private Database database;
-
     private ExecutorService queryExecutor;
 
-    public DatabaseConnection(Database database) {
+    public DatabaseConnection(NovsWar novswar, Database database) {
+        this.novswar = novswar;
         this.database = database;
         queryExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         properties = new Properties();
@@ -32,7 +35,7 @@ public class DatabaseConnection {
         ClassLoader classLoader = Bukkit.getServer().getClass().getClassLoader();
         DatabaseType type = database.getType();
 
-        FileConfiguration config = NovsWar.getInstance().getNovsConfigCache().getConfig("core");
+        CoreConfig config = novswar.getConfigManager().getCoreConfig();
         String className;
         String hostnameString;
         String portString;
@@ -43,15 +46,15 @@ public class DatabaseConnection {
 
         if (type != DatabaseType.SQLite) {
             className = "com.mysql.jdbc.Driver";
-            hostnameString = config.getString("core.database.mysql.hostname");
-            portString = config.getString("core.database.mysql.port");
-            databaseString = config.getString("core.database.mysql.database");
-            userString = config.getString("core.database.mysql.username");
-            passwordString = config.getString("core.database.mysql.password");
+            hostnameString = config.getDatabaseHostname();
+            portString = config.getDatabasePort();
+            databaseString = config.getDatabasePort();
+            userString = config.getDatabaseUsername();
+            passwordString = config.getDatabasePassword();
             pathString = "//" + hostnameString+":"+portString + "/" + databaseString;
             setProperties("true", userString, passwordString);
         } else {
-            pathString = config.getString("core.database.path");
+            pathString = config.getDatabasePath();
             className = "org.sqlite.JDBC";
         }
 

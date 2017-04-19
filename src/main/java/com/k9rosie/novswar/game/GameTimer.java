@@ -55,7 +55,7 @@ public class GameTimer {
                 time--;
                 if (time <= -1) {
                     stopTimer();
-                    game.onEndTimer();
+                    game.endTimer();
                 }
             }
         };

@@ -3,7 +3,6 @@ package com.k9rosie.novswar.command;
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.admin.AdminCommand;
 import com.k9rosie.novswar.util.ChatUtil;
-import com.k9rosie.novswar.util.Messages;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

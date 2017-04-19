@@ -1,3 +1,36 @@
 # YAML file that stores the different regions in the worlds
 # it's not recommended that you edit this file unless you are sure on what you are doing
 regions:
+- world: tdm_war
+  spawns:
+  - team: Red
+    x: 0
+    y: 0
+    z: 0
+    pitch: 0
+    yaw: 0
+  - team: Blue
+    x: 0
+    y: 0
+    z: 0
+    pitch: 0
+    yaw: 0
+  cuboids:
+  - name: red_gate
+    type: INTERMISSION_GATE
+    corner_one_x: 0
+    corner_one_y: 0
+    corner_one_z: 0
+    corner_two_x: 0
+    corner_two_y: 0
+    corner_two_z: 0
+  signs:
+  - type: COMMAND_SIGN
+    command: join
+    x: 0
+    y: 0
+    z: 0
+  - type: INFO_SIGN
+    x: 0
+    y: 0
+    z: 0

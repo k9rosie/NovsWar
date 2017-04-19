@@ -1,7 +1,7 @@
 package com.k9rosie.novswar.event;
 
 import com.k9rosie.novswar.game.Game;
-import com.k9rosie.novswar.model.NovsTeam;
+import com.k9rosie.novswar.team.NovsTeam;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
