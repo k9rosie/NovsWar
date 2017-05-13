@@ -1,17 +1,17 @@
 package com.k9rosie.novswar.gamemode;
 
-public interface Gamemode {
+import com.k9rosie.novswar.team.NovsTeam;
 
-    enum ScoreType {
-        ASCENDING,
-        DESCENDING
-    }
+import java.util.ArrayList;
+
+public interface Gamemode {
 
     int getGameTime();
     int getDeathTime();
     int getMaxScore();
     int getRounds();
-    ScoreType getScoreType();
     String getGamemodeName();
+    void setInitialScores();
+    ArrayList<NovsTeam> getWinningTeams();
 
 }

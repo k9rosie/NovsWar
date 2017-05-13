@@ -1,11 +1,9 @@
 package com.k9rosie.novswar.team;
 
-import com.k9rosie.novswar.config.Messages;
 import com.k9rosie.novswar.event.NovsWarJoinTeamEvent;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.player.NovsPlayer;
 import com.k9rosie.novswar.util.ChatUtil;
-import com.k9rosie.novswar.util.SendTitle;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;

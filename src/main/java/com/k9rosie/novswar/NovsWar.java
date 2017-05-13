@@ -1,9 +1,9 @@
 package com.k9rosie.novswar;
 
+import com.k9rosie.novswar.config.*;
 import com.k9rosie.novswar.player.PlayerManager;
 import com.k9rosie.novswar.team.TeamManager;
 import com.k9rosie.novswar.command.CommandHandler;
-import com.k9rosie.novswar.config.ConfigManager;
 import com.k9rosie.novswar.database.DatabaseThread;
 import com.k9rosie.novswar.database.NovswarDB;
 import com.k9rosie.novswar.event.NovsWarInitializationEvent;
@@ -111,6 +111,27 @@ public class NovsWar {
 	public HashMap<String, Gamemode> getGamemodes() {
 		return gamemodes;
 	}
+
+	public CoreConfig getCoreConfig() {
+		return configManager.getCoreConfig();
+	}
+
+	public TeamsConfig getTeamConfig() {
+		return configManager.getTeamConfig();
+	}
+
+	public MessagesConfig getMessagesConfig() {
+		return configManager.getMessagesConfig();
+	}
+
+	public RegionsConfig getRegionsConfig() {
+		return configManager.getRegionsConfig();
+	}
+
+	public WorldsConfig getWorldsConfig() {
+		return configManager.getWorldsConfig();
+	}
+
 
 	public static void info(String message) {
 		Bukkit.getLogger().info(message);

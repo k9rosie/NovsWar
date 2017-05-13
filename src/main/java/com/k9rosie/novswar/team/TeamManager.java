@@ -1,21 +1,12 @@
 package com.k9rosie.novswar.team;
 
 import com.k9rosie.novswar.NovsWar;
-import com.k9rosie.novswar.config.Messages;
 import com.k9rosie.novswar.config.TeamData;
 import com.k9rosie.novswar.config.TeamsConfig;
-import com.k9rosie.novswar.event.NovsWarJoinTeamEvent;
-import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.player.NovsPlayer;
-import com.k9rosie.novswar.team.NovsTeam;
-import com.k9rosie.novswar.util.ChatUtil;
-import com.k9rosie.novswar.util.ColorParser;
-import com.k9rosie.novswar.util.SendTitle;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.*;
 
@@ -65,25 +56,6 @@ public class TeamManager {
                     data.isCanAttack(),
                     data.isFriendlyFire());
             teams.put(data.getName(), team);
-        }
-    }
-    
-    public void assignTeam(NovsPlayer player) {
-    	ArrayList<NovsTeam> enabledTeams = novswar.getGameHandler().getGame().getTeams();
-
-    	// novsloadout has its own way of sorting players, only run this code if it isnt enabled
-        if (!Bukkit.getPluginManager().isPluginEnabled("NovsLoadout")) {
-
-        	//Determine which team has the fewest players and put them on there
-        	NovsTeam smallestTeam = enabledTeams.get(0);
-        	int smallest = smallestTeam.getTeamState().getPlayers().size();
-            for (NovsTeam team : enabledTeams) {
-            	if(team.getTeamState().getPlayers().size() <= smallest) {
-            		smallest = team.getTeamState().getPlayers().size();
-            		smallestTeam = team;
-            	}
-            }
-            smallestTeam.getTeamState().addPlayer(player);
         }
     }
 }

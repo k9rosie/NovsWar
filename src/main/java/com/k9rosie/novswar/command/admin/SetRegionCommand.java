@@ -2,7 +2,6 @@ package com.k9rosie.novswar.command.admin;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
-import com.k9rosie.novswar.config.Messages;
 import com.k9rosie.novswar.player.NovsPlayer;
 import com.k9rosie.novswar.world.CuboidType;
 import com.k9rosie.novswar.world.NovsWorld;

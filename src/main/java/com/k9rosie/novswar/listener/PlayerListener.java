@@ -3,7 +3,7 @@ package com.k9rosie.novswar.listener;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.NovsWarPlugin;
-import com.k9rosie.novswar.game.DeathTimer;
+import com.k9rosie.novswar.player.DeathTimer;
 import com.k9rosie.novswar.player.PlayerManager;
 import com.k9rosie.novswar.command.CommandType;
 import com.k9rosie.novswar.event.NovsWarJoinServerEvent;
@@ -144,6 +144,7 @@ public class PlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDamageByPlayer(EntityDamageByEntityEvent event) {
+        event.
     	ChatUtil.printDebug("EntityDamageByEntityEvent: " + event.getFinalDamage() + " / " + event.getCause());
         Player victimBukkitPlayer;
         Player attackerBukkitPlayer = null;

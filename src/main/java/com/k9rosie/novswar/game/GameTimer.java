@@ -2,6 +2,7 @@ package com.k9rosie.novswar.game;
 
 import com.k9rosie.novswar.NovsWar;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitScheduler;
 
 public class GameTimer {
@@ -51,7 +52,7 @@ public class GameTimer {
 
         task = new Runnable() {
             public void run() {
-                game.clockTick();
+                clockTick();
                 time--;
                 if (time <= -1) {
                     stopTimer();
@@ -72,5 +73,40 @@ public class GameTimer {
         time = -1;
         scheduler.cancelTask(taskID);
         taskID = 0;
+    }
+
+    public void clockTick() {
+        String secondsString = Integer.toString(getSeconds());
+        String minutesString = Integer.toString(getMinutes());
+        String gameStateString = "";
+
+        switch (game.getGameState()) {
+            case PRE_GAME :
+                gameStateString = ChatColor.GRAY + "Setting up: ";
+                break;
+            case DURING_GAME :
+                gameStateString = "";
+                break;
+            case POST_GAME :
+                gameStateString = ChatColor.GRAY + "Post game: ";
+                break;
+            default :
+                gameStateString = "";
+                break;
+        }
+        if (game.isPaused()) {
+            gameStateString = ChatColor.GRAY + "Game Paused ";
+        }
+        if (getSeconds() < 10) {
+            secondsString = "0" + Integer.toString(getSeconds());
+        } else if (getSeconds() <= 0) {
+            secondsString = "00";
+        }
+        if (getMinutes() < 10) {
+            minutesString = "0" + Integer.toString(getMinutes());
+        } else if (getMinutes() <= 0) {
+            minutesString = "00";
+        }
+        game.getScoreboard().setSidebarTitle(gameStateString + ChatColor.GREEN + minutesString + ":" + secondsString);
     }
 }

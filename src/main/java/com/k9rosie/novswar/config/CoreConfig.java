@@ -29,6 +29,19 @@ public class CoreConfig extends NovsConfig {
     private int gameRespawnTimer;
     private boolean gameEnableHunger;
     private boolean gameFastHealthRegen;
+    private int gameAssistTimer;
+
+    private String deathParticleType;
+    private int deathParticleCount;
+    private String deathSoundType;
+    private float deathSoundVolume;
+    private float deathSoundPitch;
+
+    private String respawnParticleType;
+    private int respawnParticleCount;
+    private String respawnSoundType;
+    private float respawnSoundVolume;
+    private float respawnSoundPitch;
 
     private boolean debug;
 
@@ -116,6 +129,48 @@ public class CoreConfig extends NovsConfig {
         return gameFastHealthRegen;
     }
 
+    public int getGameAssistTimer() { return gameAssistTimer; }
+
+    public String getDeathParticleType() {
+        return deathParticleType;
+    }
+
+    public int getDeathParticleCount() {
+        return deathParticleCount;
+    }
+
+    public String getDeathSoundType() {
+        return deathSoundType;
+    }
+
+    public float getDeathSoundVolume() {
+        return deathSoundVolume;
+    }
+
+    public float getDeathSoundPitch() {
+        return deathSoundPitch;
+    }
+
+    public String getRespawnParticleType() {
+        return respawnParticleType;
+    }
+
+    public int getRespawnParticleCount() {
+        return respawnParticleCount;
+    }
+
+    public String getRespawnSoundType() {
+        return respawnSoundType;
+    }
+
+    public float getRespawnSoundVolume() {
+        return respawnSoundVolume;
+    }
+
+    public float getRespawnSoundPitch() {
+        return respawnSoundPitch;
+    }
+
     public boolean getDebug() {
         return debug;
     }
@@ -144,6 +199,19 @@ public class CoreConfig extends NovsConfig {
         gameRespawnTimer = getConfig().getInt("core.game.respawn_timer");
         gameEnableHunger = getConfig().getBoolean("core.game.enable_hunger");
         gameFastHealthRegen = getConfig().getBoolean("core.game.fast_health_regen");
+        gameAssistTimer = getConfig().getInt("core.game.assist_timer");
+
+        deathParticleType =  getConfig().getString("core.effects.death.particle.type");
+        deathParticleCount = getConfig().getInt("core.effects.death.particle.count");
+        deathSoundType =     getConfig().getString("core.effects.death.sound.type");
+        deathSoundVolume =   (float) getConfig().getDouble("core.effects.death.sound.volume");
+        deathSoundPitch =    (float) getConfig().getDouble("core.effects.death.pitch.volume");
+
+        respawnParticleType = getConfig().getString("core.effects.respawn.particle.type");
+        respawnParticleCount = getConfig().getInt("core.effects.respawn.particle.count");
+        respawnSoundType = getConfig().getString("core.effects.respawn.sound.type");
+        respawnSoundVolume = (float) getConfig().getDouble("core.respawn.death.sound.volume");
+        respawnSoundPitch = (float) getConfig().getDouble("core.respawn.death.pitch.volume");
 
         debug = getConfig().getBoolean("core.debug");
     }

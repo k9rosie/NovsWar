@@ -70,6 +70,49 @@ core:
     
     # disable/enable faster health regen when enable_hunger is FALSE
     fast_health_regen: false
+
+    # the amount of time in seconds that players are "tagged" when they are damaged by another player
+    # players that tag another player are counted as assisters to a kill
+    # this specifies the amount of time the tag has to live, when time is up the tag is removed
+    assist_timer: 5
+
+  # effect settings
+  effects:
+
+    # effects that are played on death
+    death:
+
+      # particle settings
+      particle:
+
+        # the name of the particle (as defined here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html)
+        type: SMOKE_NORMAL
+
+        # number of particles spawned
+        count: 10
+
+      # sound settings
+      sound:
+
+        # the name of the sound (as defined here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html)
+        type: ENTITY_VILLAGER_DEATH
+
+        # the volume of the sound
+        volume: 1
+
+        # the pitch of the sound (can't be any higher than 2)
+        pitch: 1
+
+    # effects that are played on respawn
+    respawn:
+      particle:
+        type: VILLAGER_HAPPY
+        count: 50
+      sound:
+        type: ENTITY_PLAYER_LEVELUP
+        volume: 1
+        pitch: 1
+
     
   # Enable debug messages
   debug: true

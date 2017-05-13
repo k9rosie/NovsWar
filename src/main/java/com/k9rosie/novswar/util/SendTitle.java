@@ -1,5 +1,6 @@
 package com.k9rosie.novswar.util;
 
+import com.k9rosie.novswar.player.NovsPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -72,6 +73,30 @@ public class SendTitle {
             }
         } catch (Exception var11) {
             var11.printStackTrace();
+        }
+    }
+
+    public static void broadcastTitle(String title) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            SendTitle.sendTitle(player, 0, 20*4, 20, title, " ");
+        }
+    }
+
+    public static void broadcastTitle(String title, String subtitle) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            SendTitle.sendTitle(player, 0, 20*4, 20, title, subtitle);
+        }
+    }
+
+    public static void broadcastTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            SendTitle.sendTitle(player, fadeIn, stay, fadeOut, title, subtitle);
+        }
+    }
+
+    public static void broadcastSubtitle(String subtitle) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            SendTitle.sendTitle(player, 0, 20*4, 20, " ", subtitle);
         }
     }
 }

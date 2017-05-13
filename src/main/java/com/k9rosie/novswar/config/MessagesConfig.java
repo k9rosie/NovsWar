@@ -4,48 +4,160 @@ import com.k9rosie.novswar.NovsWarPlugin;
 import org.bukkit.ChatColor;
 
 public class MessagesConfig extends NovsConfig {
+    private static String pluginTag;
+    private static String invalidParameters;
+    private static String playerOffline;
+    private static String teamMissing;
+    private static String signCreated;
+    private static String noPermission;
+    private static String teamFull;
+    private static String alreadyAssigned;
+    private static String joinTeam;
+    private static String deathMessage;
+    private static String killMessage;
+    private static String shotMessage;
+    private static String spawnSet;
+    private static String cannotJoinTeam;
+    private static String cannotJoinGame;
+    private static String commandNonexistent;
+    private static String playerDataNonexistent;
+    private static String notEnoughPlayers;
 
-    static String PLUGIN_TAG;
-    static String INVALID_PARAMETERS;
-    static String PLAYER_OFFLINE;
-    static String TEAM_MISSING;
-    static String SIGN_CREATED;
-    static String NO_PERMISSION;
-    static String TEAM_FULL;
-    static String ALREADY_ASSIGNED;
-    static String JOIN_TEAM;
-    static String DEATH_MESSAGE;
-    static String KILL_MESSAGE;
-    static String SHOT_MESSAGE;
-    static String SPAWN_SET;
-    static String CANNOT_JOIN_TEAM;
-    static String CANNOT_JOIN_GAME;
-    static String COMMAND_NONEXISTENT;
-    static String PLAYER_DATA_NONEXISTENT;
-    static String NOT_ENOUGH_PLAYERS;
+    public static String getPluginTag() {
+        String message = ChatColor.translateAlternateColorCodes('&', pluginTag) + " ";
+        return message;
+    }
+
+    public static String getInvalidParameters() {
+        String message = ChatColor.translateAlternateColorCodes('&', invalidParameters);
+        return message;
+    }
+
+    public static String getPlayerOffline(String player) {
+        String message = playerOffline.replace(":player", player);
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        return message;
+    }
+
+    public static String getTeamMissing(String teamColor, String team) {
+        String message = teamMissing.replace(":team_color", teamColor)
+                .replace(":team", team);
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        return message;
+    }
+
+    public static String getSignCreated() {
+        String message = ChatColor.translateAlternateColorCodes('&', signCreated);
+        return message;
+    }
+
+    public static String getNoPermission() {
+        String message = ChatColor.translateAlternateColorCodes('&', noPermission);
+        return message;
+    }
+
+    public static String getTeamFull() {
+        String message = ChatColor.translateAlternateColorCodes('&', teamFull);
+        return message;
+    }
+
+    public static String getAlreadyAssigned() {
+        String message = ChatColor.translateAlternateColorCodes('&', alreadyAssigned);
+        return message;
+    }
+
+    public static String getJoinTeam(String teamColor, String team) {
+        String message = joinTeam.replace(":team_color", teamColor)
+                .replace(":team", team);
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        return message;
+    }
+
+    public static String getDeathMessage(String playerColor, String player) {
+        String message = deathMessage.replace(":player_color", playerColor)
+                .replace(":player", player);
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        return message;
+    }
+
+    public static String getKillMessage(String killerColor, String killer, String killedColor, String killed) {
+        String message = deathMessage.replace(":killer_color", killerColor)
+                .replace(":killer", killer)
+                .replace(":killedColor", killedColor)
+                .replace(":killed", killed);
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        return message;
+    }
+
+    public static String getShotMessage(String killerColor, String killer, String killedColor, String killed) {
+        String message = shotMessage.replace(":killer_color", killerColor)
+                .replace(":killer", killer)
+                .replace(":killedColor", killedColor)
+                .replace(":killed", killed);
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        return message;
+    }
+
+    public static String getSpawnSet(String teamColor, String team) {
+        String message = spawnSet.replace(":team_color", teamColor)
+                .replace(":team", team);
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        return message;
+    }
+
+    public static String getCannotJoinTeam(String teamColor, String team) {
+        String message = cannotJoinTeam.replace(":team_color", teamColor)
+                .replace(":team", team);
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        return message;
+    }
+
+    public static String getCannotJoinGame() {
+        String message = cannotJoinGame;
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        return message;
+    }
+
+    public static String getCommandNonexistent() {
+        String message = commandNonexistent;
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        return message;
+    }
+
+    public static String getPlayerDataNonexistent() {
+        String message = playerDataNonexistent;
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        return message;
+    }
+
+    public static String getNotEnoughPlayers(String minimum) {
+        String message = notEnoughPlayers.replace(":minimum", minimum);
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        return message;
+    }
 
     public MessagesConfig(NovsWarPlugin plugin) {
         super(plugin, "messages.yml");
     }
 
     public void reloadData() {
-        PLUGIN_TAG = getConfig().getString("plugin_tag");
-        INVALID_PARAMETERS = getConfig().getString("invalid_parameters");
-        PLAYER_OFFLINE = getConfig().getString("player_offline");
-        TEAM_MISSING = getConfig().getString("team_missing");
-        SIGN_CREATED = getConfig().getString("sign_created");
-        NO_PERMISSION = getConfig().getString("no_permission");
-        TEAM_FULL = getConfig().getString("team_full");
-        ALREADY_ASSIGNED = getConfig().getString("already_assigned");
-        JOIN_TEAM = getConfig().getString("join_team");
-        DEATH_MESSAGE = getConfig().getString("death_message");
-        KILL_MESSAGE = getConfig().getString("kill_message");
-        SHOT_MESSAGE = getConfig().getString("shot_message");
-        SPAWN_SET = getConfig().getString("spawn_set");
-        CANNOT_JOIN_TEAM = getConfig().getString("cannot_join_team");
-        CANNOT_JOIN_GAME = getConfig().getString("cannot_join_game");
-        COMMAND_NONEXISTENT = getConfig().getString("command_nonexistent");
-        PLAYER_DATA_NONEXISTENT = getConfig().getString("player_data_nonexistent");
-        NOT_ENOUGH_PLAYERS = getConfig().getString("not_enough_players");
+        pluginTag = getConfig().getString("plugin_tag");
+        invalidParameters = getConfig().getString("invalid_parameters");
+        playerOffline = getConfig().getString("player_offline");
+        teamMissing = getConfig().getString("team_missing");
+        signCreated = getConfig().getString("sign_created");
+        noPermission = getConfig().getString("no_permission");
+        teamFull = getConfig().getString("team_full");
+        alreadyAssigned = getConfig().getString("already_assigned");
+        joinTeam = getConfig().getString("join_team");
+        deathMessage = getConfig().getString("death_message");
+        killMessage = getConfig().getString("kill_message");
+        shotMessage = getConfig().getString("shot_message");
+        spawnSet = getConfig().getString("spawn_set");
+        cannotJoinTeam = getConfig().getString("cannot_join_team");
+        cannotJoinGame = getConfig().getString("cannot_join_game");
+        commandNonexistent = getConfig().getString("command_nonexistent");
+        playerDataNonexistent = getConfig().getString("player_data_nonexistent");
+        notEnoughPlayers = getConfig().getString("not_enough_players");
     }
 }

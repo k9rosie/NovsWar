@@ -14,110 +14,64 @@ import com.k9rosie.novswar.world.NovsWorld;
 import com.k9rosie.novswar.util.ChatUtil;
 
 public class BallotBox {
-	
-	private static Inventory ballotBox = Bukkit.createInventory(null, 9, "Vote for the next map");
-	private static Material voteItem = Material.MAP;
+
 	private NovsWar novswar;
-	private int[] mapWinner; //each spot in the array matches to a world in voteWorldList
-	private List<NovsWorld> ballotList;
+	private static Inventory inventory;
+	private ArrayList<NovsWorld> selectedMaps;
+	private int[] totalVotes;
 	
 	public BallotBox(NovsWar novswar) {
 		this.novswar = novswar;
-		mapWinner = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};//new int[9];
-		ballotList = new ArrayList<NovsWorld>();
+		selectedMaps = new ArrayList<>(9);
+		inventory = Bukkit.createInventory(null, 9, "Vote for the next map");
 	}
 	
-	public void castVotes() {
-			//List of enabled world names
-		List<String> enabledWorlds = novswar.getConfigManager().getConfig("core").getStringList("core.world.enabled_worlds");
+	public void promptVoting() {
+		ArrayList<NovsWorld> worlds = (ArrayList<NovsWorld>) novswar.getWorldManager().getWorlds().values();
 
-		//Choose 9 gamemodes randomly, and get their names and gamemodes
-    	Collection<NovsWorld> worlds = novswar.getWorldManager().getWorlds().values();
-    	ballotList.addAll(worlds);
-    	Collections.shuffle(ballotList);
-    	int worldCount = worlds.size();
-    	if(worldCount > 9) {
-    		worldCount = 9; //cap limit at 9
-    	}
+		// populate selectedMaps with random worlds from the master world list
+		Random random = new Random(); // generate a random wi
+		int max = worlds.size() < 9 ? worlds.size() : 9;
+		while (selectedMaps.size() < max) {
+			int index = random.nextInt(worlds.size());
+			selectedMaps.add(worlds.get(index));
+		}
+		totalVotes = new int[max];
 
-    	//Remove disabled worlds
-    	for(int k = 0; k < ballotList.size(); k++) {
-    		String currentBallotName = ballotList.get(k).getBukkitWorld().getName();
-    		boolean isWorldEnabled = false;
-    		for(String worldName : enabledWorlds) {
-    			if(currentBallotName.equals(worldName)) {
-    				isWorldEnabled = true;
-    				break;
-    			}
-    		}
-    		if(isWorldEnabled == false) {
-    			ballotList.remove(k);
-    			k--; //decrement k to account for the left-shift of elements
-    		}
-    	}
-
-    	//Generate the voting options
-    	ballotBox.clear(); //ensure the ballotbox is empty
-    	for (int i = 0; i < worldCount && i < ballotList.size(); i++) {
-    		String name = ballotList.get(i).getName();
-    		String bukkitWorldName = ballotList.get(i).getBukkitWorld().getName();
-    		String gamemode = novswar.getConfigManager().getConfig("worlds").getString("worlds."+bukkitWorldName+".gamemode");
-    		createVoteOption(voteItem, ballotBox, i, name, gamemode);
-    	}
+    	// Generate the voting options
+    	inventory.clear(); // ensure the ballotbox is empty
+		ArrayList<NovsWorld> selectedMaps = (ArrayList<NovsWorld>) this.selectedMaps.keySet();
+		for (int i = 0; i < selectedMaps.size(); i++) {
+			NovsWorld world = selectedMaps.get(i);
+			String name = world.getName();
+			String bukkitWorldName = world.getBukkitWorld().getName();
+			String gamemode = novswar.getConfigManager().getWorldsConfig().getWorldData().get(bukkitWorldName).getGamemode();
+			createVoteOption(Material.EMPTY_MAP, inventory, i, name, "A" + gamemode + " map");
+		}
     	
-    	//Open the voting screen for each player
+    	// Open the voting screen for each player
     	for(NovsPlayer player : novswar.getPlayerManager().getPlayers().values()) {
-    		//player.getBukkitPlayer().sendMessage("Cast your Vote");
-    		player.getBukkitPlayer().openInventory(ballotBox);
-    		player.setVoted(false);
+    		player.getBukkitPlayer().openInventory(inventory);
     	}
+
     	ChatUtil.sendBroadcast("Type '/nw vote' to vote for the next map");
 	}
 	
-	public void recordResult(int result) {
-		mapWinner[result]++;
+	public void castVote(int position) {
+		totalVotes[position]++;
 	}
-	
+
 	public NovsWorld tallyResults() {
-		NovsWorld winnerWinnerChickenDinner;
-		if(ballotList.size() > 0) {
-			winnerWinnerChickenDinner = ballotList.get(0); //initialize to first map by default
-			int mostVotes = 0;
-			for(int i = 0; i < ballotList.size(); i++) {
-				if(mapWinner[i] >= mostVotes) {
-					mostVotes = mapWinner[i];
-					winnerWinnerChickenDinner = ballotList.get(i);
-				}
-			}
-			Bukkit.broadcastMessage(winnerWinnerChickenDinner.getName()+" has won the vote!");
-		}
-		else {
-			winnerWinnerChickenDinner = null;
-		}
-		
-		return winnerWinnerChickenDinner;
-	}
-	
-	public NovsWorld nextWorld(NovsWorld currentWorld) {
-		NovsWorld nextWorld = null;
-		String currentWorldName = currentWorld.getBukkitWorld().getName();
-		List<String> enabledWorlds = novswar.getConfigManager().getConfig("core").getStringList("core.world.enabled_worlds");
-		for(int i = 0; i < enabledWorlds.size(); i++) {
-			if(enabledWorlds.get(i).equals(currentWorldName)) {
-				int nextIndex = i+1;
-				if(nextIndex == enabledWorlds.size()) {
-					nextIndex = 0;
-				}
-				for(NovsWorld nworld : novswar.getWorldManager().getWorlds().values()) {
-					if(nworld.getBukkitWorld().getName().equals(enabledWorlds.get(nextIndex))) {
-						nextWorld = nworld;
-					}
-				}
-			}
-		}
-		
-		return nextWorld;
-	}
+	    NovsWorld winner = null;
+	    for (int i = 0; i < selectedMaps.size(); i++) {
+	        int mostVotes = 0;
+	        if (totalVotes[i] >= mostVotes) {
+	            mostVotes = totalVotes[i];
+	            winner = selectedMaps.get(i);
+            }
+        }
+        return winner;
+    }
 	
 	public static void createVoteOption(Material material, Inventory inv, int slot, String name, String lore) {
 		ItemStack item = new ItemStack(material);
@@ -130,12 +84,8 @@ public class BallotBox {
 		inv.setItem(slot, item);
 	}
 	
-	public Inventory getBallots() {
-		return ballotBox;
-	}
-	
-	public Material getVoteItem() {
-		return voteItem;
+	public Inventory getInventory() {
+		return inventory;
 	}
 
 }

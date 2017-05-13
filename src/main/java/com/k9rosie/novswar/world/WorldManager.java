@@ -30,6 +30,10 @@ public class WorldManager {
         return worlds;
     }
 
+    public NovsWorld getWorld(World bukkitWorld) {
+        return worlds.get(bukkitWorld);
+    }
+
     public NovsWorld getLobbyWorld() {
         return lobbyWorld;
     }

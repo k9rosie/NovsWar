@@ -44,28 +44,4 @@ public class PlayerManager {
         players.put(bukkitPlayer, player);
         return player;
     }
-
-    public void broadcastTitle(String title) {
-        for (NovsPlayer player : players.values()) {
-            SendTitle.sendTitle(player.getBukkitPlayer(), 0, 20*4, 20, title, " ");
-        }
-    }
-
-    public void broadcastTitle(String title, String subtitle) {
-        for (NovsPlayer player : players.values()) {
-            SendTitle.sendTitle(player.getBukkitPlayer(), 0, 20*4, 20, title, subtitle);
-        }
-    }
-
-    public void broadcastTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        for (NovsPlayer player : players.values()) {
-            SendTitle.sendTitle(player.getBukkitPlayer(), fadeIn, stay, fadeOut, title, subtitle);
-        }
-    }
-
-    public void broadcastSubtitle(String subtitle) {
-        for (NovsPlayer player : players.values()) {
-            SendTitle.sendTitle(player.getBukkitPlayer(), 0, 20*4, 20, " ", subtitle);
-        }
-    }
 }

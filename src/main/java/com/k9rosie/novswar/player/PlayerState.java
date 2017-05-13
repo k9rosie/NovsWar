@@ -1,25 +1,22 @@
 package com.k9rosie.novswar.player;
 
 import com.k9rosie.novswar.NovsWar;
-import com.k9rosie.novswar.config.Messages;
-import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
-import com.k9rosie.novswar.event.NovsWarPlayerRespawnEvent;
-import com.k9rosie.novswar.game.DeathTimer;
+import com.k9rosie.novswar.config.CoreConfig;
+import com.k9rosie.novswar.config.MessagesConfig;
+import com.k9rosie.novswar.event.*;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.game.GameState;
 import com.k9rosie.novswar.team.NovsTeam;
 import com.k9rosie.novswar.util.ChatUtil;
 import com.k9rosie.novswar.util.SendTitle;
 import com.k9rosie.novswar.world.RegionBuffer;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
+import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.DisplaySlot;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class PlayerState {
     private Game game;
@@ -28,7 +25,7 @@ public class PlayerState {
     private NovsTeam team;
     private DeathTimer deathTimer;
     private ArrayList<NovsPlayer> observers;
-    private HashMap<NovsPlayer, Double> attackers;
+    private HashMap<NovsPlayer, AttackTimer> attackers;
     private boolean dead; //Whether a player has died and is spectating via death cam
     private boolean spectating; //Whether a player in the lobby entered spectator mode
     private boolean voted;
@@ -77,7 +74,7 @@ public class PlayerState {
         return observers;
     }
 
-    public HashMap<NovsPlayer, Double> getAttackers() {
+    public HashMap<NovsPlayer, AttackTimer> getAttackers() {
         return attackers;
     }
 
@@ -137,40 +134,27 @@ public class PlayerState {
         this.settingRegion = settingRegion;
     }
 
-    public void addAttacker(NovsPlayer player, Double damage) {
-        if(attackers.containsKey(player)) {
-            attackers.put(player, attackers.get(player) + damage);
+    public void tagPlayer(NovsPlayer attacker, double damage) {
+        if (attackers.containsKey(attacker)) {
+            AttackTimer timer = attackers.get(attacker);
+            timer.resetTimer();
+            timer.incrementDamage(damage);
         } else {
-            attackers.put(player, damage);
+            int time = novswar.getCoreConfig().getGameAssistTimer();
+            attackers.put(attacker, new AttackTimer(player, attacker, damage, time));
         }
     }
 
-    public NovsPlayer getAssistAttacker(NovsPlayer killer) {
-        if (killer != null) {
-            attackers.remove(killer);
-        }
-
-        NovsPlayer assistAttacker = null;
-        if(attackers.size() > 0) {
-            Iterator<Map.Entry<NovsPlayer, Double>> it = attackers.entrySet().iterator();
-
-            double assistAttackerDamage = 0;
-            while (it.hasNext()) {
-                Map.Entry<NovsPlayer, Double> pair = it.next();
-
-                if(pair.getValue() > assistAttackerDamage) {
-                    assistAttackerDamage = pair.getValue();
-                    assistAttacker = pair.getKey();
-                }
-            }
-        }
-        return assistAttacker;
+    public ArrayList<AttackTimer> sortAttackers() {
+        ArrayList<AttackTimer> assisters = (ArrayList<AttackTimer>) attackers.values();
+        Collections.sort(assisters);
+        return assisters;
     }
 
     public void joinGame() {
         boolean joinInProgress = novswar.getConfigManager().getCoreConfig().getGameJoinInProgress();
         if (!joinInProgress && (game.getGameState() == GameState.DURING_GAME) || game.getGameState() == GameState.POST_GAME) {
-            ChatUtil.sendError(player, Messages.CANNOT_JOIN_GAME.toString());
+            ChatUtil.sendError(player, MessagesConfig.getCannotJoinGame());
             return;
         }
 
@@ -213,6 +197,165 @@ public class PlayerState {
             // invoke respawn event
             NovsWarPlayerRespawnEvent event = new NovsWarPlayerRespawnEvent(player, game);
             Bukkit.getPluginManager().callEvent(event);
+        }
+    }
+
+    public void killPlayer() {
+        String deathMessage = MessagesConfig.getDeathMessage(team.getColor().toString(), player.getBukkitPlayer().getDisplayName());
+        player.getStats().incrementDeaths();
+
+        game.printDeathMessage(deathMessage);
+
+        ArrayList<AttackTimer> sortedAttackers = sortAttackers();
+        NovsPlayer assistAttacker = sortedAttackers.get(sortedAttackers.size()-1).getAttacker();
+        attackers.clear();
+
+        game.printDeathMessage(deathMessage);
+        scheduleDeath(game.getGamemode().getDeathTime());
+
+        NovsWarPlayerDeathEvent deathEvent = new NovsWarPlayerDeathEvent(player, team, true, game);
+        Bukkit.getPluginManager().callEvent(deathEvent);
+
+        if (assistAttacker != null) {
+            NovsWarPlayerAssistEvent assistEvent = new NovsWarPlayerAssistEvent(assistAttacker, player, assistAttacker.getPlayerState().getTeam(), team, game);
+            Bukkit.getPluginManager().callEvent(assistEvent);
+        }
+    }
+
+    public void killPlayer(NovsPlayer attacker, boolean isArrowDeath) {
+        String deathMessage;
+
+        if (isArrowDeath) {
+            deathMessage = MessagesConfig.getShotMessage(attacker.getPlayerState().getTeam().getColor().toString(),
+                    attacker.getBukkitPlayer().getDisplayName(),
+                    team.getColor().toString(),
+                    player.getBukkitPlayer().getDisplayName());
+            attacker.getStats().incrementArrowKills();
+            player.getStats().incrementArrowDeaths();
+        } else {
+            deathMessage = MessagesConfig.getKillMessage(attacker.getPlayerState().getTeam().getColor().toString(),
+                    attacker.getBukkitPlayer().getDisplayName(),
+                    team.getColor().toString(),
+                    player.getBukkitPlayer().getDisplayName());
+            attacker.getStats().incrementKills();
+            player.getStats().incrementDeaths();
+        }
+
+        // Print death message to all players
+        game.printDeathMessage(deathMessage);
+
+        // Evaluate assists
+        NovsPlayer assistAttacker = sortAttackers().get(0).getAttacker();
+        attackers.clear();
+
+        // Schedule death spectating
+        scheduleDeath(attacker, game.getGamemode().getDeathTime());
+        // Event calls
+        NovsWarPlayerKillEvent playerKillEvent = new NovsWarPlayerKillEvent(player, attacker, team, attacker.getPlayerState().getTeam(), game);
+        Bukkit.getPluginManager().callEvent(playerKillEvent);
+
+
+        if (assistAttacker != null) {
+            NovsWarPlayerAssistEvent playerAssistEvent = new NovsWarPlayerAssistEvent(assistAttacker, player, assistAttacker.getPlayerState().getTeam(), team, game);
+            Bukkit.getPluginManager().callEvent(playerAssistEvent);
+        }
+    }
+
+    private void scheduleDeath(int seconds) {
+        dead = true;
+        Player bukkitPlayer = player.getBukkitPlayer();
+
+        bukkitPlayer.setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        bukkitPlayer.setFoodLevel(20);
+
+        for (PotionEffect effect : player.getBukkitPlayer().getActivePotionEffects()) {
+            player.getBukkitPlayer().removePotionEffect(effect.getType());
+        }
+
+        CoreConfig coreConfig = novswar.getCoreConfig();
+
+        // spawn effects
+        bukkitPlayer.getWorld().spawnParticle(Particle.valueOf(coreConfig.getDeathParticleType()),
+                bukkitPlayer.getLocation(),
+                coreConfig.getDeathParticleCount(),
+                0d, 0.5d, 0d);
+        bukkitPlayer.getWorld().playSound(bukkitPlayer.getLocation(),
+                Sound.valueOf(coreConfig.getDeathSoundType()),
+                coreConfig.getDeathSoundVolume(),
+                coreConfig.getDeathSoundPitch());
+
+        bukkitPlayer.setWalkSpeed(0f);
+        bukkitPlayer.setFlySpeed(0f);
+
+        // Set each observer for this player to a new target
+        for(NovsPlayer observer : observers) {
+            game.nextSpectatorTarget(observer);
+        }
+
+        // Clear this player's observer list
+        observers.clear();
+        player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
+
+        //If there is an attacker, set spectator target.
+        game.nextSpectatorTarget(player);
+
+        DeathTimer timer = new DeathTimer(game, seconds, player);
+        timer.startTimer();
+        deathTimer = timer;
+    }
+
+    private void scheduleDeath(NovsPlayer spectatorTarget, int seconds) {
+        dead = true;
+        Player bukkitPlayer = player.getBukkitPlayer();
+
+        bukkitPlayer.setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        bukkitPlayer.setFoodLevel(20);
+
+        for (PotionEffect effect : bukkitPlayer.getActivePotionEffects()) {
+            bukkitPlayer.removePotionEffect(effect.getType());
+        }
+
+        CoreConfig coreConfig = novswar.getCoreConfig();
+
+        // spawn effects
+        bukkitPlayer.getWorld().spawnParticle(Particle.valueOf(coreConfig.getDeathParticleType()),
+                bukkitPlayer.getLocation(),
+                coreConfig.getDeathParticleCount(),
+                0d, 0.5d, 0d);
+        bukkitPlayer.getWorld().playSound(bukkitPlayer.getLocation(),
+                Sound.valueOf(coreConfig.getDeathSoundType()),
+                coreConfig.getDeathSoundVolume(),
+                coreConfig.getDeathSoundPitch());
+
+        bukkitPlayer.setWalkSpeed(0f);
+        bukkitPlayer.setFlySpeed(0f);
+
+        for (NovsPlayer observer : observers) {
+            game.nextSpectatorTarget(observer);
+        }
+
+        observers.clear();
+        player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
+        setSpectatorTarget(spectatorTarget);
+        DeathTimer timer = new DeathTimer(game, seconds, player);
+        timer.startTimer();
+        deathTimer = timer;
+    }
+
+    public void setSpectatorTarget(NovsPlayer target) {
+        player.getBukkitPlayer().teleport(target.getBukkitPlayer().getLocation());
+        player.getBukkitPlayer().setSpectatorTarget(target.getBukkitPlayer());
+        target.getPlayerState().getObservers().add(player);
+        ChatUtil.sendNotice(player, "Spectating "+target.getBukkitPlayer().getName());
+    }
+
+
+    public void quitSpectating() {
+        if(spectating) {
+            spectating = false; // must occur BEFORE gamemode change
+            player.getBukkitPlayer().teleport(game.getNovsWarInstance().getWorldManager().getLobbyWorld().getTeamSpawns().get(game.getNovsWarInstance().getTeamManager().getDefaultTeam()));
+            player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
+            ChatUtil.sendBroadcast(player.getBukkitPlayer().getName()+" stopped spectating.");
         }
     }
 }
