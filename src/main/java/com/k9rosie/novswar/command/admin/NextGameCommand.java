@@ -1,5 +1,6 @@
 package com.k9rosie.novswar.command.admin;
 
+import com.k9rosie.novswar.config.MessagesConfig;
 import com.k9rosie.novswar.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -21,13 +22,13 @@ public class NextGameCommand extends NovsCommand{
 
     public void execute() {
     	if (getArgs().length > 3) {
-            ChatUtil.sendError((Player) getSender(), Messages.INVALID_PARAMETERS.toString());
+            ChatUtil.sendError((Player) getSender(), MessagesConfig.getInvalidParameters());
             return;
         }
     	
     	if(getArgs().length < 3) {
     		Bukkit.broadcastMessage("Forcing next game...");
-        	game.nextGame(game.getBallotBox().nextWorld(game.getWorld()));
+        	game.nextGame(game.nextWorld(game.getWorld()));
     		
     	} else {
     		NovsWorld world = getNovsWar().getWorldManager().getWorldFromName(getArgs()[2]);

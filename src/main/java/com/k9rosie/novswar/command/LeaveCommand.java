@@ -24,12 +24,12 @@ public class LeaveCommand extends NovsCommand{
     public void execute() {
         NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
         NovsTeam defaultTeam = getNovsWar().getTeamManager().getDefaultTeam();
-        if(game.getGameState().equals(GameState.DURING_GAME) || 
+        if (game.getGameState().equals(GameState.DURING_GAME) ||
           game.getGameState().equals(GameState.PRE_GAME) ||
           game.isPaused()) {
         	
-        	if(player.getTeam().equals(defaultTeam)==false) {
-        		player.setTeam(defaultTeam);
+        	if(player.getPlayerState().getTeam().equals(defaultTeam) == false) {
+        		player.getPlayerState().setTeam(defaultTeam);
         		player.getBukkitPlayer().teleport(getNovsWar().getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
                 player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                 player.getBukkitPlayer().setFoodLevel(20);

@@ -1,7 +1,9 @@
 package com.k9rosie.novswar.config;
 
 import com.k9rosie.novswar.NovsWarPlugin;
+import org.bukkit.configuration.ConfigurationSection;
 
+import javax.security.auth.login.Configuration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,9 +34,57 @@ public class RegionsConfig extends NovsConfig {
     }
 
     public void populate() {
+        ArrayList<HashMap<String, Object>> regions = new ArrayList<>();
         getConfig().set("regions", null);
 
-        getConfig().createSection("regions", regionData);
+        for (Map.Entry<String, RegionData> entry : regionData.entrySet()) {
+            String mapName = entry.getKey();
+            RegionData regionData = entry.getValue();
+
+            // set the world name and create our data object
+            // the data object will be the root object to be placed in the regions list
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("world", mapName);
+
+            // create our spawn data
+            HashMap<String, Object> spawns = new HashMap<>();
+            for (SpawnData spawnData : regionData.getSpawns()) {
+                spawns.put("team", spawnData.getTeam());
+                spawns.put("x", spawnData.getX());
+                spawns.put("y", spawnData.getY());
+                spawns.put("z", spawnData.getZ());
+                spawns.put("pitch", spawnData.getPitch());
+                spawns.put("yaw", spawnData.getYaw());
+            }
+            data.put("spawns", spawns);
+
+            // create our cuboid data
+            HashMap<String, Object> cuboids = new HashMap<>();
+            for (CuboidData cuboidData : regionData.getCuboids()) {
+                cuboids.put("name", cuboidData.getName());
+                cuboids.put("type", cuboidData.getType());
+                cuboids.put("corner_one_x", cuboidData.getCornerOneX());
+                cuboids.put("corner_one_y", cuboidData.getCornerOneY());
+                cuboids.put("corner_one_z", cuboidData.getCornerOneZ());
+                cuboids.put("corner_two_x", cuboidData.getCornerTwoX());
+                cuboids.put("corner_two_y", cuboidData.getCornerTwoY());
+                cuboids.put("corner_two_z", cuboidData.getCornerTwoZ());
+            }
+            data.put("cuboids", cuboids);
+
+            // create our sign data
+            HashMap<String, Object> signs = new HashMap<>();
+            for (SignData signData : regionData.getSigns()) {
+                signs.put("x", signData.getX());
+                signs.put("y", signData.getY());
+                signs.put("z", signData.getZ());
+            }
+            data.put("signs", signs);
+
+            regions.add(data);
+        }
+
+        getConfig().set("regions", regions);
     }
 
     public void parseRegionList() {

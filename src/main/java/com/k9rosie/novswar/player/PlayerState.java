@@ -26,14 +26,10 @@ public class PlayerState {
     private DeathTimer deathTimer;
     private ArrayList<NovsPlayer> observers;
     private HashMap<NovsPlayer, AttackTimer> attackers;
-    private boolean dead; //Whether a player has died and is spectating via death cam
-    private boolean spectating; //Whether a player in the lobby entered spectator mode
+    private boolean dead;
+    private boolean spectating;
     private boolean voted;
     private boolean shiftToggled;
-    private boolean teamChat; //True for global, false for team
-    private boolean settingRegion;
-
-    private RegionBuffer regionBuffer;
 
     public PlayerState(Game game, NovsPlayer player, NovsTeam team) {
         this.game = game;
@@ -44,10 +40,8 @@ public class PlayerState {
         attackers = new HashMap<>();
         dead = false;
         spectating = false;
-        settingRegion = false;
         voted = false;
         shiftToggled = false;
-        teamChat = false;
     }
 
     public Game getGame() {
@@ -118,22 +112,6 @@ public class PlayerState {
         this.shiftToggled = shiftToggled;
     }
 
-    public boolean isTeamChat() {
-        return teamChat;
-    }
-
-    public void setTeamChat(boolean teamChat) {
-        this.teamChat = teamChat;
-    }
-
-    public boolean isSettingRegion() {
-        return settingRegion;
-    }
-
-    public void setSettingRegion(boolean settingRegion) {
-        this.settingRegion = settingRegion;
-    }
-
     public void tagPlayer(NovsPlayer attacker, double damage) {
         if (attackers.containsKey(attacker)) {
             AttackTimer timer = attackers.get(attacker);
@@ -166,7 +144,7 @@ public class PlayerState {
         NovsWarJoinGameEvent event = new NovsWarJoinGameEvent(game, player);
         Bukkit.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled() == false) {
-            novswar.getTeamManager().assignTeam(player);
+            game.assignTeam(player);
         }
     }
 
@@ -211,7 +189,7 @@ public class PlayerState {
         attackers.clear();
 
         game.printDeathMessage(deathMessage);
-        scheduleDeath(game.getGamemode().getDeathTime());
+        scheduleDeath(game.getGamemode().getDeathTime(player));
 
         NovsWarPlayerDeathEvent deathEvent = new NovsWarPlayerDeathEvent(player, team, true, game);
         Bukkit.getPluginManager().callEvent(deathEvent);
@@ -249,7 +227,7 @@ public class PlayerState {
         attackers.clear();
 
         // Schedule death spectating
-        scheduleDeath(attacker, game.getGamemode().getDeathTime());
+        scheduleDeath(attacker, game.getGamemode().getDeathTime(player));
         // Event calls
         NovsWarPlayerKillEvent playerKillEvent = new NovsWarPlayerKillEvent(player, attacker, team, attacker.getPlayerState().getTeam(), game);
         Bukkit.getPluginManager().callEvent(playerKillEvent);

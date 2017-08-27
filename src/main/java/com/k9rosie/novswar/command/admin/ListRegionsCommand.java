@@ -1,5 +1,6 @@
 package com.k9rosie.novswar.command.admin;
 
+import com.k9rosie.novswar.config.MessagesConfig;
 import com.k9rosie.novswar.util.ChatUtil;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -17,7 +18,7 @@ public class ListRegionsCommand extends NovsCommand {
 
     public void execute() {
         if (getArgs().length != 2) {
-            ChatUtil.sendError((Player) getSender(), Messages.INVALID_PARAMETERS.toString());
+            ChatUtil.sendError((Player) getSender(), MessagesConfig.getInvalidParameters());
             return;
         } else {
             Player bukkitPlayer = (Player) getSender();

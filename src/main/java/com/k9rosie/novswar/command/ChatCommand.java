@@ -16,12 +16,12 @@ public class ChatCommand extends NovsCommand{
 
     public void execute() {
     	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
-    	if(player.isGlobalChat()) {
+    	if(player.isTeamChat()) {
     		ChatUtil.sendNotice(player, "Chat mode: Team");
-    		player.setGlobalChat(false);
+    		player.setTeamChat(true);
     	} else {
     		ChatUtil.sendNotice(player, "Chat mode: Global");
-    		player.setGlobalChat(true);
+    		player.setTeamChat(false);
     	}
     }
 }

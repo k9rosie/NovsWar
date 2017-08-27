@@ -11,7 +11,7 @@ public abstract class Database {
     public Database(DatabaseType type, String prefix) {
         this.type = type;
         this.prefix = prefix;
-        databaseConnection = new DatabaseConnection(this);
+        databaseConnection = new DatabaseConnection();
     }
 
     public abstract void initialize();

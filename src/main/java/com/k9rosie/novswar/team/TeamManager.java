@@ -14,14 +14,10 @@ public class TeamManager {
 
     private NovsWar novswar;
     private HashMap<String, NovsTeam> teams;
-    private int messageTime;
-    private int messageTask;
 
     public TeamManager(NovsWar novswar) {
         this.novswar = novswar;
         teams = new HashMap<>();
-        messageTime = 0;
-        messageTask = 0;
     }
 
     public void initialize() {

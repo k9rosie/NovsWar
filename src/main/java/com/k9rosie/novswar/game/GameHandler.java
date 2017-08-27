@@ -20,7 +20,7 @@ public class GameHandler {
     }
 
     public void initialize() {
-        String firstWorld = novswar.getConfigManager().getConfig("core").getStringList("core.world.enabled_worlds").get(0);
+        String firstWorld = novswar.getCoreConfig().getEnabledWorlds().get(0);
         World initialBukkitWorld = novswar.getPlugin().getServer().getWorld(firstWorld);
         NovsWorld initialWorld = novswar.getWorldManager().getWorlds().get(initialBukkitWorld);
 
@@ -29,7 +29,7 @@ public class GameHandler {
     }
 
     public void newGame(NovsWorld world) {
-        String gamemodeString = novswar.getConfigManager().getConfig("worlds").getString("worlds."+world.getBukkitWorld().getName()+".gamemode");
+        String gamemodeString = novswar.getWorldsConfig().getWorldData().get(world.getBukkitWorld().getName()).getGamemode();
         Gamemode gamemode = novswar.getGamemodes().get(gamemodeString);
 
         game = new Game(this, world, gamemode);

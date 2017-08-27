@@ -11,10 +11,11 @@ public class AdminCommand extends NovsCommand {
     }
 
     public void execute() {
-        if (getArgs().length == 1) {
+        if (getArgs().length == 1) { // if the command is used by itself
             getSender().sendMessage("reserved for display stats");
         } else if (getArgs().length >= 2) {
-        	AdminCommandType commandArg = AdminCommandType.getCommand(getArgs()[1]);
+        	AdminCommandType commandArg = AdminCommandType.valueOf(getArgs()[1]);
+        	
             switch (commandArg) {
                 case SETSPAWN:
                     new SetSpawnCommand(getNovsWar(), getSender(), getArgs()).execute();

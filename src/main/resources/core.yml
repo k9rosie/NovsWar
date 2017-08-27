@@ -14,7 +14,7 @@ core:
     # the prefix for database tables
     prefix: nw_
 
-    # the amount of time in seconds the server will wait before flushing the manager
+    # the amount of time in seconds the server will wait before flushing
     flush_interval: 60
 
     # mysql settings
@@ -29,7 +29,7 @@ core:
   world:
 
     # list of worlds enabled for gameplay
-    # these worlds must be defined in worlds.yml
+    # these worlds *must* be defined in worlds.yml
     enabled_worlds:
       - world_nether
       - world_the_end
@@ -52,6 +52,9 @@ core:
 
     # the difference in team sizes necessary to trigger a re-balance. Set to 0 to turn off team re-balancing
     largest_team_imbalance: 4
+
+    # the amount of time in seconds players are given after being warned that a team rebalance will occur
+    rebalance_warning_timer: 5
 
     # can players join a game after it has started?
     join_in_progress: false

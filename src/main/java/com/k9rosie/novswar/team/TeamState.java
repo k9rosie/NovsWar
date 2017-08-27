@@ -1,5 +1,6 @@
 package com.k9rosie.novswar.team;
 
+import com.k9rosie.novswar.config.MessagesConfig;
 import com.k9rosie.novswar.event.NovsWarJoinTeamEvent;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.player.NovsPlayer;
@@ -54,9 +55,9 @@ public class TeamState {
             bukkitPlayer.teleport(game.getWorld().getTeamSpawnLoc(team));
             bukkitPlayer.setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             bukkitPlayer.setFoodLevel(20);
-            message = Messages.JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
+            message = MessagesConfig.getJoinTeam(team.getColor().toString(), team.getTeamName());
         } else {
-            message = Messages.CANNOT_JOIN_TEAM.toString().replace("%team_color%", team.getColor().toString()).replace("%team%", team.getTeamName());
+            message = MessagesConfig.getCannotJoinTeam(team.getColor().toString(), team.getTeamName());
         }
 
         ChatUtil.sendNotice(player.getBukkitPlayer(), message);

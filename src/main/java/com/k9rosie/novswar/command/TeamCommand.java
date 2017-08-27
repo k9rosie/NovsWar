@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class TeamCommand extends NovsCommand {
@@ -24,7 +25,7 @@ public class TeamCommand extends NovsCommand {
     public void execute() {
     	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
     	if (getArgs().length == 1) {
-            NovsTeam team = player.getTeam();
+            NovsTeam team = player.getPlayerState().getTeam();
             printTeam(team);
         } else if (getArgs().length == 2) {
             String arg = getArgs()[1];
@@ -39,7 +40,7 @@ public class TeamCommand extends NovsCommand {
                 printTeam(team);
                 return;
             } else {
-                NovsPlayer target = getNovsWar().getPlayerManager().getPlayerFromName(arg);
+                NovsPlayer target = getNovsWar().getPlayerManager().getPlayer(arg);
 
                 if (target == null) {
                 	ChatUtil.sendNotice(player, "That specific player/team couldn't be found");
@@ -59,14 +60,14 @@ public class TeamCommand extends NovsCommand {
     }
 
     public void printTeam(NovsPlayer player) {
-        NovsTeam team = player.getTeam();
+        NovsTeam team = player.getPlayerState().getTeam();
         ChatUtil.sendNotice((Player) getSender(), team.getColor()+team.getTeamName());
         getSender().sendMessage(generatePlayerList(team));
     }
 
     public String generatePlayerList(NovsTeam team) {
         StringBuilder playersList = new StringBuilder();
-        HashSet<NovsPlayer> players = team.getPlayers();
+        ArrayList<NovsPlayer> players = team.getTeamState().getPlayers();
         for (int i = 0; i < players.toArray().length; i++) {
             NovsPlayer p = (NovsPlayer) players.toArray()[i];
             playersList.append(team.getColor()+p.getBukkitPlayer().getDisplayName());

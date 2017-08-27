@@ -3,10 +3,7 @@ package com.k9rosie.novswar.game;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.config.MessagesConfig;
-import com.k9rosie.novswar.event.NovsWarEndGameEvent;
-import com.k9rosie.novswar.event.NovsWarJoinGameEvent;
-import com.k9rosie.novswar.event.NovsWarNewGameEvent;
-import com.k9rosie.novswar.event.NovsWarTeamVictoryEvent;
+import com.k9rosie.novswar.event.*;
 import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.player.DeathTimer;
 import com.k9rosie.novswar.player.NovsPlayer;
@@ -97,10 +94,6 @@ public class Game {
         waitForPlayers();
     }
 
-    /**
-     * endTimer()
-     * Controls the next state of the game when the timer ends
-     */
     public void endTimer() {
     	switch(gameState) {
             case PRE_GAME:
@@ -247,17 +240,17 @@ public class Game {
         	Bukkit.getScheduler().scheduleSyncDelayedTask(novsWar.getPlugin(), new Runnable() {
                 @Override
                 public void run() {
-                	//Remove victory message
+                	// clear victory message
                 	for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
                 		SendTitle.sendTitle(player.getBukkitPlayer(), 0, 0, 0, " ", "");
                 	}
                 	if(rounds <= 1) {
-                		//This was the final round. Prompt voting.
+                		// This was the final round. Prompt voting.
                 		if(novsWar.getConfigManager().getCoreConfig().getVotingEnabled() == true) {
                             ballotBox.promptVoting();
                         }
                 	} else {
-                		//Start a new round
+                		// Start a new round
                     	rounds--;
                     	gamemode.setInitialScores();
                     	rotateTeams();
@@ -307,11 +300,6 @@ public class Game {
         return winningTeams;
     }*/
 
-
-    /**
-     * Checks player count on teams
-     * @return True if there are the minimum required players in-game, else false
-     */
     public boolean checkPlayerCount() {
         int numPlayers = 0;
         int required = novsWar.getCoreConfig().getGameMinimumPlayers();
@@ -328,83 +316,68 @@ public class Game {
     public void joinGame(NovsPlayer player) {
         boolean canJoinInProgress = novsWar.getCoreConfig().getGameJoinInProgress();
 
+        // if the game has started or just ended
         if (!canJoinInProgress && (gameState.equals(GameState.DURING_GAME) || gameState.equals(GameState.POST_GAME))) {
             ChatUtil.sendNotice(player, MessagesConfig.getCannotJoinGame());
             return;
         }
 
-        if (!player.getPlayerState().getTeam().equals(novsWar.getTeamManager().getDefaultTeam())) {
+        // if the player is on a team specified in this game
+        if (!enabledTeams.contains(player.getPlayerState().getTeam())) {
             ChatUtil.sendNotice(player, "You're already in the game.");
             return;
         }
 
-        //Invoke event
+        // Invoke event
         NovsWarJoinGameEvent event = new NovsWarJoinGameEvent(this, player);
         Bukkit.getServer().getPluginManager().callEvent(event);
-        if (event.isCancelled() == false) {
+        if (!event.isCancelled()) {
         	assignTeam(player);
         }
-        
-        if (checkPlayerCount()) {
-            if (gameState == GameState.WAITING_FOR_PLAYERS) {
-                preGame();
+
+        // check the player count to see if that was the last player we needed to start the game
+        if (gameState == GameState.WAITING_FOR_PLAYERS) {
+            if (checkPlayerCount()) {
+                if (paused) {
+                    unpauseGame();
+                } else {
+                    preGame();
+                }
+            } else {
+                int minimum = novsWar.getCoreConfig().getGameMinimumPlayers();
+                String message = MessagesConfig.getNotEnoughPlayers(Integer.toString(minimum));
+                ChatUtil.sendBroadcast(message);
             }
-            
-            if (paused) {
-                unpauseGame();
-            }
-        } else {
-        	int minimum = novsWar.getCoreConfig().getGameMinimumPlayers();
-        	String message = MessagesConfig.getNotEnoughPlayers(Integer.toString(minimum));
-            ChatUtil.sendBroadcast(message);
         }
     }
     
     public void nextGame(NovsWorld world) {
     	if(gameTimer.getTaskID() != 0) { //if there is a running timer
-			System.out.println("Stopped timer");
 			gameTimer.stopTimer();
 		}
         this.world.closeIntermissionGates();
 		gameHandler.newGame(world);
     }
 
-    /**
-     * Sends all in-game players to their spawns and balances the teams
-     */
     public void balanceTeams() {
-        Game game = novswar.getGameHandler().getGame();
-        game.pauseGame();
-        messageTime = 5;
-        messageTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(novswar.getPlugin(), new Runnable() {
-            public void run() {
-                ArrayList<NovsPlayer> autobalancePlayers = new ArrayList<NovsPlayer>();
-                for(NovsPlayer player : novswar.getPlayerManager().getGamePlayers()) {
-                    SendTitle.sendTitle(player.getBukkitPlayer(), 0, 2000, 0, " ", "Team Auto-Balance in "+messageTime+"...");
-                    autobalancePlayers.add(player);
-                }
-                messageTime--;
-                if(messageTime <= 0) {
-                    Bukkit.getScheduler().cancelTask(messageTask);
-                    //Set every player's team to default
-                    for(NovsPlayer player : autobalancePlayers) {
-                        SendTitle.sendTitle(player.getBukkitPlayer(), 0, 0, 0, " ", "");
-                        player.setTeam(novswar.getTeamManager().getDefaultTeam());
-                    }
-                    //re-do the team sorting algorithm
-                    for(NovsPlayer player : autobalancePlayers) {
-                        assignPlayerTeam(player);
-                    }
-                    game.unpauseGame();
-                }
+        pauseGame();
+        int messageTime = novsWar.getCoreConfig().getGameRebalanceWarningTimer();
+        ChatUtil.sendBroadcast("Team auto-balance will occur in "+ messageTime + " seconds");
+        Bukkit.getScheduler().scheduleSyncDelayedTask(novsWar.getPlugin(), () -> {
+            for (NovsPlayer player : getInGamePlayers()) {
+                player.getPlayerState().setTeam(novsWar.getTeamManager().getDefaultTeam());
+                assignTeam(player);
             }
-        }, 0, 20);
+
+            unpauseGame();
+        }, messageTime*20);
     }
 
     public void assignTeam(NovsPlayer player) {
-        // novsloadout has its own way of sorting players, only run this code if it isnt enabled
-        if (!Bukkit.getPluginManager().isPluginEnabled("NovsLoadout")) { // TODO: convert this into an event
+        NovsWarAssignTeamEvent event = new NovsWarAssignTeamEvent(this, player);
+        Bukkit.getPluginManager().callEvent(event);
 
+        if (!event.isCancelled()) {
             //Determine which team has the fewest players and put them on there
             NovsTeam smallestTeam = enabledTeams.get(0);
             int smallest = smallestTeam.getTeamState().getPlayers().size();
@@ -440,28 +413,16 @@ public class Game {
      * Assigns all in-game players to the next team index in the NovsTeam array list
      */
     public void rotateTeams() {
-        Game game = novswar.getGameHandler().getGame();
-        HashMap<NovsTeam, NovsTeam> rotationMap = new HashMap<NovsTeam, NovsTeam>(); //key = source, value = target
-        int targetIndex = 0;
-        //Generate map for team switching
-        for(int sourceIndex = 0; sourceIndex < novswar.getTeamManager().getTeams().size(); sourceIndex++) {
-            targetIndex = sourceIndex + 1;
-            if(targetIndex >= novswar.getTeamManager().getTeams().size()) {
-                targetIndex = 0;
-            }
-            rotationMap.put(novswar.getTeamManager().getTeams().get(sourceIndex), novswar.getTeamManager().getTeams().get(targetIndex));
-        }
-        //Switch teams for each player in-game
-        for(NovsPlayer player : novswar.getPlayerManager().getGamePlayers()) {
-            NovsTeam newTeam = rotationMap.get(player.getTeam());
-            player.setTeam(newTeam);
-            player.getBukkitPlayer().teleport(game.getWorld().getTeamSpawnLoc(newTeam));
+        for (NovsPlayer player : getInGamePlayers()) {
+            NovsTeam team = player.getPlayerState().getTeam();
+            int nextTeam = enabledTeams.indexOf(team) == enabledTeams.size()-1 ? 0 : enabledTeams.indexOf(team)+1;
+            NovsTeam newTeam = enabledTeams.get(nextTeam);
+            player.getPlayerState().setTeam(newTeam);
+            player.getBukkitPlayer().teleport(world.getTeamSpawnLoc(newTeam));
             player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             player.getBukkitPlayer().setFoodLevel(20);
         }
     }
-    
-    //Getters
 
     public ArrayList<NovsPlayer> getInGamePlayers() {
         ArrayList<NovsPlayer> players = new ArrayList<>();
@@ -487,7 +448,7 @@ public class Game {
 
                 if (validTargets.size() > 0) {
                     int index = validTargets.indexOf(currentTarget);
-                    int nextIndex = (index + 1) >= validTargets.size() ? 0 : index + 1; // if nextIndex is larger than the size of the validTargets then return 0
+                    int nextIndex = (index + 1) >= validTargets.size()-1 ? 0 : index + 1; // if nextIndex is larger than the size of the validTargets then return 0
 
                     for (int i = 0; i < validTargets.size(); i++) {
                         NovsPlayer potentialTarget = validTargets.get(nextIndex);
@@ -500,13 +461,13 @@ public class Game {
                 }
             }
 
-            if(target != null) {
+            if (target != null) {
                 observer.getPlayerState().setSpectatorTarget(target);
             } else {
                 ChatUtil.sendError(observer, "A valid spectator target couldn't be found. Teleporting to spawn...");
                 observer.getBukkitPlayer().setSpectatorTarget(null);
                 if (observer.getPlayerState().isSpectating()) {
-                    observer.getPlayerState().quitSpectating(observer);
+                    observer.getPlayerState().quitSpectating();
                 } else {
                     observer.getBukkitPlayer().teleport(world.getTeamSpawnLoc(observer.getPlayerState().getTeam()));
                 }
@@ -554,9 +515,7 @@ public class Game {
         return paused;
     }
 
-    public HashMap<NovsPlayer, DeathTimer> getDeathTimers() { return deathTimers; }
-
     public NovsWar getNovsWarInstance() {
-        gameHandler.getNovsWarInstance();
+        return gameHandler.getNovsWarInstance();
     }
 }

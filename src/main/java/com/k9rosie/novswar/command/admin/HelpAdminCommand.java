@@ -8,7 +8,7 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
 import com.k9rosie.novswar.player.NovsPlayer;
 
-public class HelpAdminCommand extends NovsCommand {
+public class HelpAdminCommand implements NovsCommand {
 	
 	public HelpAdminCommand(NovsWar novsWar, CommandSender sender, String[] args) {
         super(novsWar, sender, args);

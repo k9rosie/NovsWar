@@ -56,8 +56,8 @@ public class WorldManager {
     }
 
     public void loadWorlds() {
-        CoreConfig coreConfig = novswar.getConfigManager().getCoreConfig();
-        WorldsConfig worldsConfig = novswar.getConfigManager().getWorldsConfig();
+        CoreConfig coreConfig = novswar.getCoreConfig();
+        WorldsConfig worldsConfig = novswar.getWorldsConfig();
 
         // load lobby world
         World lobbyWorld = Bukkit.getServer().getWorld(coreConfig.getLobbyWorld());
@@ -65,6 +65,7 @@ public class WorldManager {
             NovsWar.error(coreConfig.getLobbyWorld() + " doesn't exist!");
             return;
         }
+
         NovsWorld world = new NovsWorld(coreConfig.getLobbyWorld(), lobbyWorld);
         worlds.put(lobbyWorld, world);
         this.lobbyWorld = world;

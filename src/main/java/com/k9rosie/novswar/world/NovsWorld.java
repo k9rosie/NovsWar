@@ -21,9 +21,9 @@ public class NovsWorld {
     public NovsWorld(String name, World bukkitWorld) {
         this.name = name;
         this.bukkitWorld = bukkitWorld;
-        teamSpawns = new HashMap<NovsTeam, Location>();
-        cuboids = new HashMap<String, NovsCuboid>();
-        signs = new HashMap<Location, Sign>();
+        teamSpawns = new HashMap<>();
+        cuboids = new HashMap<>();
+        signs = new HashMap<>();
     }
 
     public String getName() {

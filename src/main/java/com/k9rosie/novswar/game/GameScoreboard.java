@@ -27,8 +27,8 @@ public class GameScoreboard {
 
         for (NovsTeam team : game.getTeams()) {
             Score score = sidebar.getScore(team.getColor() + team.getTeamName());
-            team.getNovsScore().setScoreboardScore(score);
-            score.setScore(team.getNovsScore().getScore());
+            team.getTeamState().getScore().setScoreboardScore(score);
+            score.setScore(team.getTeamState().getScore().value());
         }
 
         healthObjective.setDisplaySlot(DisplaySlot.BELOW_NAME);

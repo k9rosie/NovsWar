@@ -2,6 +2,7 @@ package com.k9rosie.novswar.command;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.admin.AdminCommand;
+import com.k9rosie.novswar.config.MessagesConfig;
 import com.k9rosie.novswar.util.ChatUtil;
 
 import org.bukkit.Bukkit;
@@ -28,7 +29,7 @@ public class CommandHandler implements CommandExecutor {
                 new BaseCommand(novsWar, sender).execute();
                 return true;
             } else {
-                ChatUtil.sendError((Player) sender, Messages.NO_PERMISSION.toString());
+                ChatUtil.sendError((Player) sender, MessagesConfig.getNoPermission());
                 return true;
             }
         }
@@ -72,11 +73,11 @@ public class CommandHandler implements CommandExecutor {
                     new ChatCommand(novsWar, sender, args).execute();
                     return true;
                 default:
-                	ChatUtil.sendError((Player) sender, Messages.COMMAND_NONEXISTENT.toString());
+                	ChatUtil.sendError((Player) sender, MessagesConfig.getCommandNonexistent());
                 	break;
         		}
         	} else {
-                ChatUtil.sendError((Player) sender, Messages.NO_PERMISSION.toString());
+                ChatUtil.sendError((Player) sender, MessagesConfig.getNoPermission());
                 return true;
         	}
         }

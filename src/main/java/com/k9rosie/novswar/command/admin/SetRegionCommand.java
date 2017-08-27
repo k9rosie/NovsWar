@@ -2,10 +2,12 @@ package com.k9rosie.novswar.command.admin;
 
 import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
+import com.k9rosie.novswar.config.MessagesConfig;
 import com.k9rosie.novswar.player.NovsPlayer;
 import com.k9rosie.novswar.world.CuboidType;
 import com.k9rosie.novswar.world.NovsWorld;
 import com.k9rosie.novswar.util.ChatUtil;
+import com.k9rosie.novswar.world.RegionBuffer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -19,7 +21,7 @@ public class SetRegionCommand extends NovsCommand {
     public void execute() {
         //nw admin setregion regionOne battlefield
         if (getArgs().length != 4) {
-            ChatUtil.sendError((Player) getSender(), Messages.INVALID_PARAMETERS.toString());
+            ChatUtil.sendError((Player) getSender(), MessagesConfig.getInvalidParameters());
             return;
         } else {
             Player bukkitPlayer = (Player) getSender();
@@ -44,9 +46,10 @@ public class SetRegionCommand extends NovsCommand {
                 return;
             }
 
-            player.setRegionNameBuffer(regionName);
-            player.setCuboidTypeBuffer(cuboidType);
+            RegionBuffer regionBuffer = new RegionBuffer(world, regionName, cuboidType);
+
             player.setSettingRegion(true);
+            player.setRegionBuffer(regionBuffer);
 
             ChatUtil.sendNotice(player, "Setting corner one...");
         }

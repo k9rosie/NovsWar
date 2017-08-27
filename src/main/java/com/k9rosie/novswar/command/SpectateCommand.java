@@ -25,19 +25,19 @@ public class SpectateCommand extends NovsCommand{
         NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
         NovsTeam defaultTeam = getNovsWar().getTeamManager().getDefaultTeam();
         
-        if(player.isSpectating()) {
+        if(player.getPlayerState().isSpectating()) {
         	//Return the player to the lobby
-        	game.quitSpectating(player);     
+        	player.getPlayerState().quitSpectating();
         } else {
-        	if(player.getTeam().equals(defaultTeam)) {
+        	if(player.getPlayerState().getTeam().equals(defaultTeam)) {
         		//Begin spectating
             	if(game.getGameState().equals(GameState.DURING_GAME) || game.getGameState().equals(GameState.PRE_GAME)) {
-            		ArrayList<NovsPlayer> inGamePlayers = getNovsWar().getPlayerManager().getGamePlayers();
+            		ArrayList<NovsPlayer> inGamePlayers = game.getInGamePlayers();
             		NovsPlayer target = inGamePlayers.get(0);
             		player.getBukkitPlayer().setGameMode(GameMode.SPECTATOR);
-            		player.setSpectating(true); //must occur AFTER gamemode change
+            		player.getPlayerState().setSpectating(true); //must occur AFTER gamemode change
             		player.getBukkitPlayer().teleport(target.getBukkitPlayer().getLocation());
-            		game.setSpectatorTarget(player, target);
+            		player.getPlayerState().setSpectatorTarget(target);
             		ChatUtil.sendNotice(player, "Spectate next player with LSHIFT. F5 to change view.");
             		ChatUtil.sendBroadcast(player.getBukkitPlayer().getName()+" is spectating the round!");
 

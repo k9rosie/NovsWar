@@ -23,11 +23,11 @@ public class KickCommand extends NovsCommand {
 
     public void execute() {
     	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
-    	NovsPlayer kickPlayer = getNovsWar().getPlayerManager().getPlayerFromName(getArgs()[2]);
+    	NovsPlayer kickPlayer = getNovsWar().getPlayerManager().getPlayer(getArgs()[2]);
     	NovsTeam defaultTeam = getNovsWar().getTeamManager().getDefaultTeam();
     	
     	if(kickPlayer != null) {
-    		kickPlayer.setTeam(defaultTeam);
+    		kickPlayer.getPlayerState().setTeam(defaultTeam);
             kickPlayer.getBukkitPlayer().teleport(getNovsWar().getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
             kickPlayer.getBukkitPlayer().setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             kickPlayer.getBukkitPlayer().setFoodLevel(20);

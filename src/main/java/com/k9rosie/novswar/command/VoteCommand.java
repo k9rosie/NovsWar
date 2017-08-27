@@ -21,9 +21,9 @@ public class VoteCommand extends NovsCommand {
     public void execute() {
     	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
     	if(game.getGameState().equals(GameState.POST_GAME)) {
-	        if(player.hasVoted() == false) {
+	        if(player.getPlayerState().hasVoted() == false) {
 	        	ChatUtil.sendNotice(player, "Cast your Vote");
-	    		player.getBukkitPlayer().openInventory(game.getBallotBox().getBallots());
+	    		player.getBukkitPlayer().openInventory(game.getBallotBox().getInventory());
 	        }
 	        else {
 	        	ChatUtil.sendNotice(player, "You have already voted");

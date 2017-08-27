@@ -24,8 +24,8 @@ public class NovsCuboid {
         this.cornerOne = cornerOne;
         this.cornerTwo = cornerTwo;
         this.cuboidType = cuboidType;
-        blocks = new ArrayList<NovsBlock>();
-        playersInCuboid = new HashSet<NovsPlayer>();
+        blocks = new ArrayList<>();
+        playersInCuboid = new HashSet<>();
     }
 
     public NovsWorld getWorld() {
@@ -68,7 +68,7 @@ public class NovsCuboid {
         return playersInCuboid;
     }
 
-    public ArrayList<NovsBlock> getCuboid() {
+    public ArrayList<NovsBlock> getCuboidBlocks() {
         ArrayList<NovsBlock> blocks = new ArrayList<NovsBlock>();
 
         int topBlockX = Math.max(cornerOne.getBlockX(), cornerTwo.getBlockX());
@@ -92,7 +92,7 @@ public class NovsCuboid {
     }
 
     public void saveBlocks() {
-        blocks = getCuboid();
+        blocks = getCuboidBlocks();
     }
 
     /**

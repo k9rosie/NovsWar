@@ -40,7 +40,6 @@ public class BallotBox {
 
     	// Generate the voting options
     	inventory.clear(); // ensure the ballotbox is empty
-		ArrayList<NovsWorld> selectedMaps = (ArrayList<NovsWorld>) this.selectedMaps.keySet();
 		for (int i = 0; i < selectedMaps.size(); i++) {
 			NovsWorld world = selectedMaps.get(i);
 			String name = world.getName();

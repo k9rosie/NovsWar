@@ -23,6 +23,7 @@ public class CoreConfig extends NovsConfig {
 
     private int gameMinimumPlayers;
     private int gameLargestTeamImbalance;
+    private int gameRebalanceWarningTimer;
     private boolean gameJoinInProgress;
     private int gamePreGameTimer;
     private int gamePostGameTimer;
@@ -104,6 +105,8 @@ public class CoreConfig extends NovsConfig {
     public int getGameLargestTeamImbalance() {
         return gameLargestTeamImbalance;
     }
+
+    public int getGameRebalanceWarningTimer() { return gameRebalanceWarningTimer; }
 
     public boolean getGameJoinInProgress() {
         return gameJoinInProgress;
@@ -193,6 +196,7 @@ public class CoreConfig extends NovsConfig {
 
         gameMinimumPlayers = getConfig().getInt("core.game.minimum_players");
         gameLargestTeamImbalance = getConfig().getInt("core.game.largest_team_imbalance");
+        gameRebalanceWarningTimer = getConfig().getInt("core.game.rebalance_warning_timer");
         gameJoinInProgress = getConfig().getBoolean("core.game.join_in_progress");
         gamePreGameTimer = getConfig().getInt("core.game.pre_game_timer");
         gamePostGameTimer = getConfig().getInt("core.game.post_game_timer");
