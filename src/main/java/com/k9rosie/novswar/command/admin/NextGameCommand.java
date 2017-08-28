@@ -11,38 +11,59 @@ import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.world.NovsWorld;
 import org.bukkit.entity.Player;
 
-public class NextGameCommand extends NovsCommand{
+public class NextGameCommand implements NovsCommand {
+	private String permissions;
+	private String description;
+	private int requiredNumofArgs;
+	private boolean playerOnly;
+	private NovsWar novsWar;
 	
-	private Game game;
-	
-    public NextGameCommand(NovsWar novsWar, CommandSender sender, String[] args) {
-        super(novsWar, sender, args);
-        game = getNovsWar().getGameHandler().getGame();
+    public NextGameCommand(NovsWar novsWar) {
+        permissions = "novswar.command.admin.nextgame";
+        description = "Forces the next round.";
+        requiredNumofArgs = 0;
+        playerOnly = false;
+        this.novsWar = novsWar;
     }
 
-    public void execute() {
-    	if (getArgs().length > 3) {
-            ChatUtil.sendError((Player) getSender(), MessagesConfig.getInvalidParameters());
-            return;
-        }
-    	
-    	if(getArgs().length < 3) {
+    public void execute(CommandSender sender, String[] args) {
+        Game game = novsWar.getGameHandler().getGame();
+        if (args.length < 3) { // no args
     		Bukkit.broadcastMessage("Forcing next game...");
         	game.nextGame(game.nextWorld(game.getWorld()));
-    		
     	} else {
-    		NovsWorld world = getNovsWar().getWorldManager().getWorldFromName(getArgs()[2]);
+    		NovsWorld world = novsWar.getWorldManager().getWorldFromName(args[2]);
     		
         	if(world == null) {
         		String message = "";
         		
-        		for(NovsWorld option : getNovsWar().getWorldManager().getWorlds().values()) {
+        		for(NovsWorld option : novsWar.getWorldManager().getWorlds().values()) {
         			message += (option.getBukkitWorld().getName() + " ");
         		}
-				ChatUtil.sendError((Player) getSender(), "Invalid world name. Options are "+message);
+				ChatUtil.sendError(sender, "Invalid world name. Options are "+message);
         	}
         	Bukkit.broadcastMessage("Forcing next game to "+world.getBukkitWorld().getName());
         	game.nextGame(world);
     	}
+    }
+
+    @Override
+    public String getPermissions() {
+        return permissions;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public int getRequiredNumofArgs() {
+        return requiredNumofArgs;
+    }
+
+    @Override
+    public boolean isPlayerOnly() {
+        return playerOnly;
     }
 }

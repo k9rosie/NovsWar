@@ -10,32 +10,56 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
 import com.k9rosie.novswar.world.NovsWorld;
 
-public class ListRegionsCommand extends NovsCommand {
-	
-	public ListRegionsCommand(NovsWar novsWar, CommandSender sender, String[] args) {
-        super(novsWar, sender, args);
+public class ListRegionsCommand implements NovsCommand {
+    private String permissions;
+    private String description;
+    private int requiredNumofArgs;
+    private boolean playerOnly;
+	private NovsWar novsWar;
+
+	public ListRegionsCommand(NovsWar novsWar) {
+	    permissions = "novswar.command.admin.listregions";
+	    description = "Lists regions in the world you're currently standing in.";
+	    requiredNumofArgs = 0;
+	    playerOnly = true;
+	    this.novsWar = novsWar;
     }
 
-    public void execute() {
-        if (getArgs().length != 2) {
-            ChatUtil.sendError((Player) getSender(), MessagesConfig.getInvalidParameters());
+    public void execute(CommandSender sender, String[] args) {
+        Player bukkitPlayer = (Player) sender;
+        World bukkitWorld = bukkitPlayer.getWorld();
+        NovsWorld world = novsWar.getWorldManager().getWorlds().get(bukkitWorld);
+
+        if (world == null) {
+            ChatUtil.sendError(bukkitPlayer, "The world you're in isn't enabled in NovsWar.");
             return;
-        } else {
-            Player bukkitPlayer = (Player) getSender();
-            World bukkitWorld = bukkitPlayer.getWorld();
-            NovsWorld world = getNovsWar().getWorldManager().getWorlds().get(bukkitWorld);
-
-            if (world == null) {
-                ChatUtil.sendError(bukkitPlayer, "The world you're in isn't enabled in NovsWar.");
-                return;
-            }
-
-            String message = "";
-            for(String name : world.getCuboids().keySet()) {
-            	message += ("§a"+name+" ");
-            }
-
-            ChatUtil.sendNotice(bukkitPlayer, "Regions in this world are: "+message);
         }
+
+        String message = "";
+        for(String name : world.getCuboids().keySet()) {
+        	message += ("§a"+name+" ");
+        }
+
+        ChatUtil.sendNotice(bukkitPlayer, "Regions in this world are: "+message);
+    }
+
+    @Override
+    public String getPermissions() {
+        return permissions;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public int getRequiredNumofArgs() {
+        return requiredNumofArgs;
+    }
+
+    @Override
+    public boolean isPlayerOnly() {
+        return playerOnly;
     }
 }

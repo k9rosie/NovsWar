@@ -13,33 +13,44 @@ import com.k9rosie.novswar.player.NovsPlayer;
 import com.k9rosie.novswar.team.NovsTeam;
 import com.k9rosie.novswar.util.ChatUtil;
 
-public class LeaveCommand extends NovsCommand{
-	private Game game;
+public class LeaveCommand implements NovsCommand {
+    private String permissions;
+    private String description;
+    private int requiredNumofArgs;
+    private boolean playerOnly;
+	private NovsWar novsWar;
 
-    public LeaveCommand(NovsWar novsWar, CommandSender sender, String[] args) {
-        super(novsWar, sender, args);
-        game = getNovsWar().getGameHandler().getGame();
+    public LeaveCommand(NovsWar novsWar) {
+        permissions = "novswar.command.leave";
+        description = "Leave the round";
+        requiredNumofArgs = 0;
+        playerOnly = true;
+        this.novsWar = novsWar;
     }
 
-    public void execute() {
-        NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
-        NovsTeam defaultTeam = getNovsWar().getTeamManager().getDefaultTeam();
-        if (game.getGameState().equals(GameState.DURING_GAME) ||
-          game.getGameState().equals(GameState.PRE_GAME) ||
-          game.isPaused()) {
-        	
-        	if(player.getPlayerState().getTeam().equals(defaultTeam) == false) {
-        		player.getPlayerState().setTeam(defaultTeam);
-        		player.getBukkitPlayer().teleport(getNovsWar().getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
-                player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-                player.getBukkitPlayer().setFoodLevel(20);
-                NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(player, game);
-                Bukkit.getPluginManager().callEvent(invokeEvent);
-        	} else {
-        		ChatUtil.sendNotice(player, "You must be on a team to leave");
-        	}
-        } else {
-        	ChatUtil.sendNotice(player, "You can only leave during the round");
-        }
+    public void execute(CommandSender sender, String[] args) {
+        NovsPlayer player = novsWar.getPlayerManager().getPlayers().get(sender);
+        Game game = novsWar.getGameHandler().getGame();
+        game.leaveGame(player);
+    }
+
+    @Override
+    public String getPermissions() {
+        return permissions;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public int getRequiredNumofArgs() {
+        return requiredNumofArgs;
+    }
+
+    @Override
+    public boolean isPlayerOnly() {
+        return playerOnly;
     }
 }

@@ -1,5 +1,7 @@
 package com.k9rosie.novswar.database;
 
+import com.k9rosie.novswar.NovsWar;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -8,10 +10,10 @@ public abstract class Database {
     private String prefix;
     private DatabaseConnection databaseConnection;
 
-    public Database(DatabaseType type, String prefix) {
+    public Database(NovsWar novsWar, DatabaseType type, String prefix) {
         this.type = type;
         this.prefix = prefix;
-        databaseConnection = new DatabaseConnection();
+        databaseConnection = new DatabaseConnection(novsWar, this);
     }
 
     public abstract void initialize();

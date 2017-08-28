@@ -241,12 +241,12 @@ public class Game {
                 @Override
                 public void run() {
                 	// clear victory message
-                	for(NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
+                	for (NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
                 		SendTitle.sendTitle(player.getBukkitPlayer(), 0, 0, 0, " ", "");
                 	}
-                	if(rounds <= 1) {
+                	if (rounds <= 1) {
                 		// This was the final round. Prompt voting.
-                		if(novsWar.getConfigManager().getCoreConfig().getVotingEnabled() == true) {
+                		if (novsWar.getConfigManager().getCoreConfig().getVotingEnabled() == true) {
                             ballotBox.promptVoting();
                         }
                 	} else {
@@ -322,8 +322,8 @@ public class Game {
             return;
         }
 
-        // if the player is on a team specified in this game
-        if (!enabledTeams.contains(player.getPlayerState().getTeam())) {
+        // if the player is already in the game
+        if (player.getPlayerState().isInGame()) {
             ChatUtil.sendNotice(player, "You're already in the game.");
             return;
         }
@@ -333,6 +333,7 @@ public class Game {
         Bukkit.getServer().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
         	assignTeam(player);
+        	player.getPlayerState().setInGame(true);
         }
 
         // check the player count to see if that was the last player we needed to start the game
@@ -349,6 +350,23 @@ public class Game {
                 ChatUtil.sendBroadcast(message);
             }
         }
+    }
+
+    public void leaveGame(NovsPlayer player) {
+        NovsTeam defaultTeam = novsWar.getTeamManager().getDefaultTeam();
+        Location spawn = novsWar.getWorldManager().getLobbyWorld().getTeamSpawnLoc(defaultTeam);
+
+        if (player.getPlayerState().isInGame() == false) {
+            ChatUtil.sendError(player, "You're not in the current game");
+            return;
+        }
+
+        player.getPlayerState().setTeam(defaultTeam);
+        player.getBukkitPlayer().teleport(spawn);
+        player.getBukkitPlayer().setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        player.getBukkitPlayer().setFoodLevel(20);
+        NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(player, this);
+        Bukkit.getPluginManager().callEvent(invokeEvent);
     }
     
     public void nextGame(NovsWorld world) {

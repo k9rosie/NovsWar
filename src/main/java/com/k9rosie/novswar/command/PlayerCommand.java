@@ -1,6 +1,7 @@
 package com.k9rosie.novswar.command;
 
 import com.k9rosie.novswar.NovsWar;
+import com.k9rosie.novswar.config.MessagesConfig;
 import com.k9rosie.novswar.player.NovsPlayer;
 import com.k9rosie.novswar.player.NovsStats;
 import com.k9rosie.novswar.team.NovsTeam;
@@ -8,6 +9,7 @@ import com.k9rosie.novswar.util.ChatUtil;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -18,44 +20,57 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-public class PlayerCommand extends NovsCommand {
+public class PlayerCommand implements NovsCommand {
+    private String permissions;
+    private String description;
+    private int requiredNumofArgs;
+    private boolean playerOnly;
+    private NovsWar novsWar;
 
-    public PlayerCommand(NovsWar novsWar, CommandSender sender, String[] args) {
-        super(novsWar, sender, args);
+    public PlayerCommand(NovsWar novsWar) {
+        permissions = "novswar.command.player";
+        description = "Display stats on yourself or another player";
+        requiredNumofArgs = 0;
+        playerOnly = false;
+        this.novsWar = novsWar;
     }
 
-    public void execute() {
-    	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
-        if (getArgs().length == 1) {
-            printStats(player);
-        } else if (getArgs().length == 2) {
-            String playerName = getArgs()[1];
+    public void execute(CommandSender sender, String[] args) {
+    	if (args.length <= 1 && !(sender instanceof Player)) {
+    	    ChatUtil.sendError(sender, "You need to be a player to display stats on another player");
+    	    return;
+        }
+
+        if (args.length == 1) {
+            printStats(sender, novsWar.getPlayerManager().getPlayers().get(sender));
+        } else if (args.length == 2) {
+            String playerName = args[1];
+
             if (NovsWar.isOnline(playerName)) {
-                NovsPlayer target = getNovsWar().getPlayerManager().getPlayerFromName(playerName);
-                printStats(target);
+                NovsPlayer target = novsWar.getPlayerManager().getPlayer(playerName);
+                printStats(sender, target);
             } else {
                 UUID uuid = NovsWar.getUUID(playerName);
+
                 if (uuid == null) {
-                	ChatUtil.sendNotice(player, Messages.PLAYER_DATA_NONEXISTENT.toString());
+                	ChatUtil.sendNotice(sender, MessagesConfig.getPlayerDataNonexistent());
                     return;
                 }
-                if (!getNovsWar().getDatabase().exists("stats", "player_uuid", uuid.toString())) {
-                	ChatUtil.sendNotice(player, Messages.PLAYER_DATA_NONEXISTENT.toString());
+                if (!novsWar.getDatabase().exists("stats", "player_uuid", uuid.toString())) {
+                	ChatUtil.sendNotice(sender, MessagesConfig.getPlayerDataNonexistent());
                     return;
                 } else {
                     OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-                    printStats(offlinePlayer);
+                    printStats(sender, offlinePlayer);
                 }
             }
-        } else {
-        	ChatUtil.sendNotice(player, Messages.INVALID_PARAMETERS.toString());
         }
     }
 
-    public void printStats(NovsPlayer player) {
+    private void printStats(CommandSender sender, NovsPlayer player) {
         NovsStats stats = player.getStats();
         Player bukkitPlayer = player.getBukkitPlayer();
-        NovsTeam team = player.getTeam();
+        NovsTeam team = player.getPlayerState().getTeam();
         double kd = 0.0;
         if ((stats.getDeaths()+stats.getArrowDeaths()) == 0) {
             kd = stats.getKills()+stats.getArrowKills();
@@ -83,14 +98,14 @@ public class PlayerCommand extends NovsCommand {
                 "§7Last Played: §a" + date,
                 "§7Logged In Since: §a" + loggedIn(stats.getLoggedIn())
         };
-        getSender().sendMessage("§aPlayer data for "+team.getColor()+bukkitPlayer.getDisplayName()+"§a:");
-        getSender().sendMessage(statsString);
+        sender.sendMessage("§aPlayer data for "+team.getColor()+bukkitPlayer.getDisplayName()+"§a:");
+        sender.sendMessage(statsString);
     }
 
-    public void printStats(OfflinePlayer offlinePlayer) {
+    private void printStats(CommandSender sender, OfflinePlayer offlinePlayer) {
         String uuid = offlinePlayer.getUniqueId().toString();
 
-        ResultSet results = getNovsWar().getDatabase().select("stats", "player_uuid", uuid);
+        ResultSet results = novsWar.getDatabase().select("stats", "player_uuid", uuid);
         String[] statsString = {""};
         double kd = 0.0;
 
@@ -124,16 +139,16 @@ public class PlayerCommand extends NovsCommand {
             e.printStackTrace();
         }
 
-        getSender().sendMessage("§aPlayer data for §7"+offlinePlayer.getName()+"§a:");
-        getSender().sendMessage(statsString);
+        sender.sendMessage("§aPlayer data for §7"+offlinePlayer.getName()+"§a:");
+        sender.sendMessage(statsString);
 
     }
 
-    public String totalTimePlayed(long time) {
+    private String totalTimePlayed(long time) {
         return "";
-    }
+    } // TODO: do something about this
 
-    public String loggedIn(Timestamp timestamp) {
+    private String loggedIn(Timestamp timestamp) {
         long currentTime = System.currentTimeMillis();
         long time = currentTime - timestamp.getTime();
         long seconds = time/1000;
@@ -174,5 +189,25 @@ public class PlayerCommand extends NovsCommand {
         }
 
         return builder.toString();
+    }
+
+    @Override
+    public String getPermissions() {
+        return permissions;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public int getRequiredNumofArgs() {
+        return requiredNumofArgs;
+    }
+
+    @Override
+    public boolean isPlayerOnly() {
+        return playerOnly;
     }
 }

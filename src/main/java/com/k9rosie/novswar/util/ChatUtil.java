@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import com.k9rosie.novswar.player.NovsPlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ChatUtil {
@@ -22,6 +23,11 @@ public class ChatUtil {
 		player.sendMessage(notice);
 	}
 
+    public static void sendNotice(CommandSender sender, String message) {
+        String notice = novsWarTag + noticeColor + message;
+        sender.sendMessage(notice);
+    }
+
 	public static void sendError(NovsPlayer player, String message) {
 		String error = novsWarTag + errorColor + message;
 		player.getBukkitPlayer().sendMessage(error);
@@ -30,6 +36,11 @@ public class ChatUtil {
 	public static void sendError(Player player, String message) {
 		String error = novsWarTag + errorColor + message;
 		player.sendMessage(error);
+	}
+
+	public static void sendError(CommandSender sender, String message) {
+		String error = novsWarTag + errorColor + message;
+		sender.sendMessage(error);
 	}
 	
 	public static void sendBroadcast(String message) {

@@ -16,6 +16,14 @@ public class RegionBuffer {
         this.type = type;
     }
 
+    public Location getCornerOne() {
+        return cornerOne;
+    }
+
+    public Location getCornerTwo() {
+        return cornerTwo;
+    }
+
     public void setCornerOne(Location cornerOne) {
         this.cornerOne = cornerOne;
     }
@@ -27,5 +35,7 @@ public class RegionBuffer {
     public void createRegion() {
         NovsCuboid cuboid = new NovsCuboid(world, cornerOne, cornerTwo, type);
         world.getCuboids().put(name, cuboid);
+        cornerOne = null;
+        cornerTwo = null;
     }
 }

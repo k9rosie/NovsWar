@@ -13,29 +13,55 @@ import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.player.NovsPlayer;
 import com.k9rosie.novswar.team.NovsTeam;
 
-public class KickCommand extends NovsCommand {
-	private Game game;
+public class KickCommand implements NovsCommand {
+    private String permissions;
+    private String description;
+    private int requiredNumofArgs;
+    private boolean playerOnly;
+    private NovsWar novsWar;
 	
-    public KickCommand(NovsWar novsWar, CommandSender sender, String[] args) {
-        super(novsWar, sender, args);
-        game = getNovsWar().getGameHandler().getGame();
+    public KickCommand(NovsWar novsWar) {
+        permissions = "novswar.command.admin.kick";
+        description = "Kick a player from the game";
+        requiredNumofArgs = 1;
+        playerOnly = false;
+        this.novsWar = novsWar;
     }
 
-    public void execute() {
-    	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
-    	NovsPlayer kickPlayer = getNovsWar().getPlayerManager().getPlayer(getArgs()[2]);
-    	NovsTeam defaultTeam = getNovsWar().getTeamManager().getDefaultTeam();
-    	
-    	if(kickPlayer != null) {
+    public void execute(CommandSender sender, String[] args) {
+    	NovsPlayer kickPlayer = novsWar.getPlayerManager().getPlayer(args[2]);
+    	NovsTeam defaultTeam = novsWar.getTeamManager().getDefaultTeam();
+    	Game game = novsWar.getGameHandler().getGame();
+        if (kickPlayer != null) {
     		kickPlayer.getPlayerState().setTeam(defaultTeam);
-            kickPlayer.getBukkitPlayer().teleport(getNovsWar().getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
-            kickPlayer.getBukkitPlayer().setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+            kickPlayer.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawns().get(defaultTeam));
+            kickPlayer.getBukkitPlayer().setHealth(kickPlayer.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             kickPlayer.getBukkitPlayer().setFoodLevel(20);
             ChatUtil.sendNotice(kickPlayer.getBukkitPlayer(), "You have been kicked to the lobby");
             NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(kickPlayer, game);
             Bukkit.getPluginManager().callEvent(invokeEvent);
     	} else {
-    		ChatUtil.sendError(player, "Invalid arguments. Format: /nw admin kick <Player Name>");
+    		ChatUtil.sendError(sender, "Player not found");
     	}
+    }
+
+    @Override
+    public String getPermissions() {
+        return permissions;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public int getRequiredNumofArgs() {
+        return requiredNumofArgs;
+    }
+
+    @Override
+    public boolean isPlayerOnly() {
+        return playerOnly;
     }
 }

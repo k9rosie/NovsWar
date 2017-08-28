@@ -64,6 +64,7 @@ public class NovsWar {
 		worldManager.loadWorlds();
 
 		gameHandler.initialize();
+		commandHandler.initialize();
 
         DEBUG = configManager.getCoreConfig().getDebug();
 	}

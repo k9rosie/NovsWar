@@ -31,22 +31,9 @@ public class NovsWarListener implements Listener {
         NovsScore score = event.getNovsScore();
         Game game = novswar.getGameHandler().getGame();
         int maxScore = game.getGamemode().getMaxScore();
-		if (game.getGameState().equals(GameState.DURING_GAME)) {
-			switch (game.getGamemode().getScoreType()) {
-				case ASCENDING:
-					if (score.getScore() >= maxScore) {
-						game.endGame();
-					}
-				case DESCENDING:
-					if (score.getScore() <= 0) {
-						game.endGame();
-					}
-				default:
-					if (score.getScore() >= maxScore) {
-						game.endGame();
-					}
-			}
-		}
+        if (score.getScoreboardScore().getScore() >= maxScore) {
+            game.endGame();
+        }
 
     }
     
@@ -57,7 +44,7 @@ public class NovsWarListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onNovsWarNewGame(NovsWarNewGameEvent event) {
     	//Update all NovsInfoSigns with new round information	
-    	ChatUtil.printDebug("NovsWar New Game event!");
+    	//ChatUtil.printDebug("NovsWar New Game event!");
 		//novswar.getGameHandler().updateInfoSigns();
     }
     
@@ -68,8 +55,8 @@ public class NovsWarListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onNovsWarJoinTeam(NovsWarJoinTeamEvent event) {
     	//Update all NovsInfoSigns with in-game player count information	
-    	ChatUtil.printDebug("NovsWar Join Team event!");
-    	event.getGame().updateInfoSigns();
+    	//ChatUtil.printDebug("NovsWar Join Team event!");
+    	// TODO: update info signs in this event
     }
     
     /**
@@ -79,52 +66,49 @@ public class NovsWarListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onNovsWarLeaveTeamModify(NovsWarLeaveTeamEvent event) {
     	Game game = event.getGame();
-    	if(event.isCancelled() == false) {
-    		ChatUtil.printDebug("NovsWar Leave Team event!");
-    		//Count the number of players still in-game
-    		int inGamePlayerCount = novswar.getPlayerManager().getGamePlayers().size();
+    	if (event.isCancelled() == false) {
+    		// Count the number of players still in-game
+    		int inGamePlayerCount = novswar.getGameHandler().getGame().getInGamePlayers().size();
     		
-    		//Update all NovsInfoSigns with in-game player count information	
-    		event.getGame().updateInfoSigns();
+    		// Update all NovsInfoSigns with in-game player count information
+    		// event.getGame().updateInfoSigns(); // TODO: Update info signs in this event
 
-    		//Assess in-game players
-    		if(game.getGameState().equals(GameState.PRE_GAME) || game.getGameState().equals(GameState.DURING_GAME)) {
-    			if(inGamePlayerCount == 0) {
-    				ChatUtil.printDebug("There are no in-game players. Starting new round.");
-        			game.nextGame(game.getWorld());
+    		// Assess in-game players
+    		if (game.getGameState().equals(GameState.PRE_GAME) || game.getGameState().equals(GameState.DURING_GAME)) {
+    			if (inGamePlayerCount == 0) {
+        			game.nextGame(game.getWorld()); // restart the game if everyone leaves
         		} else {
-        			ChatUtil.printDebug("A player left the game");
-            		if(game.checkPlayerCount()==false) { //if there are not enough players
-            			ChatUtil.printDebug("There are not enough players");
+            		if (game.checkPlayerCount() == false) { // if there are not enough players
             			switch (game.getGameState()) {
-                    	case PRE_GAME :
-                    		game.waitForPlayers();
-                    		break;
-                    	case DURING_GAME :
-                    		Bukkit.broadcastMessage("There are not enough players to continue the round.");
-                    		game.pauseGame();
-                    		break;
-                		default :
-                			break;
+                            case PRE_GAME:
+                                game.waitForPlayers();
+                                break;
+                            case DURING_GAME:
+                                Bukkit.broadcastMessage("There are not enough players to continue the round.");
+                                game.pauseGame();
+                                break;
+                            default:
+                                break;
                     	}
-            		} else { //if there are enough players, check for imbalance
-            			int largestImbalance = novswar.getConfigManager().getConfig("core").getInt("core.game.largest_team_imbalance");
-            			if(largestImbalance <= 0) {
-            				//re-balancing is disabled
+            		} else { // if there are enough players, check for imbalance
+            			int largestImbalance = novswar.getConfigManager().getCoreConfig().getGameLargestTeamImbalance();
+
+            			if (largestImbalance <= 0) {
+            				// re-balancing is disabled
             				return;
             			} else {
-            				//Determine player counts for each team
+            				// Determine player counts for each team
             				boolean imbalanceFound = false;
-            				for(NovsTeam teamA : novswar.getTeamManager().getTeams()) {
-            					for(NovsTeam teamB : novswar.getTeamManager().getTeams()) {
-            						if(!teamA.equals(teamB) && 
-            						  Math.abs(teamA.getPlayers().size() - teamB.getPlayers().size()) >= largestImbalance) {
+            				for (NovsTeam teamA : novswar.getGameHandler().getGame().getTeams()) {
+            					for (NovsTeam teamB : novswar.getGameHandler().getGame().getTeams()) {
+            						if (!teamA.equals(teamB) && Math.abs(teamA.getTeamState().getPlayers().size() - teamB.getTeamState().getPlayers().size()) >= largestImbalance) {
             							imbalanceFound = true;
             						}
             					}
             				}
-            				if(imbalanceFound) {
-            					novswar.getTeamManager().balanceTeams();
+
+            				if (imbalanceFound) {
+            					novswar.getGameHandler().getGame().balanceTeams();
             				}
             			}
             		}

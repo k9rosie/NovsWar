@@ -10,31 +10,56 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
 import com.k9rosie.novswar.world.NovsWorld;
 
-public class SaveRegionsCommand extends NovsCommand {
+public class SaveRegionsCommand implements NovsCommand {
+    private String permissions;
+    private String description;
+    private int requiredNumofArgs;
+    private boolean playerOnly;
+    private NovsWar novsWar;
 	
-	public SaveRegionsCommand(NovsWar novsWar, CommandSender sender, String[] args) {
-        super(novsWar, sender, args);
+	public SaveRegionsCommand(NovsWar novsWar) {
+        permissions = "novswar.command.admin.saveregions";
+        description = "Saves the regions in the world to persistent storage";
+        requiredNumofArgs = 0;
+        playerOnly = true;
+        this.novsWar = novsWar;
     }
 
-    public void execute() {
-        if (getArgs().length != 2) {
-            ChatUtil.sendError((Player) getSender(), MessagesConfig.getInvalidParameters());
+    public void execute(CommandSender sender, String[] args) {
+        Player bukkitPlayer = (Player) sender;
+        World bukkitWorld = bukkitPlayer.getWorld();
+        NovsWorld world = novsWar.getWorldManager().getWorlds().get(bukkitWorld);
+
+        if (world == null) {
+            ChatUtil.sendError(bukkitPlayer, "The world you're in isn't enabled in NovsWar.");
             return;
-        } else {
-            Player bukkitPlayer = (Player) getSender();
-            World bukkitWorld = bukkitPlayer.getWorld();
-            NovsWorld world = getNovsWar().getWorldManager().getWorlds().get(bukkitWorld);
-
-            if (world == null) {
-                ChatUtil.sendError(bukkitPlayer, "The world you're in isn't enabled in NovsWar.");
-                return;
-            }
-
-            getNovsWar().getWorldManager().updateRegions();
-            getNovsWar().getConfigManager().saveConfigs();
-            world.saveRegionBlocks();
-
-            ChatUtil.sendNotice(bukkitPlayer, "Saved regions in this world.");
         }
+
+        novsWar.getWorldManager().updateRegions();
+        novsWar.getConfigManager().saveConfigs();
+        world.saveRegionBlocks();
+
+        ChatUtil.sendNotice(bukkitPlayer, "Saved regions in this world.");
+
+    }
+
+    @Override
+    public String getPermissions() {
+        return permissions;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public int getRequiredNumofArgs() {
+        return requiredNumofArgs;
+    }
+
+    @Override
+    public boolean isPlayerOnly() {
+        return playerOnly;
     }
 }

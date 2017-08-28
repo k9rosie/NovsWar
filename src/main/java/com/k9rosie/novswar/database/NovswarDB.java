@@ -1,5 +1,6 @@
 package com.k9rosie.novswar.database;
 
+import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.player.NovsPlayer;
 import com.k9rosie.novswar.player.NovsStats;
 import org.bukkit.entity.Player;
@@ -13,8 +14,8 @@ import java.util.UUID;
 
 public class NovswarDB extends Database {
 
-    public NovswarDB(DatabaseType type, String prefix) {
-        super(type, prefix);
+    public NovswarDB(NovsWar novsWar, DatabaseType type, String prefix) {
+        super(novsWar, type, prefix);
     }
 
     @Override

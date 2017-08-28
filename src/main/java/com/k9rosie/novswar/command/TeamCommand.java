@@ -13,22 +13,35 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class TeamCommand extends NovsCommand {
+public class TeamCommand implements NovsCommand {
+    private String permissions;
+    private String description;
+    private int requiredNumofArgs;
+    private boolean playerOnly;
+    private NovsWar novsWar;
 
-    private Game game;
-
-    public TeamCommand(NovsWar novsWar, CommandSender sender, String[] args) {
-        super(novsWar, sender, args);
-        game = getNovsWar().getGameHandler().getGame();
+    public TeamCommand(NovsWar novsWar) {
+        permissions = "novswar.command.team";
+        description = "Display team info";
+        requiredNumofArgs = 0;
+        playerOnly = false;
+        this.novsWar = novsWar;
     }
 
-    public void execute() {
-    	NovsPlayer player = getNovsWar().getPlayerManager().getPlayers().get((Player) getSender());
-    	if (getArgs().length == 1) {
+    public void execute(CommandSender sender, String[] args) {
+    	if (args.length <= 1 && !(sender instanceof Player)) {
+            ChatUtil.sendError(sender, "You need to be a player to display stats on another player");
+            return;
+        }
+
+        Game game = novsWar.getGameHandler().getGame();
+
+        if (args.length == 1) {
+            NovsPlayer player = novsWar.getPlayerManager().getPlayers().get(sender);
             NovsTeam team = player.getPlayerState().getTeam();
-            printTeam(team);
-        } else if (getArgs().length == 2) {
-            String arg = getArgs()[1];
+            printTeam(sender, team);
+        } else if (args.length == 2) {
+            String arg = args[1];
             NovsTeam team = null;
             for (NovsTeam t : game.getTeams()) {
                 if (t.getTeamName().equalsIgnoreCase(arg)) {
@@ -37,16 +50,16 @@ public class TeamCommand extends NovsCommand {
             }
 
             if (team != null) {
-                printTeam(team);
+                printTeam(sender, team);
                 return;
             } else {
-                NovsPlayer target = getNovsWar().getPlayerManager().getPlayer(arg);
+                NovsPlayer target = novsWar.getPlayerManager().getPlayer(arg);
 
                 if (target == null) {
-                	ChatUtil.sendNotice(player, "That specific player/team couldn't be found");
+                	ChatUtil.sendNotice(sender, "That specific player/team couldn't be found");
                     return;
                 } else {
-                    printTeam(target);
+                    printTeam(sender, target);
                     return;
                 }
             }
@@ -54,18 +67,18 @@ public class TeamCommand extends NovsCommand {
         }
     }
 
-    public void printTeam(NovsTeam team) {
-        ChatUtil.sendNotice((Player) getSender(), team.getColor()+team.getTeamName());
-        getSender().sendMessage(generatePlayerList(team));
+    private void printTeam(CommandSender sender, NovsTeam team) {
+        ChatUtil.sendNotice(sender, team.getColor()+team.getTeamName());
+        sender.sendMessage(generatePlayerList(team));
     }
 
-    public void printTeam(NovsPlayer player) {
+    private void printTeam(CommandSender sender, NovsPlayer player) {
         NovsTeam team = player.getPlayerState().getTeam();
-        ChatUtil.sendNotice((Player) getSender(), team.getColor()+team.getTeamName());
-        getSender().sendMessage(generatePlayerList(team));
+        ChatUtil.sendNotice(sender, team.getColor()+team.getTeamName());
+        sender.sendMessage(generatePlayerList(team));
     }
 
-    public String generatePlayerList(NovsTeam team) {
+    private String generatePlayerList(NovsTeam team) {
         StringBuilder playersList = new StringBuilder();
         ArrayList<NovsPlayer> players = team.getTeamState().getPlayers();
         for (int i = 0; i < players.toArray().length; i++) {
@@ -83,5 +96,25 @@ public class TeamCommand extends NovsCommand {
 
         }*/
         return playersList.toString();
+    }
+
+    @Override
+    public String getPermissions() {
+        return permissions;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public int getRequiredNumofArgs() {
+        return requiredNumofArgs;
+    }
+
+    @Override
+    public boolean isPlayerOnly() {
+        return playerOnly;
     }
 }

@@ -7,18 +7,44 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
 import com.k9rosie.novswar.game.Game;
 
-public class RestartCommand extends NovsCommand {
+public class RestartCommand implements NovsCommand {
+    private String permissions;
+    private String description;
+    private int requiredNumofArgs;
+    private boolean playerOnly;
+	private NovsWar novsWar;
 	
-	private Game game;
-	
-    public RestartCommand(NovsWar novsWar, CommandSender sender, String[] args) {
-        super(novsWar, sender, args);
-        game = getNovsWar().getGameHandler().getGame();
+    public RestartCommand(NovsWar novsWar) {
+        permissions = "novswar.command.admin.restart";
+        description = "Restarts the game";
+        requiredNumofArgs = 0;
+        playerOnly = false;
+        this.novsWar = novsWar;
     }
 
-    public void execute() {
+    public void execute(CommandSender sender, String[] args) {
+        Game game = novsWar.getGameHandler().getGame();
     	Bukkit.broadcastMessage("Forcing game restart...");
-    	//getNovsWar().getGameHandler().newGame(game.getBallotBox().nextWorld(game.getWorld()));
     	game.nextGame(game.getWorld());
+    }
+
+    @Override
+    public String getPermissions() {
+        return permissions;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public int getRequiredNumofArgs() {
+        return requiredNumofArgs;
+    }
+
+    @Override
+    public boolean isPlayerOnly() {
+        return playerOnly;
     }
 }

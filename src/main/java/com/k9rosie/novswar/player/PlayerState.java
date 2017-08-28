@@ -30,6 +30,7 @@ public class PlayerState {
     private boolean spectating;
     private boolean voted;
     private boolean shiftToggled;
+    private boolean inGame;
 
     public PlayerState(Game game, NovsPlayer player, NovsTeam team) {
         this.game = game;
@@ -42,6 +43,7 @@ public class PlayerState {
         spectating = false;
         voted = false;
         shiftToggled = false;
+        inGame = false;
     }
 
     public Game getGame() {
@@ -112,6 +114,14 @@ public class PlayerState {
         this.shiftToggled = shiftToggled;
     }
 
+    public boolean isInGame() {
+        return inGame;
+    }
+
+    public void setInGame(boolean inGame) {
+        this.inGame = inGame;
+    }
+
     public void tagPlayer(NovsPlayer attacker, double damage) {
         if (attackers.containsKey(attacker)) {
             AttackTimer timer = attackers.get(attacker);
@@ -127,25 +137,6 @@ public class PlayerState {
         ArrayList<AttackTimer> assisters = (ArrayList<AttackTimer>) attackers.values();
         Collections.sort(assisters);
         return assisters;
-    }
-
-    public void joinGame() {
-        boolean joinInProgress = novswar.getConfigManager().getCoreConfig().getGameJoinInProgress();
-        if (!joinInProgress && (game.getGameState() == GameState.DURING_GAME) || game.getGameState() == GameState.POST_GAME) {
-            ChatUtil.sendError(player, MessagesConfig.getCannotJoinGame());
-            return;
-        }
-
-        if (!team.equals(novswar.getTeamManager().getDefaultTeam())) {
-            ChatUtil.sendError(player, "You're already in the game.");
-            return;
-        }
-
-        NovsWarJoinGameEvent event = new NovsWarJoinGameEvent(game, player);
-        Bukkit.getServer().getPluginManager().callEvent(event);
-        if (event.isCancelled() == false) {
-            game.assignTeam(player);
-        }
     }
 
     public void respawn() {
