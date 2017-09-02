@@ -81,18 +81,18 @@ public class MessagesConfig extends NovsConfig {
     }
 
     public static String getKillMessage(String killerColor, String killer, String killedColor, String killed) {
-        String message = deathMessage.replace(":killer_color", killerColor)
+        String message = killMessage.replace(":kr_color", killerColor)
                 .replace(":killer", killer)
-                .replace(":killedColor", killedColor)
+                .replace(":kd_color", killedColor)
                 .replace(":killed", killed);
         message = ChatColor.translateAlternateColorCodes('&', message);
         return message;
     }
 
     public static String getShotMessage(String killerColor, String killer, String killedColor, String killed) {
-        String message = shotMessage.replace(":killer_color", killerColor)
+        String message = shotMessage.replace(":kr_color", killerColor)
                 .replace(":killer", killer)
-                .replace(":killedColor", killedColor)
+                .replace(":kd_color", killedColor)
                 .replace(":killed", killed);
         message = ChatColor.translateAlternateColorCodes('&', message);
         return message;

@@ -66,7 +66,6 @@ public class PlayerListener implements Listener {
         bukkitPlayer.setScoreboard(game.getScoreboard().getBukkitScoreboard());
         bukkitPlayer.teleport(novswar.getWorldManager().getLobbyWorld().getTeamSpawnLoc(defaultTeam));
         bukkitPlayer.setGameMode(GameMode.SURVIVAL);
-        bukkitPlayer.setHealth(19);
         bukkitPlayer.setHealth(player.getBukkitPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         bukkitPlayer.setFoodLevel(20);
         SendTitle.sendTitle(bukkitPlayer, 0, 2000, 0, " ", ""); // clear any title messages they may have
@@ -75,21 +74,16 @@ public class PlayerListener implements Listener {
         Bukkit.getPluginManager().callEvent(invokeEvent);
     }
 
-    /**
-     * Fires on chat events
-     * All players always see global chat messages and team chat messages
-     * @param event
-     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         
         //Check if the event was caused by a player
-        if(event.isAsynchronous()) {
+        if (event.isAsynchronous()) {
         	Player bukkitPlayer = event.getPlayer();
             NovsPlayer player = novsPlayerCache.getPlayers().get(bukkitPlayer);
             NovsTeam team = player.getPlayerState().getTeam();
             
-            if(!player.isTeamChat()) {
+            if (!player.isTeamChat()) {
                 if (player.getPlayerState().isDead()) {
                     event.setFormat("§7*DEAD* " + team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
                 } else if (player.getPlayerState().isSpectating()) {
@@ -98,36 +92,30 @@ public class PlayerListener implements Listener {
                     event.setFormat(team.getColor() + bukkitPlayer.getDisplayName() + ChatColor.WHITE + ": " + event.getMessage());
                 }
             } else {
-            	//Team chat only
+            	// Team chat only
             	event.setCancelled(true);
-            	for(NovsPlayer teamPlayer : team.getTeamState().getPlayers()) {
+            	for (NovsPlayer teamPlayer : team.getTeamState().getPlayers()) {
             		teamPlayer.getBukkitPlayer().sendMessage(ChatColor.GREEN + "[Team] "+bukkitPlayer.getDisplayName() +": "+ ChatColor.ITALIC + event.getMessage());
             	}
             }
         }
     }
 
-    /**
-     * Fires when a player quits the server
-     * @param event
-     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event) {
     	Game game = novswar.getGameHandler().getGame();
         Player bukkitPlayer = event.getPlayer();
         NovsPlayer player = novsPlayerCache.getPlayers().get(bukkitPlayer);
 
-        player.getBukkitPlayer().setWalkSpeed(0.2f);
-        player.getBukkitPlayer().setFlySpeed(0.2f);
-
         novswar.getDatabase().flushPlayerData(player);
         novsPlayerCache.getPlayers().remove(bukkitPlayer);
-        if (player.getPlayerState().getTeam().equals(novswar.getTeamManager().getDefaultTeam()) == false) {
+        if (player.getPlayerState().isInGame()) {
+            novswar.getWorldManager().updateSigns(game);
         	// If player is on a team, invoke event
         	NovsWarLeaveTeamEvent invokeEvent = new NovsWarLeaveTeamEvent(player, game);
             Bukkit.getPluginManager().callEvent(invokeEvent);
         }
-        //System.out.println("Player count: " + novswar.getPlayerManager().getPlayers().values().size());
+
     }
 
     /**
@@ -151,11 +139,13 @@ public class PlayerListener implements Listener {
                 	attackerBukkitPlayer = (Player) arrow.getShooter();
                     arrowDeath = true;
                 }
+
             } else if (event.getDamager() instanceof Player) {
             	attackerBukkitPlayer = (Player) event.getDamager();
             } else { // if neither player nor arrow
                 return;
             }
+
             NovsPlayer victim = novsPlayerCache.getPlayers().get(victimBukkitPlayer);
             NovsPlayer attacker = novsPlayerCache.getPlayers().get(attackerBukkitPlayer);
 
@@ -186,6 +176,8 @@ public class PlayerListener implements Listener {
             if (victim.getBukkitPlayer().getHealth() - damage <= 0) {
                 event.setCancelled(true);
                 victim.getPlayerState().killPlayer(attacker, arrowDeath);
+            } else {
+                victim.getPlayerState().tagPlayer(attacker, damage);
             }
         }
     }
@@ -229,7 +221,7 @@ public class PlayerListener implements Listener {
                     return;
                 } else {
                 	// The player was killed by the environment, but still has a valid killer
-                    killer = novsPlayerCache.getPlayers().get(bukkitPlayer.getKiller());
+                    killer = victim.getPlayerState().sortAttackers().get(0).getAttacker();
                 }
             }
             
@@ -242,7 +234,12 @@ public class PlayerListener implements Listener {
             // if damage is fatal or fell into void
             if ((bukkitPlayer.getHealth() - damage <= 0) || event.getCause().equals(EntityDamageEvent.DamageCause.VOID)) {
                 event.setCancelled(true);
-                victim.getPlayerState().killPlayer();
+
+                if (killer != null) {
+                    victim.getPlayerState().killPlayer(killer, false);
+                } else {
+                    victim.getPlayerState().killPlayer();
+                }
             }
         }
     }
@@ -276,6 +273,8 @@ public class PlayerListener implements Listener {
                 player.getRegionBuffer().setCornerOne(location);
                 ChatUtil.sendNotice(player, "Setting corner two...");
             } else if (player.getRegionBuffer().getCornerOne() != null) { // if they set the first corner already
+                player.getRegionBuffer().setCornerTwo(location);
+                ChatUtil.sendNotice(player, "Region set!");
                 player.getRegionBuffer().createRegion();
                 player.setSettingRegion(false);
             }

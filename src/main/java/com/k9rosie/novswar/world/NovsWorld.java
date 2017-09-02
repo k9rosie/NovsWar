@@ -1,7 +1,9 @@
 package com.k9rosie.novswar.world;
 
+import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.team.NovsTeam;
 
+import com.k9rosie.novswar.util.ChatUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -9,20 +11,21 @@ import org.bukkit.block.Sign;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeMap;
 
 public class NovsWorld {
 
     private String name;
     private World bukkitWorld;
     private HashMap<NovsTeam, Location> teamSpawns;
-    private HashMap<String, NovsCuboid> cuboids;
+    private TreeMap<String, NovsCuboid> cuboids;
     private HashMap<Location, Sign> signs;
 
     public NovsWorld(String name, World bukkitWorld) {
         this.name = name;
         this.bukkitWorld = bukkitWorld;
         teamSpawns = new HashMap<>();
-        cuboids = new HashMap<>();
+        cuboids = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         signs = new HashMap<>();
     }
 
@@ -63,7 +66,7 @@ public class NovsWorld {
     	return loc;
     }
 
-    public HashMap<String, NovsCuboid> getCuboids() {
+    public TreeMap<String, NovsCuboid> getCuboids() {
         return cuboids;
     }
     
@@ -136,6 +139,14 @@ public class NovsWorld {
             if (region.getCuboidType().equals(CuboidType.INTERMISSION_GATE)) {
                 region.resetBlocks();
             }
+        }
+    }
+
+    public void updateSigns(Game game) {
+        for (Sign sign : signs.values()) {
+            sign.setLine(0, ChatUtil.PLUGIN_TAG);
+            sign.setLine(1, game.getWorld().getName());
+            sign.setLine(2, game.getInGamePlayers().size() + " players");
         }
     }
 }

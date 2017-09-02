@@ -1,9 +1,15 @@
 package com.k9rosie.novswar.config;
 
 import com.k9rosie.novswar.NovsWarPlugin;
+import com.k9rosie.novswar.team.NovsTeam;
+import com.k9rosie.novswar.world.NovsCuboid;
+import com.k9rosie.novswar.world.NovsWorld;
+import org.bukkit.Location;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 
 import javax.security.auth.login.Configuration;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,51 +43,62 @@ public class RegionsConfig extends NovsConfig {
         ArrayList<HashMap<String, Object>> regions = new ArrayList<>();
         getConfig().set("regions", null);
 
-        for (Map.Entry<String, RegionData> entry : regionData.entrySet()) {
-            String mapName = entry.getKey();
-            RegionData regionData = entry.getValue();
+        for (NovsWorld world : getNovsWar().getWorldManager().getWorlds().values()) {
+            HashMap<String, Object> obj = new HashMap<>();
+            obj.put("world", world.getName());
 
-            // set the world name and create our data object
-            // the data object will be the root object to be placed in the regions list
-            HashMap<String, Object> data = new HashMap<>();
-            data.put("world", mapName);
+            if (!world.getTeamSpawns().isEmpty()) {
+                ArrayList<HashMap<String, Object>> spawns = new ArrayList<>();
+                for (Map.Entry<NovsTeam, Location> entry : world.getTeamSpawns().entrySet()) {
+                    HashMap<String, Object> data = new HashMap<>();
+                    NovsTeam team = entry.getKey();
+                    Location loc = entry.getValue();
 
-            // create our spawn data
-            HashMap<String, Object> spawns = new HashMap<>();
-            for (SpawnData spawnData : regionData.getSpawns()) {
-                spawns.put("team", spawnData.getTeam());
-                spawns.put("x", spawnData.getX());
-                spawns.put("y", spawnData.getY());
-                spawns.put("z", spawnData.getZ());
-                spawns.put("pitch", spawnData.getPitch());
-                spawns.put("yaw", spawnData.getYaw());
+                    data.put("team", team.getTeamName());
+                    data.put("x", loc.getX());
+                    data.put("y", loc.getY());
+                    data.put("z", loc.getZ());
+                    data.put("pitch", loc.getPitch());
+                    data.put("yaw", loc.getYaw());
+                    spawns.add(data);
+                }
+                obj.put("spawns", spawns);
             }
-            data.put("spawns", spawns);
 
-            // create our cuboid data
-            HashMap<String, Object> cuboids = new HashMap<>();
-            for (CuboidData cuboidData : regionData.getCuboids()) {
-                cuboids.put("name", cuboidData.getName());
-                cuboids.put("type", cuboidData.getType());
-                cuboids.put("corner_one_x", cuboidData.getCornerOneX());
-                cuboids.put("corner_one_y", cuboidData.getCornerOneY());
-                cuboids.put("corner_one_z", cuboidData.getCornerOneZ());
-                cuboids.put("corner_two_x", cuboidData.getCornerTwoX());
-                cuboids.put("corner_two_y", cuboidData.getCornerTwoY());
-                cuboids.put("corner_two_z", cuboidData.getCornerTwoZ());
+            if (!world.getCuboids().isEmpty()) {
+                ArrayList<HashMap<String, Object>> cuboids = new ArrayList<>();
+                for (Map.Entry<String, NovsCuboid> entry : world.getCuboids().entrySet()) {
+                    HashMap<String, Object> data = new HashMap<>();
+                    String cuboidName = entry.getKey();
+                    NovsCuboid cuboid = entry.getValue();
+
+                    data.put("name", cuboidName);
+                    data.put("type", cuboid.getCuboidType().toString());
+                    data.put("corner_one_x", cuboid.getCornerOne().getX());
+                    data.put("corner_one_y", cuboid.getCornerOne().getY());
+                    data.put("corner_one_z", cuboid.getCornerOne().getZ());
+                    data.put("corner_two_x", cuboid.getCornerTwo().getX());
+                    data.put("corner_two_y", cuboid.getCornerTwo().getY());
+                    data.put("corner_two_z", cuboid.getCornerTwo().getZ());
+                    cuboids.add(data);
+                }
+                obj.put("cuboids", cuboids);
             }
-            data.put("cuboids", cuboids);
 
-            // create our sign data
-            HashMap<String, Object> signs = new HashMap<>();
-            for (SignData signData : regionData.getSigns()) {
-                signs.put("x", signData.getX());
-                signs.put("y", signData.getY());
-                signs.put("z", signData.getZ());
+            if (!world.getSigns().isEmpty()) {
+                ArrayList<HashMap<String, Object>> signs = new ArrayList<>();
+                for (Location loc : world.getSigns().keySet()) {
+                    HashMap<String, Object> data = new HashMap<>();
+
+                    data.put("x", loc.getX());
+                    data.put("y", loc.getY());
+                    data.put("z", loc.getZ());
+                    signs.add(data);
+                }
+                obj.put("signs", signs);
             }
-            data.put("signs", signs);
 
-            regions.add(data);
+            regions.add(obj);
         }
 
         getConfig().set("regions", regions);
@@ -102,44 +119,50 @@ public class RegionsConfig extends NovsConfig {
             ArrayList<SignData> signData = new ArrayList<>();
 
             // iterate through spawns and populate spawnData with data
-            for (Object obj : spawns) {
-                HashMap<String, Object> d = (HashMap<String, Object>) obj;
+            if (spawns != null) {
+                for (Object obj : spawns) {
+                    HashMap<String, Object> d = (HashMap<String, Object>) obj;
 
-                String team = (String) d.get("team");
-                Double x = (Double) d.get("x");
-                Double y = (Double) d.get("y");
-                Double z = (Double) d.get("z");
-                Float pitch = (Float) d.get("pitch");
-                Float yaw = (Float) d.get("yaw");
+                    String team = (String) d.get("team");
+                    Double x = new Double(d.get("x").toString());
+                    Double y = new Double(d.get("y").toString());
+                    Double z = new Double(d.get("z").toString());
+                    Double pitch = new Double(d.get("pitch").toString());
+                    Double yaw = new Double(d.get("yaw").toString());
 
-                spawnData.add(new SpawnData(team, x, y, z, pitch, yaw));
+                    spawnData.add(new SpawnData(team, x, y, z, pitch.floatValue(), yaw.floatValue()));
+                }
             }
 
             // iterate through cuboids and populate cuboidData with data
-            for (Object obj : cuboids) {
-                HashMap<String, Object> d = (HashMap<String, Object>) obj;
+            if (cuboids != null) {
+                for (Object obj : cuboids) {
+                    HashMap<String, Object> d = (HashMap<String, Object>) obj;
 
-                String name = (String) d.get("name");
-                String type = (String) d.get("type");
-                Double cornerOneX = (Double) d.get("double_one_x");
-                Double cornerOneY = (Double) d.get("double_one_y");
-                Double cornerOneZ = (Double) d.get("double_one_z");
-                Double cornerTwoX = (Double) d.get("double_two_x");
-                Double cornerTwoY = (Double) d.get("double_two_y");
-                Double cornerTwoZ = (Double) d.get("double_two_z");
+                    String name = (String) d.get("name");
+                    String type = (String) d.get("type");
+                    Double cornerOneX = new Double(d.get("corner_one_x").toString());
+                    Double cornerOneY = new Double(d.get("corner_one_y").toString());
+                    Double cornerOneZ = new Double(d.get("corner_one_z").toString());
+                    Double cornerTwoX = new Double(d.get("corner_two_x").toString());
+                    Double cornerTwoY = new Double(d.get("corner_two_y").toString());
+                    Double cornerTwoZ = new Double(d.get("corner_two_z").toString());
 
-                cuboidData.add(new CuboidData(name, type, cornerOneX, cornerOneY, cornerOneZ, cornerTwoX, cornerTwoY, cornerTwoZ));
+                    cuboidData.add(new CuboidData(name, type, cornerOneX, cornerOneY, cornerOneZ, cornerTwoX, cornerTwoY, cornerTwoZ));
+                }
             }
 
             // iterate through signs and populate signData with data
-            for (Object obj : signs) {
-                HashMap<String, Object> d = (HashMap<String, Object>) obj;
+            if (signs != signs) {
+                for (Object obj : signs) {
+                    HashMap<String, Object> d = (HashMap<String, Object>) obj;
 
-                Double x = (Double) d.get("x");
-                Double y = (Double) d.get("y");
-                Double z = (Double) d.get("z");
+                    Double x = new Double(d.get("x").toString());
+                    Double y = new Double(d.get("y").toString());
+                    Double z = new Double(d.get("z").toString());
 
-                signData.add(new SignData(x, y, z));
+                    signData.add(new SignData(x, y, z));
+                }
             }
 
             regionData.put(world, new RegionData(world, spawnData, cuboidData, signData));

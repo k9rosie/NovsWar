@@ -56,8 +56,7 @@ public class WorldListener implements Listener {
 					ChatUtil.sendError(event.getPlayer(), "Could not create Info Sign, invalid world");
         		} else {
         			world.getSigns().put(block.getLocation(), (Sign) block.getState());
-					ChatUtil.sendNotice(event.getPlayer(), "Created Info Sign in world "+block.getWorld());
-					//novswar.getGameHandler().getGame().updateInfoSigns(); //TODO: update info signs in this event
+					novswar.getWorldManager().updateSigns(novswar.getGameHandler().getGame());
         		}
         	}
     	}

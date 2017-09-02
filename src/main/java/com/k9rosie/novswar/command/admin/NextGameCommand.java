@@ -1,6 +1,5 @@
 package com.k9rosie.novswar.command.admin;
 
-import com.k9rosie.novswar.config.MessagesConfig;
 import com.k9rosie.novswar.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -9,7 +8,6 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.command.NovsCommand;
 import com.k9rosie.novswar.game.Game;
 import com.k9rosie.novswar.world.NovsWorld;
-import org.bukkit.entity.Player;
 
 public class NextGameCommand implements NovsCommand {
 	private String permissions;
@@ -32,7 +30,7 @@ public class NextGameCommand implements NovsCommand {
     		Bukkit.broadcastMessage("Forcing next game...");
         	game.nextGame(game.nextWorld(game.getWorld()));
     	} else {
-    		NovsWorld world = novsWar.getWorldManager().getWorldFromName(args[2]);
+    		NovsWorld world = novsWar.getWorldManager().getWorld(args[2]);
     		
         	if(world == null) {
         		String message = "";

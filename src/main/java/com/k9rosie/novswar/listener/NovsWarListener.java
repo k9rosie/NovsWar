@@ -31,47 +31,35 @@ public class NovsWarListener implements Listener {
         NovsScore score = event.getNovsScore();
         Game game = novswar.getGameHandler().getGame();
         int maxScore = game.getGamemode().getMaxScore();
-        if (score.getScoreboardScore().getScore() >= maxScore) {
-            game.endGame();
+
+        // if the score goes above the maxScore threshold then end the game
+        if (game.getGameState() == GameState.DURING_GAME) {
+            if (score.getScoreboardScore().getScore() >= maxScore) {
+                game.endGame();
+            }
         }
 
     }
-    
-    /**
-     * New Game Event
-     * @param event
-     */
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onNovsWarNewGame(NovsWarNewGameEvent event) {
-    	//Update all NovsInfoSigns with new round information	
-    	//ChatUtil.printDebug("NovsWar New Game event!");
-		//novswar.getGameHandler().updateInfoSigns();
+    	novswar.getWorldManager().updateSigns(event.getGame());
     }
-    
-    /**
-     * Join Team Event
-     * @param event
-     */
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onNovsWarJoinTeam(NovsWarJoinTeamEvent event) {
-    	//Update all NovsInfoSigns with in-game player count information	
-    	//ChatUtil.printDebug("NovsWar Join Team event!");
-    	// TODO: update info signs in this event
+        novswar.getWorldManager().updateSigns(event.getGame());
     }
-    
-    /**
-     * Decides whether or not to rebalance the teams when a player leaves one.
-     * @param event
-     */
+
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onNovsWarLeaveTeamModify(NovsWarLeaveTeamEvent event) {
+    public void onNovsWarLeaveTeam(NovsWarLeaveTeamEvent event) {
     	Game game = event.getGame();
     	if (event.isCancelled() == false) {
     		// Count the number of players still in-game
     		int inGamePlayerCount = novswar.getGameHandler().getGame().getInGamePlayers().size();
     		
     		// Update all NovsInfoSigns with in-game player count information
-    		// event.getGame().updateInfoSigns(); // TODO: Update info signs in this event
+            novswar.getWorldManager().updateSigns(event.getGame());
 
     		// Assess in-game players
     		if (game.getGameState().equals(GameState.PRE_GAME) || game.getGameState().equals(GameState.DURING_GAME)) {

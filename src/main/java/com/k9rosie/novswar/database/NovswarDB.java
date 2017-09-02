@@ -8,8 +8,11 @@ import org.bukkit.entity.Player;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 public class NovswarDB extends Database {
@@ -120,6 +123,7 @@ public class NovswarDB extends Database {
 
             column = new Column("last_played");
             column.setType("TIMESTAMP");
+            column.setDefaultValue("CURRENT_TIMESTAMP");
             stats.add(column);
 
             column = new Column("total_time");
@@ -144,6 +148,8 @@ public class NovswarDB extends Database {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         playerStats.setLoggedIn(timestamp);
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         try {
             while (data.next()) {
                 player.setDeathMessages(data.getBoolean("death_messages"));
@@ -159,8 +165,12 @@ public class NovswarDB extends Database {
                 playerStats.setConnects(stats.getInt("connects"));
                 playerStats.setDamageGiven(stats.getDouble("damage_given"));
                 playerStats.setDamageTaken(stats.getDouble("damage_taken"));
-                playerStats.setLastPlayed(stats.getTimestamp("last_played"));
                 playerStats.setTotalTime(stats.getLong("total_time"));
+                try {
+                    playerStats.setLastPlayed(dateFormat.parse(stats.getString("last_played")));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

@@ -87,6 +87,10 @@ public class NovsScore {
 
     public void callEvent() {
         NovsWarScoreModifyEvent event = new NovsWarScoreModifyEvent(this);
+        if (event == null) {
+            System.out.println("event is null for some reason");
+            return;
+        }
         Bukkit.getPluginManager().callEvent(event);
     }
 }

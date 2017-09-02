@@ -34,9 +34,7 @@ public class DatabaseThread implements Runnable {
                         e.printStackTrace();
                     }
 
-                    NovsWar.debug("Flushing database..");
                     flushDatabase();
-                    NovsWar.debug("Database flushed.");
                 }
             }
         });

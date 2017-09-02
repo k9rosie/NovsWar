@@ -5,7 +5,6 @@ import com.k9rosie.novswar.NovsWar;
 import com.k9rosie.novswar.config.MessagesConfig;
 import com.k9rosie.novswar.event.*;
 import com.k9rosie.novswar.gamemode.Gamemode;
-import com.k9rosie.novswar.player.DeathTimer;
 import com.k9rosie.novswar.player.NovsPlayer;
 import com.k9rosie.novswar.team.NovsTeam;
 import com.k9rosie.novswar.team.TeamState;
@@ -53,11 +52,9 @@ public class Game {
 
     	// Create TeamState data for default team
         NovsTeam defaultTeam = novsWar.getTeamManager().getDefaultTeam();
-        Team defaultScoreboardTeam = scoreboard.createScoreboardTeam(defaultTeam);
-        defaultTeam.setTeamState(new TeamState(this, defaultTeam, defaultScoreboardTeam));
 
         // populate enabledTeams list
-        String[] list = novsWar.getConfigManager().getWorldsConfig().getWorldData().get(world.getBukkitWorld().getName()).getEnabledTeams();
+        ArrayList<String> list = novsWar.getConfigManager().getWorldsConfig().getWorldData().get(world.getBukkitWorld().getName()).getEnabledTeams();
         for (String teamName : list) {
             enabledTeams.add(novsWar.getTeamManager().getTeams().get(teamName));
         }
@@ -90,7 +87,7 @@ public class Game {
         world.respawnBattlefields();
         NovsWarNewGameEvent event = new NovsWarNewGameEvent(this);
         Bukkit.getPluginManager().callEvent(event);
-        novsWar.getWorldManager().updateInfoSigns(this);
+        novsWar.getWorldManager().updateSigns(this);
         waitForPlayers();
     }
 

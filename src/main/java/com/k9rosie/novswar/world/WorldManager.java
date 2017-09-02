@@ -9,6 +9,7 @@ import com.k9rosie.novswar.team.NovsTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
@@ -37,16 +38,8 @@ public class WorldManager {
     public NovsWorld getLobbyWorld() {
         return lobbyWorld;
     }
-    
-    public ArrayList<Sign> getActiveSigns() {
-        ArrayList<Sign> signs = new ArrayList<>();
-    	for (NovsWorld world : worlds.values()) {
-    	    signs.addAll(world.getSigns().values());
-        }
-    	return signs;
-    }
 
-    public NovsWorld getWorldFromName(String worldName) {
+    public NovsWorld getWorld(String worldName) {
     	for(NovsWorld world : worlds.values()) {
     		if(world.getBukkitWorld().getName().equals(worldName)) {
     			return world;
@@ -58,7 +51,7 @@ public class WorldManager {
     public void loadWorlds() {
         CoreConfig coreConfig = novswar.getCoreConfig();
         WorldsConfig worldsConfig = novswar.getWorldsConfig();
-
+        Bukkit.getServer().createWorld(new WorldCreator(coreConfig.getLobbyWorld())); // load the world in bukkit
         // load lobby world
         World lobbyWorld = Bukkit.getServer().getWorld(coreConfig.getLobbyWorld());
         if (lobbyWorld == null) {
@@ -72,6 +65,7 @@ public class WorldManager {
 
         // load worlds
         for (WorldData worldData : worldsConfig.getWorlds()) {
+            Bukkit.getServer().createWorld(new WorldCreator(worldData.getWorld())); // load the world in bukkit
             World bukkitWorld = Bukkit.getServer().getWorld(worldData.getWorld());
             if (bukkitWorld == null) {
                 NovsWar.error(worldData.getWorld() + " doesn't exist!");
@@ -92,6 +86,10 @@ public class WorldManager {
         World bukkitWorld = world.getBukkitWorld();
         RegionsConfig regionsConfig = novswar.getConfigManager().getRegionsConfig();
         RegionData regionData = regionsConfig.getRegionData().get(world.getBukkitWorld().getName());
+
+        if (regionData == null) { // if there's no region data for the world yet
+            return;
+        }
 
         for (SpawnData spawnData : regionData.getSpawns()) {
             NovsTeam team = novswar.getTeamManager().getTeam(spawnData.getTeam());
@@ -115,8 +113,9 @@ public class WorldManager {
                      cuboidData.getCornerTwoX(),
                      cuboidData.getCornerTwoY(),
                      cuboidData.getCornerTwoZ());
-
-             world.getCuboids().put(cuboidData.getName(), new NovsCuboid(world, cornerOne, cornerTwo, cuboidType));
+             NovsCuboid cuboid = new NovsCuboid(world, cornerOne, cornerTwo, cuboidType);
+             cuboid.setBlocks(cuboid.getCuboidBlocks());
+             world.getCuboids().put(cuboidData.getName(), cuboid);
         }
 
         for (SignData signData : regionData.getSigns()) {
@@ -190,14 +189,9 @@ public class WorldManager {
         }
     }
 
-    public void updateInfoSigns(Game game) {
-        int required = novswar.getConfigManager().getCoreConfig().getGameMinimumPlayers();
-        for (Sign sign : novswar.getWorldManager().getActiveSigns()) {
-            sign.setLine(0,  "§2Map Info");
-            sign.setLine(1, game.getWorld().getName());
-            sign.setLine(2, game.getGamemode().getGamemodeName());
-            sign.setLine(3, game.getInGamePlayers().size() + "/"+required+" players");
-            sign.update(true);
+    public void updateSigns(Game game) {
+        for (NovsWorld world : worlds.values()) {
+            world.updateSigns(game);
         }
     }
 }

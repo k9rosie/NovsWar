@@ -57,6 +57,7 @@ public class NovsWar {
 		NovsWarInitializationEvent event = new NovsWarInitializationEvent(this);
 		Bukkit.getPluginManager().callEvent(event);
 
+		configManager.saveDefaultConfigs();
 		configManager.reloadConfigs();
 		databaseThread.getThread().start();
 		teamManager.initialize();

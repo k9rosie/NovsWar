@@ -51,6 +51,7 @@ public class CommandHandler implements CommandExecutor {
 
     public void initialize() {
         admin.initialize();
+        commands.put("admin", admin);
         commands.put("novswar", base);
         commands.put("nw", base); // nw alias
         commands.put("chat", chat);
@@ -67,19 +68,18 @@ public class CommandHandler implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        NovsCommand novsCommand;
-
-        if (args.length == 1) {
-            novsCommand = commands.get(args[0]);
-        } else {
-            novsCommand = commands.get(args[1]);
+        if (args.length == 0) {
+            base.execute(sender, args);
+            return true;
         }
+
+        NovsCommand novsCommand = commands.get(args[0]);
 
         if (novsCommand == null) {
             ChatUtil.sendError(sender, MessagesConfig.getCommandNonexistent());
             return true;
         } else {
-            if (novsCommand.getRequiredNumofArgs() > args.length-1) { // subtract 1 from args.length because requiredNumofArgs definitions don't take in account for the first argument
+            if (novsCommand.getRequiredNumofArgs() > args.length) {
                 ChatUtil.sendError(sender, MessagesConfig.getInvalidParameters());
                 return true;
             }

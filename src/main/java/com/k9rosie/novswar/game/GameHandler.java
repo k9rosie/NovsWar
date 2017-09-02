@@ -1,6 +1,7 @@
 package com.k9rosie.novswar.game;
 
 import com.k9rosie.novswar.NovsWar;
+import com.k9rosie.novswar.gamemode.DefaultGamemode;
 import com.k9rosie.novswar.gamemode.Gamemode;
 import com.k9rosie.novswar.world.NovsWorld;
 
@@ -13,10 +14,12 @@ public class GameHandler {
     private NovsWar novswar;
     private Game game;
     private ScoreboardManager scoreboardManager;
+    private DefaultGamemode defaultGamemode;
 
     public GameHandler(NovsWar novswar) {
         this.novswar = novswar;
         scoreboardManager = Bukkit.getScoreboardManager();
+        defaultGamemode = new DefaultGamemode();
     }
 
     public void initialize() {
@@ -31,6 +34,11 @@ public class GameHandler {
     public void newGame(NovsWorld world) {
         String gamemodeString = novswar.getWorldsConfig().getWorldData().get(world.getBukkitWorld().getName()).getGamemode();
         Gamemode gamemode = novswar.getGamemodes().get(gamemodeString);
+
+        if (gamemode == null) {
+            NovsWar.error(gamemodeString + " doesn't exist or hasn't been initialized. Default gamemode loaded.");
+            gamemode = defaultGamemode;
+        }
 
         game = new Game(this, world, gamemode);
 
@@ -54,6 +62,10 @@ public class GameHandler {
 
     public ScoreboardManager getScoreboardManager() {
         return scoreboardManager;
+    }
+
+    public Gamemode getDefaultGamemode() {
+        return defaultGamemode;
     }
 
 }

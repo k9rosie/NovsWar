@@ -25,7 +25,7 @@ public class WorldsConfig extends NovsConfig {
     }
 
     public ArrayList<WorldData> getWorlds() {
-        return (ArrayList<WorldData>) worldData.values();
+        return new ArrayList<>(worldData.values());
     }
 
     public void reloadData() {
@@ -41,7 +41,7 @@ public class WorldsConfig extends NovsConfig {
             String world = (String) data.get("world");
             String name = (String) data.get("name");
             String gamemode = (String) data.get("gamemode");
-            String[] enabledTeams = (String[]) data.get("enabled_teams");
+            ArrayList<String> enabledTeams = (ArrayList<String>) data.get("enabled_teams");
 
             worldData.put(world, new WorldData(world, name, gamemode, enabledTeams));
         }

@@ -69,5 +69,13 @@ public abstract class NovsConfig {
 	    }
 	}
 
+	public NovsWarPlugin getPlugin() {
+		return plugin;
+	}
+
+	public NovsWar getNovsWar() {
+		return plugin.getNovswarInstance();
+	}
+
     public abstract void reloadData();
 }

@@ -35,7 +35,22 @@ permissions:
       novswar.command.vote: true
       novswar.command.deathmessage: true
       novswar.command.chat: true
-      novswar.command.admin: true
+      novswar.command.admin: false
+
+  novswar.command.admin.*:
+    description: Gives access to all administrative NovsWar commands
+    default: op
+    children:
+      novswar.command.admin.delregion: true
+      novswar.command.admin.help: true
+      novswar.command.admin.kick: true
+      novswar.command.admin.listregions: true
+      novswar.command.admin.nextgame: true
+      novswar.command.admin.restart: true
+      novswar.command.admin.saveregions: true
+      novswar.command.admin.setregion: true
+      novswar.command.admin.setspawn: true
+      novswar.command.admin.setteam: true
 
   novswar.command.help:
     description: Help command
@@ -79,4 +94,44 @@ permissions:
 
   novswar.command.admin:
     description: Base admin command
+    default: op
+
+  novswar.command.admin.restart:
+    description: Restart command
+    default: op
+
+  novswar.command.admin.saveregions:
+    description: Saveregions command
+    default: op
+
+  novswar.command.admin.setregion:
+    description: Setregion command
+    default: op
+
+  novswar.command.admin.setspawn:
+    description: Setspawn command
+    default: op
+
+  novswar.command.admin.setteam:
+    description: Setteam command
+    default: op
+
+  novswar.command.admin.delregion:
+    description: Delregion command
+    default: op
+
+  novswar.command.admin.help:
+    description: Admin help command
+    default: op
+
+  novswar.command.admin.kick:
+    description: Kick command
+    default: op
+
+  novswar.command.admin.listregions:
+    description: Listregions command
+    default: op
+
+  novswar.command.admin.nextgame:
+    description: Nextgame command
     default: op

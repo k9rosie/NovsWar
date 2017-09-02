@@ -27,8 +27,8 @@ public class BallotBox {
 	}
 	
 	public void promptVoting() {
-		ArrayList<NovsWorld> worlds = (ArrayList<NovsWorld>) novswar.getWorldManager().getWorlds().values();
-
+		ArrayList<NovsWorld> worlds = new ArrayList<>(novswar.getWorldManager().getWorlds().values());
+		worlds.remove(0); // remove the lobby world
 		// populate selectedMaps with random worlds from the master world list
 		Random random = new Random(); // generate a random wi
 		int max = worlds.size() < 9 ? worlds.size() : 9;
@@ -45,7 +45,12 @@ public class BallotBox {
 			String name = world.getName();
 			String bukkitWorldName = world.getBukkitWorld().getName();
 			String gamemode = novswar.getConfigManager().getWorldsConfig().getWorldData().get(bukkitWorldName).getGamemode();
-			createVoteOption(Material.EMPTY_MAP, inventory, i, name, "A" + gamemode + " map");
+
+			if (gamemode == null) {
+				gamemode = novswar.getGameHandler().getDefaultGamemode().getGamemodeName();
+			}
+
+			createVoteOption(Material.EMPTY_MAP, inventory, i, name, "A " + gamemode + " map");
 		}
     	
     	// Open the voting screen for each player

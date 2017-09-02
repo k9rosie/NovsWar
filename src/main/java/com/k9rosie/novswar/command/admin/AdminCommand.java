@@ -33,6 +33,7 @@ public class AdminCommand implements NovsCommand {
         description = "Base admin command";
         requiredNumofArgs = 0;
         playerOnly = false;
+        commands = new HashMap<>();
         this.novsWar = novsWar;
 
         delRegion = new DelRegionCommand(novsWar);
@@ -56,20 +57,21 @@ public class AdminCommand implements NovsCommand {
         commands.put("restart", restart);
         commands.put("saveregions", saveregions);
         commands.put("setregion", setregion);
+        commands.put("setspawn", setspawn);
         commands.put("setteam", setteam);
     }
 
     public void execute(CommandSender sender, String[] args) {
         if (args.length == 1) { // if the command is used by itself
             sender.sendMessage("reserve for send stats"); // TODO: send stuff like TPS data, database storage info, etc.
-        } else if (args.length >= 2) {
-            NovsCommand novsCommand = commands.get(args[2]);
+        } else if (args.length > 1) {
+            NovsCommand novsCommand = commands.get(args[1]);
 
             if (novsCommand == null) {
                 ChatUtil.sendError(sender, MessagesConfig.getCommandNonexistent());
                 return;
             } else {
-                if (novsCommand.getRequiredNumofArgs() > args.length-2) { // subtract 1 from args.length because requiredNumofArgs definitions don't take in account for the first argument
+                if (novsCommand.getRequiredNumofArgs() > args.length-1) { // subtract 1 from args.length because requiredNumofArgs definitions don't take in account for the first argument
                     ChatUtil.sendError(sender, MessagesConfig.getInvalidParameters());
                     return;
                 }

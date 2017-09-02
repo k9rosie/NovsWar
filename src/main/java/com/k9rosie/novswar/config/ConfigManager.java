@@ -26,10 +26,15 @@ public class ConfigManager {
 	
 	public void reloadConfigs() {
         coreConfig.reloadConfig();
+        coreConfig.reloadData();
         teamConfig.reloadConfig();
+        teamConfig.reloadData();
         worldsConfig.reloadConfig();
+        worldsConfig.reloadData();
         regionsConfig.reloadConfig();
+        regionsConfig.reloadData();
         messagesConfig.reloadConfig();
+        messagesConfig.reloadData();
 	}
 	
 	public void saveConfigs() {
@@ -39,6 +44,14 @@ public class ConfigManager {
         regionsConfig.saveConfig();
         messagesConfig.saveConfig();
 	}
+
+	public void saveDefaultConfigs() {
+	    coreConfig.saveDefaultConfig();
+	    teamConfig.saveDefaultConfig();
+	    worldsConfig.saveDefaultConfig();
+	    regionsConfig.saveDefaultConfig();
+	    messagesConfig.saveDefaultConfig();
+    }
 
     public CoreConfig getCoreConfig() {
         return coreConfig;

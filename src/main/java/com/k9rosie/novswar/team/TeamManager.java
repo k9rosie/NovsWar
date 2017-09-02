@@ -13,11 +13,11 @@ import java.util.*;
 public class TeamManager {
 
     private NovsWar novswar;
-    private HashMap<String, NovsTeam> teams;
+    private TreeMap<String, NovsTeam> teams;
 
     public TeamManager(NovsWar novswar) {
         this.novswar = novswar;
-        teams = new HashMap<>();
+        teams = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     }
 
     public void initialize() {
@@ -25,7 +25,7 @@ public class TeamManager {
         loadTeams(); // load teams' data from config
     }
 
-    public HashMap<String, NovsTeam> getTeams() {
+    public TreeMap<String, NovsTeam> getTeams() {
         return teams;
     }
 
@@ -46,7 +46,7 @@ public class TeamManager {
     public void loadTeams() {
         TeamsConfig teamsConfig = novswar.getConfigManager().getTeamConfig();
         for (TeamData data : teamsConfig.getTeamData()) {
-            ChatColor color = ChatColor.valueOf(data.getColor());
+            ChatColor color = ChatColor.valueOf(data.getColor().toUpperCase());
             NovsTeam team = new NovsTeam(data.getName(), color,
                     data.isCanBeDamaged(),
                     data.isCanAttack(),

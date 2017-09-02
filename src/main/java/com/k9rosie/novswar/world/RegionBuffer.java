@@ -34,6 +34,7 @@ public class RegionBuffer {
 
     public void createRegion() {
         NovsCuboid cuboid = new NovsCuboid(world, cornerOne, cornerTwo, type);
+        cuboid.setBlocks(cuboid.getCuboidBlocks());
         world.getCuboids().put(name, cuboid);
         cornerOne = null;
         cornerTwo = null;

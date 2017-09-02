@@ -13,6 +13,7 @@ public class TeamsConfig extends NovsConfig {
 
     public TeamsConfig(NovsWarPlugin plugin) {
         super(plugin, "teams.yml");
+        teamData = new ArrayList<>();
     }
 
     public List<Map<?, ?>> getTeams() {
@@ -24,7 +25,9 @@ public class TeamsConfig extends NovsConfig {
     }
 
     public void reloadData() {
-        teamList.clear();
+        if (teamList != null) {
+            teamList.clear();
+        }
         teamList = getConfig().getMapList("teams");
         parseTeamList();
     }

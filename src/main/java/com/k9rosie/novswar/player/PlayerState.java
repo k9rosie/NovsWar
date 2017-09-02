@@ -134,7 +134,7 @@ public class PlayerState {
     }
 
     public ArrayList<AttackTimer> sortAttackers() {
-        ArrayList<AttackTimer> assisters = (ArrayList<AttackTimer>) attackers.values();
+        ArrayList<AttackTimer> assisters = new ArrayList(attackers.values());
         Collections.sort(assisters);
         return assisters;
     }
@@ -153,7 +153,7 @@ public class PlayerState {
 
             // remove player from the spectator list of who they're spectating
             Player target = (Player) player.getBukkitPlayer().getSpectatorTarget();
-            if (player != null) { // if they're spectating something
+            if (target != null) { // if they're spectating something
                 novswar.getPlayerManager().getPlayer(target).getPlayerState().getObservers().remove(player);
             }
 
@@ -173,11 +173,12 @@ public class PlayerState {
         String deathMessage = MessagesConfig.getDeathMessage(team.getColor().toString(), player.getBukkitPlayer().getDisplayName());
         player.getStats().incrementDeaths();
 
-        game.printDeathMessage(deathMessage);
-
-        ArrayList<AttackTimer> sortedAttackers = sortAttackers();
-        NovsPlayer assistAttacker = sortedAttackers.get(sortedAttackers.size()-1).getAttacker();
-        attackers.clear();
+        NovsPlayer assistAttacker = null;
+        if (!attackers.isEmpty()) {
+            ArrayList<AttackTimer> sortedAttackers = sortAttackers();
+            assistAttacker = sortedAttackers.get(sortedAttackers.size() - 1).getAttacker();
+            attackers.clear();
+        }
 
         game.printDeathMessage(deathMessage);
         scheduleDeath(game.getGamemode().getDeathTime(player));
@@ -214,7 +215,10 @@ public class PlayerState {
         game.printDeathMessage(deathMessage);
 
         // Evaluate assists
-        NovsPlayer assistAttacker = sortAttackers().get(0).getAttacker();
+        NovsPlayer assistAttacker = null;
+        if (sortAttackers().size() > 1) {
+            assistAttacker = sortAttackers().get(1).getAttacker();
+        }
         attackers.clear();
 
         // Schedule death spectating

@@ -2,6 +2,8 @@ package com.k9rosie.novswar.player;
 
 import com.k9rosie.novswar.NovsWar;
 
+import com.k9rosie.novswar.game.Game;
+import com.k9rosie.novswar.team.NovsTeam;
 import com.k9rosie.novswar.util.SendTitle;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -36,11 +38,15 @@ public class PlayerManager {
     }
 
     public ArrayList<NovsPlayer> getNovsPlayers() {
-        return (ArrayList<NovsPlayer>) players.values();
+        return new ArrayList<>(players.values());
     }
 
     public NovsPlayer createNovsPlayer(Player bukkitPlayer) {
+        Game game = novswar.getGameHandler().getGame();
+        NovsTeam defaultTeam = novswar.getTeamManager().getDefaultTeam();
         NovsPlayer player = new NovsPlayer(bukkitPlayer);
+        PlayerState playerState = new PlayerState(game, player, defaultTeam);
+        player.setPlayerState(playerState);
         players.put(bukkitPlayer, player);
         return player;
     }

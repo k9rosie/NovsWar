@@ -26,7 +26,7 @@ public class ChatCommand implements NovsCommand {
     public void execute(CommandSender sender, String args[]) {
     	NovsPlayer player = novsWar.getPlayerManager().getPlayers().get(sender);
 
-    	if(player.isTeamChat()) {
+    	if (!player.isTeamChat()) {
     		ChatUtil.sendNotice(player, "Chat mode: Team");
     		player.setTeamChat(true);
     	} else {
