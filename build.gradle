@@ -7,13 +7,18 @@ group = 'com.k9rosie'
 version = '1.0.0-SNAPSHOT'
 
 repositories {
-  maven {
-    url "https://nexus.k9rosie.com/content/groups/public"
-  }
+  maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+  maven { url "https://packagecloud.io/k9rosie/novswar/maven2" }
+  mavenCentral()
+}
+
+configurations {
+  deployerJars
 }
 
 dependencies {
   compile "org.bukkit:bukkit:1.12.1-R0.1-SNAPSHOT"
+  deployerJars "io.packagecloud.maven.wagon:maven-packagecloud-wagon:0.0.6"
   testCompile "junit:junit:4.8.2"
 }
 
@@ -30,8 +35,9 @@ processResources {
 uploadArchives {
   repositories {
     mavenDeployer {
-      repository(url: "https://nexus.k9rosie.com/content/repositories/snapshots") {
-        authentication(userName: System.env.NEXUS_CREDENTIALS_USERNAME, password: System.env.NEXUS_CREDENTIALS_PASSWORD)
+      configuration = configurations.deployerJars
+      repository(url: "packagecloud+https://packagecloud.io/k9rosie/novswar") {
+        authentication(password: System.env.PACKAGECLOUD_PASSWORD)
       }
       pom.version = project.version
       pom.artifactId = project.name
