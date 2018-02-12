@@ -6,21 +6,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public abstract class Database {
-    private DatabaseType type;
     private String prefix;
+    private String type;
     private DatabaseConnection databaseConnection;
 
-    public Database(NovsWar novsWar, DatabaseType type, String prefix) {
-        this.type = type;
+    public Database(NovsWar novsWar, String type, String prefix) {
         this.prefix = prefix;
+        this.type = type;
         databaseConnection = new DatabaseConnection(novsWar, this);
     }
 
     public abstract void initialize();
-
-    public DatabaseType getType() {
-        return type;
-    }
 
     public DatabaseConnection getDatabaseConnection() {
         return databaseConnection;
@@ -29,6 +25,8 @@ public abstract class Database {
     public String getPrefix() {
         return prefix;
     }
+
+    public String getType() { return type; }
 
     public boolean exists(String table, String column, String search) {
         String query = "SELECT COUNT(1) FROM " + prefix+table + " WHERE " + column + " = '" + search +"';";

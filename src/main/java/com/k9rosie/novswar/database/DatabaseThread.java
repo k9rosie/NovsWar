@@ -44,10 +44,10 @@ public class DatabaseThread implements Runnable {
 
     public void createDatabase() {
         CoreConfig coreConfig = novsWar.getConfigManager().getCoreConfig();
-        String type = coreConfig.getDatabaseConnector();
         String prefix = coreConfig.getDatabasePrefix();
+        String type = coreConfig.getDatabaseConnector();
 
-        database = new NovswarDB(novsWar, DatabaseType.matchType(type), prefix);
+        database = new NovswarDB(novsWar, type, prefix);
     }
 
     public Thread getThread() {

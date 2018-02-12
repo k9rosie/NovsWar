@@ -39,7 +39,7 @@ public class Table {
                 buffer.append("PRIMARY KEY ");
             }
 
-            if (column.shouldAutoIncrement() && database.getType() != DatabaseType.SQLite) {
+            if (column.shouldAutoIncrement() && !database.getType().equalsIgnoreCase("sqlite")) {
                 buffer.append("AUTO_INCREMENT ");
             }
 

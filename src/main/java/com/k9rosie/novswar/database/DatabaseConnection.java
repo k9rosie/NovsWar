@@ -32,8 +32,6 @@ public class DatabaseConnection {
             return;
         }
 
-        DatabaseType type = database.getType();
-
         CoreConfig config = novswar.getConfigManager().getCoreConfig();
         String hostnameString;
         String portString;
@@ -42,7 +40,7 @@ public class DatabaseConnection {
         String passwordString;
         String pathString;
 
-        if (type != DatabaseType.SQLite) {
+        if (!database.getType().equalsIgnoreCase("sqlite")) {
             hostnameString = config.getDatabaseHostname();
             portString = config.getDatabasePort();
             databaseString = config.getDatabasePort();
@@ -55,7 +53,7 @@ public class DatabaseConnection {
         }
 
         try {
-            connection = DriverManager.getConnection("jdbc:" + type.toString().toLowerCase() + ":" + pathString, properties);
+            connection = DriverManager.getConnection("jdbc:" + database.getType().toLowerCase() + ":" + pathString, properties);
 
             return;
         } catch (SQLException e) {

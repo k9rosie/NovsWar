@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class NovswarDB extends Database {
 
-    public NovswarDB(NovsWar novsWar, DatabaseType type, String prefix) {
+    public NovswarDB(NovsWar novsWar, String type, String prefix) {
         super(novsWar, type, prefix);
     }
 
