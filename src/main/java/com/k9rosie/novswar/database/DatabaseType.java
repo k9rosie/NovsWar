@@ -1,18 +1,8 @@
 package com.k9rosie.novswar.database;
 
 public enum DatabaseType {
-    MySQL ("mariadb.jar"),
-    SQLite ("sqlite.jar");
-
-    private String driver;
-
-    DatabaseType(String driver) {
-        this.driver = driver;
-    }
-
-    public String getDriver() {
-        return driver;
-    }
+    MariaDB,
+    SQLite;
 
     public static DatabaseType matchType(String str) {
         for(DatabaseType type : values()) {

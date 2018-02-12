@@ -32,11 +32,9 @@ public class DatabaseConnection {
             return;
         }
 
-        ClassLoader classLoader = Bukkit.getServer().getClass().getClassLoader();
         DatabaseType type = database.getType();
 
         CoreConfig config = novswar.getConfigManager().getCoreConfig();
-        String className;
         String hostnameString;
         String portString;
         String databaseString;
@@ -45,7 +43,6 @@ public class DatabaseConnection {
         String pathString;
 
         if (type != DatabaseType.SQLite) {
-            className = "com.mariadb.jdbc.Driver";
             hostnameString = config.getDatabaseHostname();
             portString = config.getDatabasePort();
             databaseString = config.getDatabasePort();
@@ -55,13 +52,10 @@ public class DatabaseConnection {
             setProperties("true", userString, passwordString);
         } else {
             pathString = config.getDatabasePath();
-            className = "org.sqlite.JDBC";
         }
 
-        Driver driver = (Driver) classLoader.loadClass(className).newInstance();
-
         try {
-            connection = driver.connect("jdbc:" + type.toString().toLowerCase() + ":" + pathString, properties);
+            connection = DriverManager.getConnection("jdbc:" + type.toString().toLowerCase() + ":" + pathString, properties);
 
             return;
         } catch (SQLException e) {
