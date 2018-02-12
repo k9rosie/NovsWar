@@ -62,6 +62,8 @@ public class DatabaseConnection {
 
         try {
             connection = driver.connect("jdbc:" + type.toString().toLowerCase() + ":" + pathString, properties);
+            System.out.println(connection);
+            System.out.println("jdbc:" + type.toString().toLowerCase() + ":" + pathString);
             return;
         } catch (SQLException e) {
             e.printStackTrace();
