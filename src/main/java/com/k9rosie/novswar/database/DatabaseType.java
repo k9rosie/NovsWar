@@ -1,7 +1,7 @@
 package com.k9rosie.novswar.database;
 
 public enum DatabaseType {
-    MySQL ("mysql.jar"),
+    MySQL ("mariadb.jar"),
     SQLite ("sqlite.jar");
 
     private String driver;

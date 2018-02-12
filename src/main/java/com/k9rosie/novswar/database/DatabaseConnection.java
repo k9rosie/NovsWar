@@ -45,7 +45,7 @@ public class DatabaseConnection {
         String pathString;
 
         if (type != DatabaseType.SQLite) {
-            className = "com.mysql.jdbc.Driver";
+            className = "com.mariadb.jdbc.Driver";
             hostnameString = config.getDatabaseHostname();
             portString = config.getDatabasePort();
             databaseString = config.getDatabasePort();
@@ -62,8 +62,7 @@ public class DatabaseConnection {
 
         try {
             connection = driver.connect("jdbc:" + type.toString().toLowerCase() + ":" + pathString, properties);
-            System.out.println(connection);
-            System.out.println("jdbc:" + type.toString().toLowerCase() + ":" + pathString);
+
             return;
         } catch (SQLException e) {
             e.printStackTrace();
