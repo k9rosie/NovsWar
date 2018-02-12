@@ -43,18 +43,11 @@ public class DatabaseConnection {
         if (!database.getType().equalsIgnoreCase("sqlite")) {
             hostnameString = config.getDatabaseHostname();
             portString = config.getDatabasePort();
-            databaseString = config.getDatabasePort();
+            databaseString = config.getDatabaseName();
             userString = config.getDatabaseUsername();
             passwordString = config.getDatabasePassword();
             pathString = "//" + hostnameString+":"+portString + "/" + databaseString;
             setProperties("true", userString, passwordString);
-            System.out.println("hostname: " + hostnameString);
-            System.out.println("port: " + portString);
-            System.out.println("database: " + databaseString);
-            System.out.println("username: " + userString);
-            System.out.println("password: " + passwordString);
-            System.out.println("path: " + pathString);
-            System.out.println("full path: " + "jdbc:" + database.getType().toLowerCase() + ":" + pathString);
         } else {
             pathString = config.getDatabasePath();
         }
