@@ -39,14 +39,11 @@ public interface Gamemode {
     String getGamemodeName();
 
     /**
-     * Sets the initial scores for teams at the beginning of a round
-     */
-    void setInitialScores();
-
-    /**
      * Gets a list of the winning teams at the end of a round
      * @return
      */
-    ArrayList<NovsTeam> getWinningTeams();
+    NovsTeam[] getWinningTeams();
+
+    void setInitialScores();
 
 }

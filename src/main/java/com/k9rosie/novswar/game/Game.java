@@ -30,7 +30,7 @@ public class Game {
     private GameScoreboard scoreboard;
     private BallotBox ballotBox;
     private ArrayList<NovsTeam> enabledTeams;
-    
+
     private int rounds;
 
     public Game(GameHandler gameHandler, NovsWorld world, Gamemode gamemode) {
@@ -184,19 +184,20 @@ public class Game {
             }
 
             // Determine winning teams
-            ArrayList<NovsTeam> winners = gamemode.getWinningTeams();
-            if (winners.size() == 1) { // if there's only one winning team
-                NovsTeam winner = winners.get(0);
+            NovsTeam[] winners = gamemode.getWinningTeams();
+            if (winners.length == 1) { // if there's only one winning team
+                NovsTeam winner = winners[0];
 
                 // Display victory message for all players, given single victor
                 SendTitle.broadcastSubtitle(winner.getColor()+winner.getTeamName()+" §fwins!");
 
-            } else if (winners.size() > 1) { // if multiple teams have won (tie)
+            } else if (winners.length > 1) { // if multiple teams have won (tie)
                 StringBuilder teamList = new StringBuilder();
-                for (int i = 0; i < winners.toArray().length; i++) {
-                    NovsTeam team = (NovsTeam) winners.toArray()[i];
+
+                for (int i = 0; i < winners.length; i++) {
+                    NovsTeam team = winners[i];
                     teamList.append(team.getColor()+team.getTeamName());
-                    if (i != winners.toArray().length-1) {
+                    if (i != winners.length-1) {
                         teamList.append(ChatColor.GRAY+", ");
                     }
                 }
@@ -204,7 +205,7 @@ public class Game {
                 // Display victory message for all players, given multiple victors
                 SendTitle.broadcastSubtitle(teamList.toString() + " §ftie!");
 
-            } else { // no winners (all teams scored 0)
+            } else { // no winners (array is empty)
                 SendTitle.broadcastSubtitle("§fNo winners");
             }
 
