@@ -73,7 +73,12 @@ public class Game {
         }
 
         // set the initial scores for the teams
-        gamemode.setInitialScores();
+        HashMap<NovsTeam, Integer> initialScores = gamemode.getInitialScores();
+        for (NovsTeam team : initialScores.keySet()) {
+            int score = initialScores.get(team);
+            team.getTeamState().getScore().setScore(score);
+        }
+
 
         // teleport players to lobby spawn, set their health and food
         for (NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
@@ -529,6 +534,18 @@ public class Game {
     
     public boolean isPaused() {
         return paused;
+    }
+
+    public GameTimer getGameTimer() {
+        return gameTimer;
+    }
+
+    public ArrayList<NovsTeam> getEnabledTeams() {
+        return enabledTeams;
+    }
+
+    public int getRounds() {
+        return rounds;
     }
 
     public NovsWar getNovsWarInstance() {

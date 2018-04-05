@@ -324,7 +324,7 @@ public class PlayerState {
 
 
     public void quitSpectating() {
-        if(spectating) {
+        if (spectating) {
             spectating = false; // must occur BEFORE gamemode change
             player.getBukkitPlayer().teleport(game.getNovsWarInstance().getWorldManager().getLobbyWorld().getTeamSpawns().get(game.getNovsWarInstance().getTeamManager().getDefaultTeam()));
             player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);

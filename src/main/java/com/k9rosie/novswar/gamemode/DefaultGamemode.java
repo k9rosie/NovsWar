@@ -34,11 +34,12 @@ public class DefaultGamemode implements Gamemode {
         }
     }
 
-    public ArrayList<NovsTeam> getWinningTeams() {
+    public NovsTeam[] getWinningTeams() {
         ArrayList<NovsTeam> teams = new ArrayList<>();
         for (NovsTeam team : NovsWar.getInstance().getGameHandler().getGame().getTeams()) {
             teams.add(team);
         }
-        return teams;
+
+        return (NovsTeam[]) teams.toArray();
     }
 }

@@ -4,6 +4,7 @@ import com.k9rosie.novswar.player.NovsPlayer;
 import com.k9rosie.novswar.team.NovsTeam;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public interface Gamemode {
 
@@ -21,10 +22,11 @@ public interface Gamemode {
     int getDeathTime(NovsPlayer player);
 
     /**
-     * Gets the max score a team has to reach to win the game
+     * Gets the initial scores for each team
      * @return
      */
-    int getMaxScore();
+
+    HashMap<NovsTeam, Integer> getInitialScores();
 
     /**
      * Gets the number of rounds to be played
