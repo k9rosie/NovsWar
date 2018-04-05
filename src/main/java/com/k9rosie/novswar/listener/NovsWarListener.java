@@ -27,21 +27,6 @@ public class NovsWarListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onNovsWarScoreModify(NovsWarScoreModifyEvent event) {
-        NovsScore score = event.getNovsScore();
-        Game game = novswar.getGameHandler().getGame();
-        int maxScore = game.getGamemode().getMaxScore();
-
-        // if the score goes above the maxScore threshold then end the game
-        if (game.getGameState() == GameState.DURING_GAME) {
-            if (score.getScoreboardScore().getScore() >= maxScore) {
-                game.endGame();
-            }
-        }
-
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL)
     public void onNovsWarNewGame(NovsWarNewGameEvent event) {
     	novswar.getWorldManager().updateSigns(event.getGame());
     }
