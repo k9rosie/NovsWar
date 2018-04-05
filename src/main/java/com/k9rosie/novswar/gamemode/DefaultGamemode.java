@@ -5,6 +5,7 @@ import com.k9rosie.novswar.player.NovsPlayer;
 import com.k9rosie.novswar.team.NovsTeam;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DefaultGamemode implements Gamemode {
 
@@ -20,8 +21,15 @@ public class DefaultGamemode implements Gamemode {
         return 5;
     }
 
-    public int getMaxScore() {
-        return 10;
+    public HashMap<NovsTeam, Integer> getInitialScores() {
+
+        HashMap<NovsTeam, Integer> scores = new HashMap<>();
+
+        for (NovsTeam team : NovsWar.getInstance().getGameHandler().getGame().getEnabledTeams()) {
+            scores.put(team, 10);
+        }
+
+        return scores;
     }
 
     public int getRounds() {
