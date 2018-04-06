@@ -72,10 +72,6 @@ public class Game {
             player.setPlayerState(playerState);
         }
 
-        // set the initial scores for the teams
-        setInitialScores();
-
-
         // teleport players to lobby spawn, set their health and food
         for (NovsPlayer player : novsWar.getPlayerManager().getPlayers().values()) {
             player.getBukkitPlayer().teleport(novsWar.getWorldManager().getLobbyWorld().getTeamSpawnLoc(defaultTeam));
@@ -124,6 +120,8 @@ public class Game {
 
     public void startGame() {
         gameState = GameState.DURING_GAME;
+        // set the initial scores for the teams
+        setInitialScores();
         world.openIntermissionGates();
         int gameTime = gamemode.getGameTime();
         gameTimer.stopTimer();
