@@ -185,20 +185,20 @@ public class Game {
             }
 
             // Determine winning teams
-            NovsTeam[] winners = gamemode.getWinningTeams();
-            if (winners.length == 1) { // if there's only one winning team
-                NovsTeam winner = winners[0];
+            ArrayList<NovsTeam> winners = gamemode.getWinningTeams();
+            if (winners.size() == 1) { // if there's only one winning team
+                NovsTeam winner = winners.get(0);
 
                 // Display victory message for all players, given single victor
                 SendTitle.broadcastSubtitle(winner.getColor()+winner.getTeamName()+" §fwins!");
 
-            } else if (winners.length > 1) { // if multiple teams have won (tie)
+            } else if (winners.size() > 1) { // if multiple teams have won (tie)
                 StringBuilder teamList = new StringBuilder();
 
-                for (int i = 0; i < winners.length; i++) {
-                    NovsTeam team = winners[i];
+                for (int i = 0; i < winners.size(); i++) {
+                    NovsTeam team = winners.get(i);
                     teamList.append(team.getColor()+team.getTeamName());
-                    if (i != winners.length-1) {
+                    if (i != winners.size()-1) {
                         teamList.append(ChatColor.GRAY+", ");
                     }
                 }
