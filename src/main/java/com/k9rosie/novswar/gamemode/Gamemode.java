@@ -45,7 +45,4 @@ public interface Gamemode {
      * @return
      */
     NovsTeam[] getWinningTeams();
-
-    void setInitialScores();
-
 }
