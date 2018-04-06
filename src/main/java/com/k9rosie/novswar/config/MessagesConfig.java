@@ -40,7 +40,7 @@ public class MessagesConfig extends NovsConfig {
     }
 
     public static String getTeamMissing(String teamColor, String team) {
-        String message = teamMissing.replace(":team_color", teamColor)
+        String message = teamMissing.replace(":t_color", teamColor)
                 .replace(":team", team);
         message = ChatColor.translateAlternateColorCodes('&', message);
         return message;
@@ -67,14 +67,14 @@ public class MessagesConfig extends NovsConfig {
     }
 
     public static String getJoinTeam(String teamColor, String team) {
-        String message = joinTeam.replace(":team_color", teamColor)
+        String message = joinTeam.replace(":t_color", teamColor)
                 .replace(":team", team);
         message = ChatColor.translateAlternateColorCodes('&', message);
         return message;
     }
 
     public static String getDeathMessage(String playerColor, String player) {
-        String message = deathMessage.replace(":player_color", playerColor)
+        String message = deathMessage.replace(":p_color", playerColor)
                 .replace(":player", player);
         message = ChatColor.translateAlternateColorCodes('&', message);
         return message;
@@ -99,14 +99,14 @@ public class MessagesConfig extends NovsConfig {
     }
 
     public static String getSpawnSet(String teamColor, String team) {
-        String message = spawnSet.replace(":team_color", teamColor)
+        String message = spawnSet.replace(":t_color", teamColor)
                 .replace(":team", team);
         message = ChatColor.translateAlternateColorCodes('&', message);
         return message;
     }
 
     public static String getCannotJoinTeam(String teamColor, String team) {
-        String message = cannotJoinTeam.replace(":team_color", teamColor)
+        String message = cannotJoinTeam.replace(":t_color", teamColor)
                 .replace(":team", team);
         message = ChatColor.translateAlternateColorCodes('&', message);
         return message;
