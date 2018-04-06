@@ -44,5 +44,5 @@ public interface Gamemode {
      * Gets a list of the winning teams at the end of a round
      * @return
      */
-    NovsTeam[] getWinningTeams();
+    ArrayList<NovsTeam> getWinningTeams();
 }
