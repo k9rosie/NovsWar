@@ -319,7 +319,7 @@ public class PlayerListener implements Listener {
 			int slot = event.getSlot();
 			ItemStack clicked = event.getCurrentItem();
 			// check that the click was on a BEDROCK voting item
-			if (clicked != null && clicked.getType().equals(Material.EMPTY_MAP) && bukkitPlayer != null){
+			if (clicked != null && clicked.getType().equals(Material.MAP) && bukkitPlayer != null){
 				game.getBallotBox().castVote(slot);
 				bukkitPlayer.closeInventory();
 				ChatUtil.sendNotice(player, "You voted for "+clicked.getItemMeta().getDisplayName());
