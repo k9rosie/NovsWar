@@ -50,7 +50,7 @@ public class BallotBox {
 				gamemode = novswar.getGameHandler().getDefaultGamemode().getGamemodeName();
 			}
 
-			createVoteOption(Material.EMPTY_MAP, inventory, i, name, "A " + gamemode + " map");
+			createVoteOption(Material.MAP, inventory, i, name, "A " + gamemode + " map");
 		}
     	
     	// Open the voting screen for each player
