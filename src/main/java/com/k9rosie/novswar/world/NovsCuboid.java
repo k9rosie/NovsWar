@@ -82,7 +82,7 @@ public class NovsCuboid {
             for (int y = bottomBlockY; y <= topBlockY; y++) {
                 for (int z = bottomBlockZ; z <= topBlockZ; z++) {
                     Block bukkitBlock = world.getBukkitWorld().getBlockAt(x, y, z);
-                    NovsBlock block = createNovsBlock(bukkitBlock);
+                    NovsBlock block = new NovsBlock(bukkitBlock);
                     blocks.add(block);
                 }
             }
@@ -118,7 +118,7 @@ public class NovsCuboid {
 
     public void resetBlocks() {
         for (NovsBlock block : blocks) {
-            block.respawn();
+            block.resetBlock();
         }
     }
 
@@ -142,91 +142,5 @@ public class NovsCuboid {
                 }
             }
         }
-    }
-
-
-    public NovsBlock createNovsBlock(Block bukkitBlock) {
-        BlockState blockState = bukkitBlock.getState();
-        NovsBlock block = new NovsBlock(bukkitBlock.getLocation(), bukkitBlock.getState(), bukkitBlock.getType(), bukkitBlock.getState().getData());
-
-        if (blockState instanceof InventoryHolder) {
-            InventoryHolder inventoryHolder = (InventoryHolder) blockState;
-            block.setInventoryContents(inventoryHolder.getInventory().getContents());
-        }
-
-        if (blockState instanceof Sign) {
-            Sign sign = (Sign) blockState;
-            block.setSignText(sign.getLines());
-        }
-
-        if (blockState instanceof Banner) {
-            Banner banner = (Banner) blockState;
-            block.setBannerBaseColor(banner.getBaseColor());
-            block.setBannerPatterns((ArrayList) banner.getPatterns());
-        }
-
-        if (blockState instanceof Furnace) {
-            Furnace furnace = (Furnace) blockState;
-            block.setFurnaceBurnTime(furnace.getBurnTime());
-            block.setFurnaceCookTime(furnace.getCookTime());
-        }
-
-        if (blockState instanceof BrewingStand) {
-            BrewingStand brewingStand = (BrewingStand) blockState;
-            block.setBrewingStandBrewingTime(brewingStand.getBrewingTime());
-            block.setBrewingStandFuelLevel(brewingStand.getFuelLevel());
-        }
-
-        if (blockState instanceof Beacon) {
-            Beacon beacon = (Beacon) blockState;
-            if (beacon.getPrimaryEffect() != null) {
-                block.setBeaconPrimaryEffectType(beacon.getPrimaryEffect().getType());
-            }
-            if (beacon.getSecondaryEffect() != null) {
-                block.setBeaconSecondaryEffectType(beacon.getSecondaryEffect().getType());
-            }
-        }
-
-        if (blockState instanceof CreatureSpawner) {
-            CreatureSpawner creatureSpawner = (CreatureSpawner) blockState;
-            block.setCreatureSpawnerDelay(creatureSpawner.getDelay());
-            block.setCreatureSpawnerCreatureType(creatureSpawner.getSpawnedType());
-        }
-
-        if (blockState instanceof NoteBlock) {
-            NoteBlock noteBlock = (NoteBlock) blockState;
-            block.setNoteBlockNote(noteBlock.getNote());
-        }
-
-        if (blockState instanceof Jukebox) {
-            Jukebox jukebox = (Jukebox) blockState;
-            block.setJukeboxRecord(jukebox.getPlaying());
-        }
-
-        if (blockState instanceof Skull) {
-            Skull skull = (Skull) blockState;
-            block.setSkullOwningPlayer(skull.getOwningPlayer());
-            block.setSkullRotation(skull.getRotation());
-            block.setSkullSkullType(skull.getSkullType());
-        }
-
-        if (blockState instanceof CommandBlock) {
-            CommandBlock commandBlock = (CommandBlock) blockState;
-            block.setCommandBlockCommand(commandBlock.getCommand());
-            block.setCommandBlockName(commandBlock.getName());
-        }
-
-        if (blockState instanceof EndGateway) {
-            EndGateway endGateway = (EndGateway) blockState;
-            block.setEndGatewayExactTeleport(endGateway.isExactTeleport());
-            block.setEndGatewayExitLocation(endGateway.getExitLocation());
-        }
-
-        if (blockState instanceof FlowerPot) {
-            FlowerPot flowerPot = (FlowerPot) blockState;
-            block.setFlowerPotContents(flowerPot.getContents());
-        }
-
-        return block;
     }
 }
