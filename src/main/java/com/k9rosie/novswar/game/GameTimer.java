@@ -50,14 +50,12 @@ public class GameTimer {
             return;
         }
 
-        task = new Runnable() {
-            public void run() {
-                clockTick();
-                time--;
-                if (time <= -1) {
-                    stopTimer();
-                    game.endTimer();
-                }
+        task = () -> {
+            clockTick();
+            time--;
+            if (time <= -1) {
+                stopTimer();
+                game.endTimer();
             }
         };
 
